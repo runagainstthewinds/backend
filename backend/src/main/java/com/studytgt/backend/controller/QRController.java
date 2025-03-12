@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/qr")
@@ -18,7 +19,8 @@ public class QRController {
 
     @GetMapping(value = "/generate", produces = MediaType.IMAGE_PNG_VALUE)
     public void generateQRCode(HttpServletResponse response) throws Exception {
-        String url = "https://www.youtube.com/watch?v=qz9tKlF431k&ab_channel=Cl%C3%A9mentMihailescu"; // URL to redirect to
+        String randomId = UUID.randomUUID().toString();
+        String url = "https://studytgt.com/studyroom/" + randomId; 
         int width = 200;
         int height = 200;
 
