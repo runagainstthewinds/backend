@@ -11,7 +11,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertThrows; // Correct import
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class QRControllerTest {
