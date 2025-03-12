@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/* 
+TBD IF WE NEED TO IMPLEMENT THIS
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
@@ -16,3 +18,4 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowCredentials(true); // Allow credentials (if needed)
     }
 }
+*/
