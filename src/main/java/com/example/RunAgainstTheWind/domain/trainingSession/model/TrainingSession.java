@@ -7,8 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import java.util.Date;
 
 import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
@@ -17,8 +16,7 @@ import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 
 @Entity
 @Table(name = "training_session")
-@Getter
-@Setter
+@Data
 public class TrainingSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

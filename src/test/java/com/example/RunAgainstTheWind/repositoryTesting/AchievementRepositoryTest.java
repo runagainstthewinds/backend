@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.repository;
+package com.example.RunAgainstTheWind.repositoryTesting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

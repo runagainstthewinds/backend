@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
  * Controller responsible to handle request for new app user registration
  */
 @RestController
-@RequestMapping("/api/v1/registration")
+@RequestMapping("/api/registration")
 @AllArgsConstructor
 public class RegistrationController {
 

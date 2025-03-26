@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 import com.example.RunAgainstTheWind.domain.race.model.Race;
-import com.example.RunAgainstTheWind.domain.road.model.Road;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.enumeration.Road;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,13 +16,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
 @Table(name = "training_plan")
-@Getter
-@Setter
+@Data
 public class TrainingPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

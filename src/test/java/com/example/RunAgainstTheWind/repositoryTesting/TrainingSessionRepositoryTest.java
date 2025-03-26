@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.repository;
+package com.example.RunAgainstTheWind.repositoryTesting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,15 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUserRole;
 import com.example.RunAgainstTheWind.domain.appUser.repository.AppUserRepository;
-import com.example.RunAgainstTheWind.domain.road.model.Road;
 import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.shoe.repository.ShoeRepository;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.trainingPlan.repository.TrainingPlanRepository;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.domain.trainingSession.repository.TrainingSessionRepository;
+import com.example.RunAgainstTheWind.enumeration.AppUserRole;
+import com.example.RunAgainstTheWind.enumeration.Road;
 
 @SpringBootTest
 @Transactional

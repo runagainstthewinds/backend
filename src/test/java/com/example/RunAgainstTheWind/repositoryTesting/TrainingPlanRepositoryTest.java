@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.repository;
+package com.example.RunAgainstTheWind.repositoryTesting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.RunAgainstTheWind.domain.road.model.Road;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.trainingPlan.repository.TrainingPlanRepository;
 import com.example.RunAgainstTheWind.domain.trainingSession.repository.TrainingSessionRepository;
+import com.example.RunAgainstTheWind.enumeration.Road;
 
 @SpringBootTest
 @Transactional

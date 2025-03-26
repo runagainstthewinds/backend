@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.repository;
+package com.example.RunAgainstTheWind.repositoryTesting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.RunAgainstTheWind.externalApi.weather.model.Weather;
+import com.example.RunAgainstTheWind.enumeration.Weather;
 import com.example.RunAgainstTheWind.externalApi.weatherCondition.model.WeatherCondition;
 import com.example.RunAgainstTheWind.externalApi.weatherCondition.repository.WeatherConditionRepository;
 
