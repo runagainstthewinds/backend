@@ -26,6 +26,8 @@ public class JWTService {
 
     private String secretkey = "";
 
+    private static final long TOKEN_EXPIRATION_TIME = 60 * 60 * 30 * 1000; // In milliseconds
+
     public JWTService() {
 
         try {
@@ -44,7 +46,7 @@ public class JWTService {
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30))
+                .expiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
                 .and()
                 .signWith(getKey())
                 .compact();

@@ -12,13 +12,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
 @Table(name = "app_user_details")
-@Getter
-@Setter
+@Data
 public class AppUserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

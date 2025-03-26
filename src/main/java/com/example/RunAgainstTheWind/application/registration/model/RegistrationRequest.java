@@ -1,14 +1,14 @@
 package com.example.RunAgainstTheWind.application.registration.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 
 /*
  * Model class to represent the registration request
  */
-@Getter
+@Data
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString

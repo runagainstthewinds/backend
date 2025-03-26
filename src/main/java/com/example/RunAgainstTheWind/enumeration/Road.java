@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.domain.road.model;
+package com.example.RunAgainstTheWind.enumeration;
 
 public enum Road {
     GRASS,

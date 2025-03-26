@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.RunAgainstTheWind.application.registration.model.RegistrationRequest;
 import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUserRole;
 import com.example.RunAgainstTheWind.domain.appUser.repository.AppUserRepository;
+import com.example.RunAgainstTheWind.enumeration.AppUserRole;
 
 import lombok.AllArgsConstructor;
 
@@ -16,17 +16,11 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class RegistrationService {
-    private final EmailValidator emailValidator;
     private AppUserRepository appUserRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // Check if the email is valid and if it is, sign up the user
     public String register(RegistrationRequest request) {
-        boolean isEmailValid = emailValidator.test(request.getEmail());
-        if (!isEmailValid) {
-            throw new IllegalStateException("Email not valid");
-        }
-
         boolean userExists = appUserRepository.findByEmail(request.getEmail()).isPresent();
 
         if (userExists) {
