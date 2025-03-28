@@ -1,6 +1,6 @@
-package com.example.RunAgainstTheWind.application;
+package com.example.RunAgainstTheWind.integrationTesting;
 
-import com.example.RunAgainstTheWind.application.user.model.Users;
+import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -16,6 +17,7 @@ import static org.hamcrest.Matchers.not;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class UserControllerTest {
 
     @Autowired
@@ -24,13 +26,13 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Users testUser;
+    private AppUser testUser;
 
     @BeforeEach
     public void setup() throws Exception {
-        testUser = new Users();
-        testUser.setId(1);
+        testUser = new AppUser();
         testUser.setUsername("testuser");
+        testUser.setEmail("testemail");
         testUser.setPassword("password123");
 
         // Register the test user
@@ -42,16 +44,16 @@ public class UserControllerTest {
 
     @Test
     public void givenValidUser_whenRegister_thenReturnsUser() throws Exception {
-        Users newUser = new Users();
-        newUser.setId(2);
+        AppUser newUser = new AppUser();
         newUser.setUsername("newuser");
+        newUser.setEmail("newemail");
         newUser.setPassword("newpass");
 
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(2))
+                .andExpect(jsonPath("$.email").value("newemail"))
                 .andExpect(jsonPath("$.username").value("newuser"))
                 .andExpect(jsonPath("$.password").isNotEmpty()); // Cannot check password value because it is encrypted
     }
@@ -67,7 +69,7 @@ public class UserControllerTest {
 
     @Test
     public void givenInvalidCredentials_whenLogin_thenReturnsFail() throws Exception {
-        Users invalidUser = new Users();
+        AppUser invalidUser = new AppUser();
         invalidUser.setUsername("nonexistent");
         invalidUser.setPassword("wrongpass");
 

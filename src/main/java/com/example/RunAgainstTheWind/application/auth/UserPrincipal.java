@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.RunAgainstTheWind.application.user.model.Users;
+import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 
 /*
  * Model that serves as bridge between the User entity and the Spring Security UserDetails interface.
@@ -15,9 +15,9 @@ import com.example.RunAgainstTheWind.application.user.model.Users;
  */
 public class UserPrincipal implements UserDetails {
 
-    private Users user;
+    private AppUser user;
 
-    public UserPrincipal(Users user) {
+    public UserPrincipal(AppUser user) {
         this.user = user;
     }
 

@@ -20,7 +20,6 @@ import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.trainingPlan.repository.TrainingPlanRepository;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.domain.trainingSession.repository.TrainingSessionRepository;
-import com.example.RunAgainstTheWind.enumeration.AppUserRole;
 import com.example.RunAgainstTheWind.enumeration.Road;
 
 @SpringBootTest
@@ -53,7 +52,10 @@ public class TrainingSessionRepositoryTest {
         Shoe shoe = new Shoe("Nike", "Alphafly", 10.0, 100.0, 250.0);
         shoe = shoeRepository.save(shoe);
 
-        AppUser appUser = new AppUser("David", "Zhou","david.zhou3@mail.mcgill.ca", "12345678", AppUserRole.USER);
+        AppUser appUser = new AppUser();
+        appUser.setUsername("testuser");
+        appUser.setEmail("testemail");
+        appUser.setPassword("testpass");
         appUser = appUserRepository.save(appUser);
 
         LocalDate localDate = LocalDate.of(2025, 3, 24);
@@ -84,7 +86,7 @@ public class TrainingSessionRepositoryTest {
         assertEquals(60.0, retrievedTrainingSession.getAchievedDuration());
         assertEquals(5.0, retrievedTrainingSession.getEffort());
         assertEquals("Nike", retrievedTrainingSession.getShoe().getBrand());
-        assertEquals("David", retrievedTrainingSession.getAppUser().getFirstName());
+        assertEquals("testuser", retrievedTrainingSession.getAppUser().getUsername());
         assertEquals("Marathon", retrievedTrainingSession.getTrainingPlan().getPlanType());
     }
 }
