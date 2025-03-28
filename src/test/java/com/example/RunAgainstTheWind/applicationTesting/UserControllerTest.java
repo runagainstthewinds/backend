@@ -1,6 +1,6 @@
 package com.example.RunAgainstTheWind.applicationTesting;
 
-import com.example.RunAgainstTheWind.application.user.model.Users;
+import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,13 +24,13 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Users testUser;
+    private AppUser testUser;
 
     @BeforeEach
     public void setup() throws Exception {
-        testUser = new Users();
-        testUser.setId(1);
+        testUser = new AppUser();
         testUser.setUsername("testuser");
+        testUser.setEmail("testemail");
         testUser.setPassword("password123");
 
         // Register the test user
@@ -42,9 +42,9 @@ public class UserControllerTest {
 
     @Test
     public void givenValidUser_whenRegister_thenReturnsUser() throws Exception {
-        Users newUser = new Users();
-        newUser.setId(2);
+        AppUser newUser = new AppUser();
         newUser.setUsername("newuser");
+        newUser.setEmail("newemail");
         newUser.setPassword("newpass");
 
         mockMvc.perform(post("/auth/register")
@@ -67,7 +67,7 @@ public class UserControllerTest {
 
     @Test
     public void givenInvalidCredentials_whenLogin_thenReturnsFail() throws Exception {
-        Users invalidUser = new Users();
+        AppUser invalidUser = new AppUser();
         invalidUser.setUsername("nonexistent");
         invalidUser.setPassword("wrongpass");
 

@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.application.user.service;
+package com.example.RunAgainstTheWind.domain.appUser.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,17 +9,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.RunAgainstTheWind.application.auth.JWTService;
-import com.example.RunAgainstTheWind.application.user.model.Users;
-import com.example.RunAgainstTheWind.application.user.repository.UserRepo;
+import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
+import com.example.RunAgainstTheWind.domain.appUser.repository.AppUserRepository;
 
 /*
  * Service responsible for handling user registration and login
  */
 @Service
-public class UserService {
+public class AppUserService {
 
     @Autowired
-    private UserRepo repo;
+    private AppUserRepository repo;
 
     @Autowired
     private JWTService jwtService;
@@ -29,12 +29,12 @@ public class UserService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public Users register(Users user){ 
+    public AppUser register(AppUser user){ 
         user.setPassword(encoder.encode(user.getPassword()));
         return repo.save(user);
     }
 
-    public String verify(Users user){
+    public String verify(AppUser user){
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if(authentication.isAuthenticated())
