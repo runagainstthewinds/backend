@@ -11,7 +11,7 @@ import com.example.RunAgainstTheWind.domain.appUser.service.AppUserService;
  */
 @RestController
 @RequestMapping("/auth")    
-public class UserController {
+public class AppUserController {
 
     @Autowired
     private AppUserService service;
