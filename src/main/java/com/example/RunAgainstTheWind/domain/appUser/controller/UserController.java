@@ -1,10 +1,10 @@
-package com.example.RunAgainstTheWind.application.user.controller;
+package com.example.RunAgainstTheWind.domain.appUser.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.RunAgainstTheWind.application.user.model.Users;
-import com.example.RunAgainstTheWind.application.user.service.UserService;
+import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
+import com.example.RunAgainstTheWind.domain.appUser.service.AppUserService;
 
 /*
  * Controller responsible for handling authentication for a user trying to access the api.
@@ -14,10 +14,10 @@ import com.example.RunAgainstTheWind.application.user.service.UserService;
 public class UserController {
 
     @Autowired
-    private UserService service;
+    private AppUserService service;
 
     @PostMapping("/register")
-    public Users register(@RequestBody Users user){
+    public AppUser register(@RequestBody AppUser user){
         try {
             return service.register(user);
         } catch (Exception e) {
@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody Users user){
+    public String login(@RequestBody AppUser user){
         try {
             return service.verify(user);
         } catch (Exception e) {
