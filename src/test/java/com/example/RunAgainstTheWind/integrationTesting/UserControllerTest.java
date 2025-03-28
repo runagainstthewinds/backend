@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.applicationTesting;
+package com.example.RunAgainstTheWind.integrationTesting;
 
 import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
