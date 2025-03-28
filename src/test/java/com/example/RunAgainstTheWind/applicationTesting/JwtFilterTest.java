@@ -1,6 +1,6 @@
-package com.example.RunAgainstTheWind.application;
+package com.example.RunAgainstTheWind.applicationTesting;
 
-import com.example.RunAgainstTheWind.application.user.model.Users;
+import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class JwtFilterTest {
 
     @Autowired
@@ -29,9 +31,9 @@ public class JwtFilterTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        Users user = new Users();
-        user.setId(1);
+        AppUser user = new AppUser();
         user.setUsername("jwtuser");
+        user.setEmail("jwtemail");
         user.setPassword("jwtpass");
 
         // Register user

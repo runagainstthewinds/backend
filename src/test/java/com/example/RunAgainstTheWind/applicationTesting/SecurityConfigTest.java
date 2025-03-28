@@ -1,6 +1,6 @@
-package com.example.RunAgainstTheWind.application;
+package com.example.RunAgainstTheWind.applicationTesting;
 
-import com.example.RunAgainstTheWind.application.user.model.Users;
+import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class SecurityConfigTest {
 
     @Autowired
@@ -27,9 +29,9 @@ public class SecurityConfigTest {
     @BeforeEach
     public void setup() throws Exception {
         // Register a test user before each test
-        Users user = new Users();
-        user.setId(1);
+        AppUser user = new AppUser();
         user.setUsername("testuser");
+        user.setEmail("jwtemail");
         user.setPassword("testpass");
 
         mockMvc.perform(post("/auth/register")
@@ -43,7 +45,7 @@ public class SecurityConfigTest {
         // Use POST /auth/login to login and return token with 200 OK
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new Users() {{
+                .content(objectMapper.writeValueAsString(new AppUser() {{
                     setUsername("testuser");
                     setPassword("testpass");
                 }})))
