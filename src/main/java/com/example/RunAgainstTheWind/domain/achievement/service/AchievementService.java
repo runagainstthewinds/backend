@@ -1,5 +1,7 @@
 package com.example.RunAgainstTheWind.domain.achievement.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,11 @@ public class AchievementService {
     
     @Autowired
     private AchievementRepository achievementRepository;
+
+    @Transactional
+    public List<Achievement> getAllAchievements() {
+        return achievementRepository.findAll();
+    }
 
     @Transactional
     public Achievement createAchievement(@Valid AchievementCreationDTO achievementDTO) {
@@ -56,7 +63,7 @@ public class AchievementService {
         if (achievementId == null) {
             throw new IllegalArgumentException("Achievement ID cannot be null");
         }
-        
+
         Achievement achievement = achievementRepository.findById(achievementId)
                 .orElseThrow(() -> new EntityNotFoundException("Achievement with ID " + achievementId + " not found"));
         
