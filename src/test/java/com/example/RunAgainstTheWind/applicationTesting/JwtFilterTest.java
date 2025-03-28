@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.application;
+package com.example.RunAgainstTheWind.applicationTesting;
 
 import com.example.RunAgainstTheWind.application.user.model.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
