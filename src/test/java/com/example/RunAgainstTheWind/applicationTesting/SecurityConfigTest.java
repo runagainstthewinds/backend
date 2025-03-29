@@ -54,7 +54,7 @@ public class SecurityConfigTest {
 
     @Test
     public void givenNoToken_whenAccessSecuredEndpoint_thenForbidden() throws Exception {
-        mockMvc.perform(get("/example"))  // TODO: Change this when we create an actual endpoint 
+        mockMvc.perform(get("/achievements")) 
                 .andExpect(status().isForbidden());
     }
 }

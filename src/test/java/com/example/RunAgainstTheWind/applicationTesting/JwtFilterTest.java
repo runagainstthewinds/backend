@@ -53,14 +53,14 @@ public class JwtFilterTest {
 
     @Test
     public void givenValidToken_whenAccessSecuredEndpoint_thenOk() throws Exception {
-        mockMvc.perform(get("/example") // TODO: Change this when we create an actual endpoint 
+        mockMvc.perform(get("/achievements") 
                 .header("Authorization", jwtToken))
                 .andExpect(status().isOk()); 
     }
 
     @Test
     public void givenInvalidToken_whenAccessSecuredEndpoint_thenForbidden() throws Exception {
-        mockMvc.perform(get("/example")  // TODO: Change this when we create an actual endpoint 
+        mockMvc.perform(get("/achievements")  
                 .header("Authorization", "Bearer invalid.token.here"))
                 .andExpect(status().isForbidden());
     }
