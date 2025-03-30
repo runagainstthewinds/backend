@@ -12,14 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
-import com.example.RunAgainstTheWind.domain.appUser.repository.AppUserRepository;
 import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.shoe.repository.ShoeRepository;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.trainingPlan.repository.TrainingPlanRepository;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.domain.trainingSession.repository.TrainingSessionRepository;
+import com.example.RunAgainstTheWind.domain.user.model.User;
+import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.enumeration.Road;
 
 @SpringBootTest
@@ -30,7 +30,7 @@ public class TrainingSessionRepositoryTest {
     private TrainingSessionRepository trainingSessionRepository;
 
     @Autowired
-    private AppUserRepository appUserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private ShoeRepository shoeRepository;
@@ -52,11 +52,11 @@ public class TrainingSessionRepositoryTest {
         Shoe shoe = new Shoe("Nike", "Alphafly", 10.0, 100.0, 250.0);
         shoe = shoeRepository.save(shoe);
 
-        AppUser appUser = new AppUser();
-        appUser.setUsername("testuser");
-        appUser.setEmail("testemail");
-        appUser.setPassword("testpass");
-        appUser = appUserRepository.save(appUser);
+        User user = new User();
+        user.setUsername("testuser");
+        user.setEmail("testemail");
+        user.setPassword("testpass");
+        user = userRepository.save(user);
 
         LocalDate localDate = LocalDate.of(2025, 3, 24);
         LocalDate localDate2 = LocalDate.of(2025, 4, 24);
@@ -65,7 +65,7 @@ public class TrainingSessionRepositoryTest {
         TrainingPlan trainingPlan = new TrainingPlan(startDate, endDate, "Marathon", Road.GRASS , 42.2, 180.0);
         trainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        TrainingSession trainingSession = new TrainingSession(trainingDate, 10.0, 60.0, 6.0, false, 5.0, 10.0, 60.0, 5.0, shoe, appUser, trainingPlan);
+        TrainingSession trainingSession = new TrainingSession(trainingDate, 10.0, 60.0, 6.0, false, 5.0, 10.0, 60.0, 5);
         trainingSessionRepository.save(trainingSession);
 
         // Check if it exists
@@ -84,9 +84,6 @@ public class TrainingSessionRepositoryTest {
         assertEquals(5.0, retrievedTrainingSession.getAchievedPace());
         assertEquals(10.0, retrievedTrainingSession.getAchievedDistance());
         assertEquals(60.0, retrievedTrainingSession.getAchievedDuration());
-        assertEquals(5.0, retrievedTrainingSession.getEffort());
-        assertEquals("Nike", retrievedTrainingSession.getShoe().getBrand());
-        assertEquals("testuser", retrievedTrainingSession.getAppUser().getUsername());
-        assertEquals("Marathon", retrievedTrainingSession.getTrainingPlan().getPlanType());
+        assertEquals(5, retrievedTrainingSession.getEffort());
     }
 }
