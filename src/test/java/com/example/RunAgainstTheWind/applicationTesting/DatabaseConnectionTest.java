@@ -1,17 +1,18 @@
 package com.example.RunAgainstTheWind.applicationTesting;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
+
+import io.github.cdimascio.dotenv.Dotenv;
 
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class DatabaseConnectionTest {
     
     @Autowired
@@ -19,6 +20,14 @@ public class DatabaseConnectionTest {
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeAll
+    static void setup() {
+        Dotenv dotenv = Dotenv.configure().directory("./").load();
+        dotenv.entries().forEach(entry -> 
+            System.setProperty(entry.getKey(), entry.getValue())
+        );
+    }
     
     @Test
     public void testDatabaseConnection() throws Exception {
@@ -40,7 +49,7 @@ public class DatabaseConnectionTest {
     public void testDatabaseMetadata() throws Exception {
         try (var connection = dataSource.getConnection()) {
             var metaData = connection.getMetaData();
-            assertThat(metaData.getDatabaseProductName()).contains("H2");
+            assertThat(metaData.getDatabaseProductName()).contains("MySQL");
         }
     }
 }
