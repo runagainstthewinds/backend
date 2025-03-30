@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.RunAgainstTheWind.application.auth.JwtFilter;
-import com.example.RunAgainstTheWind.domain.appUser.service.MyUserDetailsService;
+import com.example.RunAgainstTheWind.domain.user.service.MyUserDetailsService;
 
 @Configuration
 @EnableWebSecurity

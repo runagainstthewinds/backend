@@ -3,16 +3,14 @@ package com.example.RunAgainstTheWind.domain.trainingPlan.model;
 import java.util.Date;
 import java.util.List;
 
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
-import com.example.RunAgainstTheWind.domain.race.model.Race;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.enumeration.Road;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -44,12 +42,8 @@ public class TrainingPlan {
         this.goalTime = goalTime;
     }
 
-    @OneToOne
-    @JoinColumn(name = "raceId")
-    private Race race;
-
     @OneToOne(mappedBy = "trainingPlan")
-    private AppUser appUser;
+    private User user;
 
     @OneToMany(mappedBy = "trainingPlan")
     private List<TrainingSession> trainingSessions;

@@ -1,9 +1,9 @@
 package com.example.RunAgainstTheWind.applicationTesting;
 
 import com.example.RunAgainstTheWind.application.auth.JWTService;
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
-import com.example.RunAgainstTheWind.domain.appUser.repository.AppUserRepository;
-import com.example.RunAgainstTheWind.domain.appUser.service.MyUserDetailsService;
+import com.example.RunAgainstTheWind.domain.user.model.User;
+import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
+import com.example.RunAgainstTheWind.domain.user.service.MyUserDetailsService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ public class JwtServiceTest {
     private MyUserDetailsService myUserDetailsService;
 
     @Autowired
-    private AppUserRepository userRepo;
+    private UserRepository userRepo;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -34,7 +34,7 @@ public class JwtServiceTest {
     @BeforeEach
     public void setup() {
         // Register a test user in the database
-        AppUser user = new AppUser();
+        User user = new User();
         user.setUsername("jwtuser");
         user.setEmail("jwtemail");
         user.setPassword(passwordEncoder.encode("jwtpass"));

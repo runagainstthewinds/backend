@@ -1,6 +1,6 @@
 package com.example.RunAgainstTheWind.applicationTesting;
 
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
+import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ public class SecurityConfigTest {
     @BeforeEach
     public void setup() throws Exception {
         // Register a test user before each test
-        AppUser user = new AppUser();
+        User user = new User();
         user.setUsername("testuser");
         user.setEmail("jwtemail");
         user.setPassword("testpass");
@@ -45,7 +45,7 @@ public class SecurityConfigTest {
         // Use POST /auth/login to login and return token with 200 OK
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new AppUser() {{
+                .content(objectMapper.writeValueAsString(new User() {{
                     setUsername("testuser");
                     setPassword("testpass");
                 }})))

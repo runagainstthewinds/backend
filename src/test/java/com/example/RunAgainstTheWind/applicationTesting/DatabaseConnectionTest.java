@@ -38,7 +38,7 @@ public class DatabaseConnectionTest {
     public void testDatabaseMetadata() throws Exception {
         try (var connection = dataSource.getConnection()) {
             var metaData = connection.getMetaData();
-            assertThat(metaData.getDatabaseProductName()).contains("PostgreSQL");
+            assertThat(metaData.getDatabaseProductName()).contains("MySQL");
         }
     }
 }
