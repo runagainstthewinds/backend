@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.RunAgainstTheWind.application.auth.JWTService;
 import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
@@ -29,11 +30,13 @@ public class AppUserService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
+    @Transactional
     public AppUser register(AppUser user){ 
         user.setPassword(encoder.encode(user.getPassword()));
         return repo.save(user);
     }
 
+    @Transactional
     public String verify(AppUser user){
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
