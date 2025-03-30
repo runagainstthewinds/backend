@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.domain.appUser.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
@@ -16,6 +17,7 @@ public class AppUserController {
     @Autowired
     private AppUserService service;
 
+    @Transactional
     @PostMapping("/register")
     public AppUser register(@RequestBody AppUser user){
         try {
@@ -25,6 +27,7 @@ public class AppUserController {
         }
     }
 
+    @Transactional
     @PostMapping("/login")
     public String login(@RequestBody AppUser user){
         try {
