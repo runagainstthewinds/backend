@@ -5,20 +5,22 @@ import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.domain.user.service.MyUserDetailsService;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeAll;
+
 @SpringBootTest
 @Transactional
-@ActiveProfiles("test")
 public class JwtServiceTest {
 
     @Autowired
@@ -32,6 +34,14 @@ public class JwtServiceTest {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @BeforeAll
+    static void setupEnv() {
+        Dotenv dotenv = Dotenv.configure().directory("./").load();
+        dotenv.entries().forEach(entry -> 
+            System.setProperty(entry.getKey(), entry.getValue())
+        );
+    }
 
     @BeforeEach
     public void setup() {

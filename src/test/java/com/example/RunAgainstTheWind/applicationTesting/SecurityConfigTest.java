@@ -2,6 +2,10 @@ package com.example.RunAgainstTheWind.applicationTesting;
 
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.cdimascio.dotenv.Dotenv;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,14 @@ public class SecurityConfigTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeAll
+    static void setupEnv() {
+        Dotenv dotenv = Dotenv.configure().directory("./").load();
+        dotenv.entries().forEach(entry -> 
+            System.setProperty(entry.getKey(), entry.getValue())
+        );
+    }
 
     @BeforeEach
     public void setup() throws Exception {
