@@ -10,9 +10,9 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import java.util.Date;
 
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
+import com.example.RunAgainstTheWind.domain.user.model.User;
 
 @Entity
 @Table(name = "training_session")
@@ -30,11 +30,11 @@ public class TrainingSession {
     private Double achievedPace;
     private Double achievedDistance;
     private Double achievedDuration;
-    private Double effort;
+    private Integer effort;
 
     public TrainingSession() {}
 
-    public TrainingSession(Date date, Double distance, Double duration, Double goalPace, Boolean isCompleted, Double achievedPace, Double achievedDistance, Double achievedDuration, Double effort, Shoe shoe, AppUser appUser, TrainingPlan trainingPlan) {
+    public TrainingSession(Date date, Double distance, Double duration, Double goalPace, Boolean isCompleted, Double achievedPace, Double achievedDistance, Double achievedDuration, Integer effort) {
         this.date = date;
         this.distance = distance;
         this.duration = duration;
@@ -44,9 +44,6 @@ public class TrainingSession {
         this.achievedDistance = achievedDistance;
         this.achievedDuration = achievedDuration;
         this.effort = effort;
-        this.shoe = shoe;
-        this.appUser = appUser;
-        this.trainingPlan = trainingPlan;
     }
 
     @ManyToOne
@@ -55,7 +52,7 @@ public class TrainingSession {
 
     @ManyToOne
     @JoinColumn(name = "userId")
-    private AppUser appUser;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "trainingPlanId")

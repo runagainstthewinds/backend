@@ -2,8 +2,8 @@ package com.example.RunAgainstTheWind.domain.shoe.model;
 
 import java.util.List;
 
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.domain.user.model.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,8 +40,8 @@ public class Shoe {
     }
 
     @ManyToOne
-    @JoinColumn(name = "id")
-    private AppUser appUser;
+    @JoinColumn(name = "userId")
+    private User user;
 
     @OneToMany(mappedBy = "shoe")
     private List<TrainingSession> trainingSessions;

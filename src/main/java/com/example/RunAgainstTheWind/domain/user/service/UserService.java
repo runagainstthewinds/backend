@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.domain.appUser.service;
+package com.example.RunAgainstTheWind.domain.user.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.RunAgainstTheWind.application.auth.JWTService;
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
-import com.example.RunAgainstTheWind.domain.appUser.repository.AppUserRepository;
+import com.example.RunAgainstTheWind.domain.user.model.User;
+import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 
 /*
  * Service responsible for handling user registration and login
  */
 @Service
-public class AppUserService {
+public class UserService {
 
     @Autowired
-    private AppUserRepository repo;
+    private UserRepository repo;
 
     @Autowired
     private JWTService jwtService;
@@ -31,13 +31,13 @@ public class AppUserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Transactional
-    public AppUser register(AppUser user){ 
+    public User register(User user){ 
         user.setPassword(encoder.encode(user.getPassword()));
         return repo.save(user);
     }
 
     @Transactional
-    public String verify(AppUser user){
+    public String verify(User user){
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if(authentication.isAuthenticated())
