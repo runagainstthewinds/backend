@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
@@ -19,6 +20,7 @@ import com.example.RunAgainstTheWind.enumeration.Road;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class TrainingPlanRepositoryTest {
     
     @Autowired
