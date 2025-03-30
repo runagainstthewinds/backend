@@ -1,11 +1,12 @@
-package com.example.RunAgainstTheWind.domain.appUser.model;
+package com.example.RunAgainstTheWind.domain.user.model;
 
 import java.util.List;
 import java.util.UUID;
 
-import com.example.RunAgainstTheWind.domain.appUserDetails.model.AppUserDetails;
+import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.domain.userDetails.model.UserDetails;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,27 +24,32 @@ import lombok.NoArgsConstructor;
  * Model of a User who is trying to access the API.
  */
 @Data
-@Table(name = "app_user")
+@Table(name = "user")
 @EqualsAndHashCode
 @NoArgsConstructor
 @Entity
-public class AppUser {
+public class User {
     @Id 
     @GeneratedValue(strategy = GenerationType.UUID) 
-    private UUID appUserId; 
+    private UUID userId; 
 
     private String username;
     private String email;
     private String password;
+    private String googleCalendarToken;
+    private String stravaToken;
 
     @OneToOne
-    @JoinColumn(name = "appUserDetailsID")
-    private AppUserDetails appUserDetails;
-
-    @OneToMany(mappedBy = "appUser")
-    private List<TrainingSession> trainingSessions;
+    @JoinColumn(name = "userDetailsID")
+    private UserDetails userDetails;
 
     @OneToOne
     @JoinColumn(name = "trainingPlanId")
     private TrainingPlan trainingPlan;
+
+    @OneToMany(mappedBy = "user")
+    private List<TrainingSession> trainingSessions;
+
+    @OneToMany(mappedBy = "user")
+    private List<Shoe> shoes;
 }

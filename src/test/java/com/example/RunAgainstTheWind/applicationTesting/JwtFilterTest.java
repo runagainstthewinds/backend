@@ -1,6 +1,6 @@
 package com.example.RunAgainstTheWind.applicationTesting;
 
-import com.example.RunAgainstTheWind.domain.appUser.model.AppUser;
+import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ public class JwtFilterTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        AppUser user = new AppUser();
+        User user = new User();
         user.setUsername("jwtuser");
         user.setEmail("jwtemail");
         user.setPassword("jwtpass");
