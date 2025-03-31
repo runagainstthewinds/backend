@@ -1,9 +1,12 @@
 package com.example.RunAgainstTheWind.applicationTesting;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import io.github.cdimascio.dotenv.Dotenv;
 
 import javax.sql.DataSource;
 
@@ -17,6 +20,14 @@ public class DatabaseConnectionTest {
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeAll
+    static void setup() {
+        Dotenv dotenv = Dotenv.configure().directory("./").load();
+        dotenv.entries().forEach(entry -> 
+            System.setProperty(entry.getKey(), entry.getValue())
+        );
+    }
     
     @Test
     public void testDatabaseConnection() throws Exception {
