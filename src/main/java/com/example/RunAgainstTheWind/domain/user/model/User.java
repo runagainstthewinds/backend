@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Model of a User who is trying to access the API.
  */
 @Data
-@Table(name = "user")
+@Table(name = "`user`")
 @EqualsAndHashCode
 @NoArgsConstructor
 @Entity
