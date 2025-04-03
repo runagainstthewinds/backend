@@ -1,13 +1,11 @@
 package com.example.RunAgainstTheWind.algorithm;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 
 public class RiegelConverter {
     // Riegel's fatigue factor (usually 1.06)
     private static final double FATIGUE_FACTOR = 1.06;
-
-    // Standard distance will be 5K
-    private static final double STANDARD_DISTANCE = 5000;
 
     /**
      * Predicts a time for a target distance based on a known performance
@@ -21,24 +19,24 @@ public class RiegelConverter {
     }
 
     /**
-     * Converts a training session to predicted 5K time
+     * Converts a training session to predicted time for given standard distance
      * @param trainingSession The training session with distance (meters) and time (seconds)
-     * @return Predicted 5K time in seconds
+     * @return Predicted time in seconds
      */
-    public static double convertTo5K(TrainingSession trainingSession) {
-        return predictTime(trainingSession.getAchievedDistance(), trainingSession.getAchievedDuration(), STANDARD_DISTANCE);
+    public static double convertToStandard(TrainingSession trainingSession, StandardDistance standardDistance) {
+        return predictTime(trainingSession.getAchievedDistance(), trainingSession.getAchievedDuration(), standardDistance.getMeters());
     }
 
     /**
      * Converts a list of training sessions to predicted 5K times
      * @param sessions List of training sessions
-     * @return Array of predicted 5K times in seconds
+     * @return Array of predicted times in seconds for standard distance
      */
-    public static double[] convertAllTo5K(TrainingSession[] trainingSessions) {
+    public static double[] convertAll(TrainingSession[] trainingSessions, StandardDistance standardDistance) {
         double[] predictedTimes = new double[trainingSessions.length];
 
         for (int i = 0; i< trainingSessions.length; i++) {
-            predictedTimes[i] = convertTo5K(trainingSessions[i]);
+            predictedTimes[i] = convertToStandard(trainingSessions[i], standardDistance);
         }
 
         return predictedTimes;

@@ -3,6 +3,7 @@ package com.example.RunAgainstTheWind.algorithm;
 import java.util.Date;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 
 public class TrainingPlanCreator {
     public static void main(String[] args) {
@@ -24,7 +25,7 @@ public class TrainingPlanCreator {
         };
 
         // Convert all sessions to predicted 5K times
-        double[] predicted5KTimes = RiegelConverter.convertAllTo5K(trainingSessions);
+        double[] predicted5KTimes = RiegelConverter.convertAll(trainingSessions, StandardDistance.FIVE_KM);
 
         // Result
         System.out.println("Predicted 5K times:");
