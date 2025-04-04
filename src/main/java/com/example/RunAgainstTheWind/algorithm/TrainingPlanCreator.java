@@ -14,24 +14,29 @@ public class TrainingPlanCreator {
 
             // Date, distance(m), duration(s), goalPace, isCompleted, achievedPace, achievedDistance, achievedDuration, effort
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.5, 0
+                // 4:00 pace
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0
             ),
             new TrainingSession(
+                // 5:00 pace
                 new Date(), 0.0, 0.0,  0.0, true, 0.0, 3000.0, 15.0, 0
             ),
             new TrainingSession(
+                // 6:00 pace
                 new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0
             )
         };
 
-        // Convert all sessions to predicted 5K times
-        double[] predicted5KTimes = RiegelConverter.convertAll(trainingSessions, StandardDistance.FIVE_KM);
+        RunnerStatistics runnerStatistics = new RunnerStatistics(trainingSessions, StandardDistance.FIVE_KM, 1.0, 1.0);
 
-        // Result
-        System.out.println("Predicted 5K times:");
-        for (int i = 0; i < trainingSessions.length; i++) {
-            System.out.println("Training Session " + i + ": " + trainingSessions[i].getAchievedDistance() + "m in " + trainingSessions[i].getAchievedDuration() + 
-                              "= 5K in " + (predicted5KTimes[i]));
-        }
+        System.out.println("Sessions: ");
+        System.out.println("High Intensity Sessions: " + runnerStatistics.getHighIntensitySessions());
+        System.out.println("Average Intensity Sessions: " + runnerStatistics.getAverageIntensitySessions());
+        System.out.println("Low Intensity Sessions: " + runnerStatistics.getLowIntensitySessions());
+        System.out.println("Statistics: ");
+        System.out.println("Mean time: " + runnerStatistics.getMeanTime());
+        System.out.println("Standard deviation: " + runnerStatistics.getStandardDeviation());
+        System.out.println("Fast Cutoff: " + runnerStatistics.getFastCutoff());
+        System.out.println("Slow Cutoff: " + runnerStatistics.getSlowCutoff());
     }
 }
