@@ -36,9 +36,9 @@ public class TrainingSession {
 
     public TrainingSession(Date date, Double distance, Double duration, Double goalPace, Boolean isCompleted, Double achievedPace, Double achievedDistance, Double achievedDuration, Integer effort) {
         this.date = date;
-        this.distance = distance;
-        this.duration = duration;
-        this.goalPace = goalPace;
+        this.distance = distance; // In meters
+        this.duration = duration; // In minutes and decimal seconds
+        this.goalPace = goalPace; // In minutes and decimal seconds per kilometer
         this.isCompleted = isCompleted;
         this.achievedPace = achievedPace;
         this.achievedDistance = achievedDistance;
