@@ -1,6 +1,8 @@
 package com.example.RunAgainstTheWind.domain.user.controller;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +19,18 @@ public class UserController {
     @Autowired
     private UserService service;
 
-    @Transactional
+    // no transactional, or else unexpected rollbackException
     @PostMapping("/register")
-    public User register(@RequestBody User user){
+    public ResponseEntity<?> register(@RequestBody User user) {
         try {
-            return service.register(user);
-        } catch (Exception e) {
-            return null;
+            User registeredUser = service.register(user);
+            return ResponseEntity.ok(registeredUser);
+
+        // catch if username is already in db
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                .badRequest()
+                .body(Map.of("error", e.getMessage()));
         }
     }
 
