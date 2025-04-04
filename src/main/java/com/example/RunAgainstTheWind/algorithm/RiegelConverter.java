@@ -14,7 +14,7 @@ public class RiegelConverter {
      * @param targetDistance Target distance in meters
      * @return Predicted time in minutes and decimal seconds
      */
-    public static double predictTime(double knownDistance, double knownTime, double targetDistance) {
+    private static double predictTime(double knownDistance, double knownTime, double targetDistance) {
         return knownTime * Math.pow(targetDistance / knownDistance, FATIGUE_FACTOR);
     }
 
@@ -23,7 +23,7 @@ public class RiegelConverter {
      * @param trainingSession The training session with distance (meters) and time (seconds)
      * @return Predicted time in seconds
      */
-    public static double convertToStandard(TrainingSession trainingSession, StandardDistance standardDistance) {
+    private static double convertToStandard(TrainingSession trainingSession, StandardDistance standardDistance) {
         return predictTime(trainingSession.getAchievedDistance(), trainingSession.getAchievedDuration(), standardDistance.getMeters());
     }
 
