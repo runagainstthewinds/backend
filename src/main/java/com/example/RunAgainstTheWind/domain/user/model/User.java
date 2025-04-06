@@ -29,27 +29,31 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 public class User {
-    @Id 
-    @GeneratedValue(strategy = GenerationType.UUID) 
-    private UUID userId; 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID userId;
+    
     private String username;
     private String email;
     private String password;
     private String googleCalendarToken;
+    
     private String stravaToken;
-
+    private String stravaRefreshToken;
+    private Long stravaTokenExpiresAt;
+    private Long stravaAthleteId;
+    
     @OneToOne
     @JoinColumn(name = "userDetailsID")
     private UserDetails userDetails;
-
+    
     @OneToOne
     @JoinColumn(name = "trainingPlanId")
     private TrainingPlan trainingPlan;
-
+    
     @OneToMany(mappedBy = "user")
     private List<TrainingSession> trainingSessions;
-
+    
     @OneToMany(mappedBy = "user")
     private List<Shoe> shoes;
 }

@@ -33,7 +33,7 @@ public class SecurityConfig {
         return http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/registration", "/auth/register", "/auth/login").permitAll() // Combine public endpoints
+                .requestMatchers("/api/registration", "/auth/register", "/auth/login", "/api/strava/callback", "/api/strava/test/exchange-token","/api/strava/auth-url").permitAll() // Combine public endpoints
                 .anyRequest().authenticated() 
             )
             .sessionManagement(session -> session
