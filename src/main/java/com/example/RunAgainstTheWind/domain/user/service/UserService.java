@@ -31,7 +31,11 @@ public class UserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Transactional
-    public User register(User user){ 
+    public User register(User user) throws IllegalArgumentException {
+        if (repo.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        
         user.setPassword(encoder.encode(user.getPassword()));
         return repo.save(user);
     }
