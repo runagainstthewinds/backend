@@ -22,6 +22,7 @@ import com.example.RunAgainstTheWind.domain.trainingSession.repository.TrainingS
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.enumeration.Road;
+import com.example.RunAgainstTheWind.enumeration.TrainingType;
 
 @SpringBootTest
 @Transactional
@@ -67,7 +68,7 @@ public class TrainingSessionRepositoryTest {
         TrainingPlan trainingPlan = new TrainingPlan(startDate, endDate, "Marathon", Road.GRASS , 42.2, 180.0);
         trainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        TrainingSession trainingSession = new TrainingSession(trainingDate, 10.0, 60.0, 6.0, false, 5.0, 10.0, 60.0, 5);
+        TrainingSession trainingSession = new TrainingSession(trainingDate, 10.0, 60.0, 6.0, false, 5.0, 10.0, 60.0, 5, TrainingType.NONE);
         trainingSessionRepository.save(trainingSession);
 
         // Check if it exists

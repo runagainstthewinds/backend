@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.example.RunAgainstTheWind.algorithm.RiegelConverter;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
+import com.example.RunAgainstTheWind.enumeration.TrainingType;
 
 public class RiegelConverterTest {
     private TrainingSession[] trainingSessions;
@@ -19,13 +20,13 @@ public class RiegelConverterTest {
         trainingSessions = new TrainingSession[] {
             // Date, distance(m), duration(s), goalPace, isCompleted, achievedPace, achievedDistance, achievedDuration, effort
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0,TrainingType.NONE
             ),
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 3000.0, 15.0, 0
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 3000.0, 15.0, 0, TrainingType.NONE
             ),
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0, TrainingType.NONE
             )
         };
     }
@@ -67,7 +68,7 @@ public class RiegelConverterTest {
     public void testSingleSession() {
         TrainingSession[] singleSession = new TrainingSession[] {
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.NONE
             )
         };
         double[] predictions = RiegelConverter.convertAll(singleSession, StandardDistance.FIVE_KM);
