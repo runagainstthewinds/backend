@@ -68,7 +68,7 @@ public class TrainingSessionRepositoryTest {
         TrainingPlan trainingPlan = new TrainingPlan(startDate, endDate, "Marathon", Road.GRASS , 42.2, 180.0);
         trainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        TrainingSession trainingSession = new TrainingSession(trainingDate, 10.0, 60.0, 6.0, false, 5.0, 10.0, 60.0, 5, TrainingType.NONE);
+        TrainingSession trainingSession = new TrainingSession(trainingDate, 10.0, 60.0, 6.0, false, 5.0, 10.0, 60.0, 5, TrainingType.UNSPECIFIED);
         trainingSessionRepository.save(trainingSession);
 
         // Check if it exists

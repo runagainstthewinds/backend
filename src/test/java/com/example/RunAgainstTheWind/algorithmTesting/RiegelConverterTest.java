@@ -20,13 +20,13 @@ public class RiegelConverterTest {
         trainingSessions = new TrainingSession[] {
             // Date, distance(m), duration(s), goalPace, isCompleted, achievedPace, achievedDistance, achievedDuration, effort
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0,TrainingType.NONE
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0,TrainingType.UNSPECIFIED
             ),
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 3000.0, 15.0, 0, TrainingType.NONE
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 3000.0, 15.0, 0, TrainingType.UNSPECIFIED
             ),
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0, TrainingType.NONE
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0, TrainingType.UNSPECIFIED
             )
         };
     }
@@ -68,7 +68,7 @@ public class RiegelConverterTest {
     public void testSingleSession() {
         TrainingSession[] singleSession = new TrainingSession[] {
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.NONE
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.UNSPECIFIED
             )
         };
         double[] predictions = RiegelConverter.convertAll(singleSession, StandardDistance.FIVE_KM);

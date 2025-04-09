@@ -16,15 +16,15 @@ public class TrainingPlanCreator {
             // Date, distance(m), duration(s), goalPace, isCompleted, achievedPace, achievedDistance, achievedDuration, effort
             new TrainingSession(
                 // 4:00 pace
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.NONE
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.UNSPECIFIED
             ),
             new TrainingSession(
                 // 5:00 pace
-                new Date(), 0.0, 0.0,  0.0, true, 0.0, 3000.0, 15.0, 0, TrainingType.NONE
+                new Date(), 0.0, 0.0,  0.0, true, 0.0, 3000.0, 15.0, 0, TrainingType.UNSPECIFIED
             ),
             new TrainingSession(
                 // 6:00 pace
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0, TrainingType.NONE
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0, TrainingType.UNSPECIFIED
             )
         };
 
