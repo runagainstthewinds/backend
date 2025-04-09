@@ -5,5 +5,5 @@ public enum TrainingType {
     TEMPO,
     LONG_RUN,
     RECOVERY_RUN,
-    NONE
+    UNSPECIFIED
 }
