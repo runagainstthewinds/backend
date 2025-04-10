@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.serviceTesting;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -194,5 +195,97 @@ public class UserDetailsServiceTest {
         verify(userRepository).findById(userId);
         verify(userDetailsRepository).save(any(UserDetails.class));
         verify(userRepository).save(user);
+    }
+
+    @Test
+    public void testUpdateUserDetails_Success_PartialUpdate() {
+        // Arrange
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userDetailsRepository.save(any(UserDetails.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserDetailsDTO updateDTO = new UserDetailsDTO();
+        updateDTO.setTotalDistance(150.0); // Partial update with just totalDistance
+
+        // Act
+        UserDetailsDTO result = userDetailsService.updateUserDetails(userId, updateDTO);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(userDetails.getUserDetailsId(), result.getUserDetailsId());
+        assertEquals(150.0, result.getTotalDistance()); // Updated
+        assertEquals(200.0, result.getTotalDuration()); // Unchanged
+        assertEquals(50.0, result.getWeeklyDistance()); // Unchanged
+        assertEquals(5, result.getRunCount()); // Unchanged
+
+        verify(userRepository).findById(userId);
+        verify(userDetailsRepository).save(any(UserDetails.class));
+    }
+
+    @Test
+    public void testUpdateUserDetails_Success_FullUpdate() {
+        // Arrange
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userDetailsRepository.save(any(UserDetails.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserDetailsDTO updateDTO = new UserDetailsDTO();
+        updateDTO.setTotalDistance(200.0);
+        updateDTO.setTotalDuration(400.0);
+        updateDTO.setWeeklyDistance(100.0);
+        updateDTO.setRunCount(10);
+
+        // Act
+        UserDetailsDTO result = userDetailsService.updateUserDetails(userId, updateDTO);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(userDetails.getUserDetailsId(), result.getUserDetailsId());
+        assertEquals(200.0, result.getTotalDistance());
+        assertEquals(400.0, result.getTotalDuration());
+        assertEquals(100.0, result.getWeeklyDistance());
+        assertEquals(10, result.getRunCount());
+
+        verify(userRepository).findById(userId);
+        verify(userDetailsRepository).save(any(UserDetails.class));
+    }
+
+    @Test
+    public void testUpdateUserDetails_UserNotFound() {
+        // Arrange
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        UserDetailsDTO updateDTO = new UserDetailsDTO();
+        updateDTO.setTotalDistance(150.0);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            userDetailsService.updateUserDetails(userId, updateDTO);
+        });
+
+        assertEquals("User not found with id: " + userId, exception.getMessage());
+        verify(userRepository).findById(userId);
+        verify(userDetailsRepository, never()).save(any(UserDetails.class));
+    }
+
+    @Test
+    public void testUpdateUserDetails_UserDetailsNotFound() {
+        // Arrange
+        User userWithoutDetails = new User();
+        userWithoutDetails.setUserId(userId);
+        userWithoutDetails.setUsername("testuser");
+        userWithoutDetails.setUserDetails(null);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userWithoutDetails));
+
+        UserDetailsDTO updateDTO = new UserDetailsDTO();
+        updateDTO.setTotalDistance(150.0);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            userDetailsService.updateUserDetails(userId, updateDTO);
+        });
+
+        assertEquals("User details not found for userId: " + userId, exception.getMessage());
+        verify(userRepository).findById(userId);
+        verify(userDetailsRepository, never()).save(any(UserDetails.class));
     }
 }

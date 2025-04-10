@@ -68,4 +68,39 @@ public class UserDetailsService {
 
         return responseDto;
     }
+
+    @Transactional
+    public UserDetailsDTO updateUserDetails(UUID userId, UserDetailsDTO userDetailsDTO) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        
+        UserDetails userDetails = user.getUserDetails();
+        if (userDetails == null) {
+            throw new RuntimeException("User details not found for userId: " + userId);
+        }
+
+        if (userDetailsDTO.getTotalDistance() != null) {
+            userDetails.setTotalDistance(userDetailsDTO.getTotalDistance());
+        }
+        if (userDetailsDTO.getTotalDuration() != null) {
+            userDetails.setTotalDuration(userDetailsDTO.getTotalDuration());
+        }
+        if (userDetailsDTO.getWeeklyDistance() != null) {
+            userDetails.setWeeklyDistance(userDetailsDTO.getWeeklyDistance());
+        }
+        if (userDetailsDTO.getRunCount() != null) {
+            userDetails.setRunCount(userDetailsDTO.getRunCount());
+        }
+
+        UserDetails updatedUserDetails = userDetailsRepository.save(userDetails);
+
+        UserDetailsDTO responseDto = new UserDetailsDTO();
+        responseDto.setUserDetailsId(updatedUserDetails.getUserDetailsId());
+        responseDto.setTotalDistance(updatedUserDetails.getTotalDistance());
+        responseDto.setTotalDuration(updatedUserDetails.getTotalDuration());
+        responseDto.setWeeklyDistance(updatedUserDetails.getWeeklyDistance());
+        responseDto.setRunCount(updatedUserDetails.getRunCount());
+
+        return responseDto;
+    }
 }
