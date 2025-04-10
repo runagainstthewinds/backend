@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
+import com.example.RunAgainstTheWind.enumeration.TrainingType;
 
 public class TrainingPlanCreator {
     public static void main(String[] args) {
@@ -15,15 +16,15 @@ public class TrainingPlanCreator {
             // Date, distance(m), duration(s), goalPace, isCompleted, achievedPace, achievedDistance, achievedDuration, effort
             new TrainingSession(
                 // 4:00 pace
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.UNSPECIFIED
             ),
             new TrainingSession(
                 // 5:00 pace
-                new Date(), 0.0, 0.0,  0.0, true, 0.0, 3000.0, 15.0, 0
+                new Date(), 0.0, 0.0,  0.0, true, 0.0, 3000.0, 15.0, 0, TrainingType.UNSPECIFIED
             ),
             new TrainingSession(
                 // 6:00 pace
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0
+                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0, TrainingType.UNSPECIFIED
             )
         };
 
@@ -38,5 +39,10 @@ public class TrainingPlanCreator {
         System.out.println("Standard deviation: " + runnerStatistics.getStandardDeviation());
         System.out.println("Fast Cutoff: " + runnerStatistics.getFastCutoff());
         System.out.println("Slow Cutoff: " + runnerStatistics.getSlowCutoff());
+
+        // TRAINING PLAN SKELETON
+        TrainingPlanSkeleton trainingPlanSkeleton = new TrainingPlanSkeleton("easy", 4);
+        System.out.println("Training Plan Skeleton: ");
+        System.out.println(trainingPlanSkeleton.createTrainingPlanSkeleton());  
     }
 }
