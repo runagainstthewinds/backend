@@ -16,8 +16,8 @@ import com.example.RunAgainstTheWind.dto.shoe.ShoeDTO;
 
 @Service
 public class ShoeService {
-    
-    private final ShoeRepository shoeRepository;   
+
+    private final ShoeRepository shoeRepository;
     private final UserRepository userRepository;
 
     @Autowired
@@ -31,21 +31,21 @@ public class ShoeService {
         if (!userOptional.isPresent()) {
             throw new RuntimeException("User not found with UUID: " + userUUID);
         }
-        
+
         List<Shoe> shoes = shoeRepository.findByUser(userOptional.get());
         return shoes.stream()
-            .map(shoe -> {
-                ShoeDTO dto = new ShoeDTO();
-                dto.setShoeId(shoe.getShoeId());
-                dto.setBrand(shoe.getBrand());
-                dto.setModel(shoe.getModel());
-                dto.setSize(shoe.getSize());
-                dto.setTotalMileage(shoe.getTotalMileage());
-                dto.setPrice(shoe.getPrice());
-                dto.setUserId(shoe.getUser().getUserId());
-                return dto;
-            })
-            .collect(Collectors.toList());
+                .map(shoe -> {
+                    ShoeDTO dto = new ShoeDTO();
+                    dto.setShoeId(shoe.getShoeId());
+                    dto.setBrand(shoe.getBrand());
+                    dto.setModel(shoe.getModel());
+                    dto.setSize(shoe.getSize());
+                    dto.setTotalMileage(shoe.getTotalMileage());
+                    dto.setPrice(shoe.getPrice());
+                    dto.setUserId(shoe.getUser().getUserId());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     public ShoeDTO createShoe(ShoeDTO shoeDTO) {
@@ -75,5 +75,55 @@ public class ShoeService {
         } else {
             throw new RuntimeException("Shoe not found with id: " + shoeId);
         }
+    }
+
+    public ShoeDTO updateShoe(Long shoeId, ShoeDTO shoeDTO) {
+        Optional<Shoe> shoeOptional = shoeRepository.findById(shoeId);
+        if (!shoeOptional.isPresent()) {
+            throw new RuntimeException("Shoe not found with id: " + shoeId);
+        }
+
+        Shoe shoe = shoeOptional.get();
+
+        if (shoeDTO.getBrand() != null) {
+            shoe.setBrand(shoeDTO.getBrand());
+        }
+        if (shoeDTO.getModel() != null) {
+            shoe.setModel(shoeDTO.getModel());
+        }
+        if (shoeDTO.getSize() != null) {
+            shoe.setSize(shoeDTO.getSize());
+        }
+        if (shoeDTO.getTotalMileage() != null) {
+            shoe.setTotalMileage(shoeDTO.getTotalMileage());
+        }
+        if (shoeDTO.getPrice() != null) {
+            shoe.setPrice(shoeDTO.getPrice());
+        }
+
+
+        // Valid user check
+        if (shoeDTO.getUserId() != null) {
+            Optional<User> userOptional = userRepository.findById(shoeDTO.getUserId());
+            if (userOptional.isPresent()) {
+                shoe.setUser(userOptional.get());
+            } else {
+                throw new RuntimeException("User not found with id: " + shoeDTO.getUserId());
+            }
+        }
+
+        Shoe updatedShoe = shoeRepository.save(shoe);
+
+        // Return DTO
+        ShoeDTO updatedDTO = new ShoeDTO();
+        updatedDTO.setShoeId(updatedShoe.getShoeId());
+        updatedDTO.setBrand(updatedShoe.getBrand());
+        updatedDTO.setModel(updatedShoe.getModel());
+        updatedDTO.setSize(updatedShoe.getSize());
+        updatedDTO.setTotalMileage(updatedShoe.getTotalMileage());
+        updatedDTO.setPrice(updatedShoe.getPrice());
+        updatedDTO.setUserId(updatedShoe.getUser().getUserId());
+
+        return updatedDTO;
     }
 }

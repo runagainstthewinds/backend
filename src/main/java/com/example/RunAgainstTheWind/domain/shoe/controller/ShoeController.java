@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,6 +54,16 @@ public class ShoeController {
         try {
             shoeService.deleteShoe(shoeId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/{shoeId}")
+    public ResponseEntity<ShoeDTO> updateShoe(@PathVariable Long shoeId, @RequestBody ShoeDTO shoeDTO) {
+        try {
+            ShoeDTO updatedShoe = shoeService.updateShoe(shoeId, shoeDTO);
+            return new ResponseEntity<>(updatedShoe, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
