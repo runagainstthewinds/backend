@@ -1,26 +1,33 @@
 package com.example.RunAgainstTheWind.domain.user.controller;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.service.UserService;
+import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
+import com.example.RunAgainstTheWind.dto.UserDetailsDTO;
 
 /*
  * Controller responsible for handling authentication for a user trying to access the api.
  */
 @RestController
-@RequestMapping("/auth")    
+@RequestMapping   
 public class UserController {
 
     @Autowired
     private UserService service;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     // no transactional, or else unexpected rollbackException
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         try {
             User registeredUser = service.register(user);
@@ -35,12 +42,36 @@ public class UserController {
     }
 
     @Transactional
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public String login(@RequestBody User user){
         try {
             return service.verify(user);
         } catch (Exception e) {
             return "Fail"; 
+        }
+    }
+
+    @Transactional
+    @GetMapping("/users/{userId}/userDetails")
+    public ResponseEntity<UserDetailsDTO> getUserDetails(@PathVariable("userId") UUID userId) {
+        try {
+            UserDetailsDTO userDetails = userDetailsService.getUserDetailsById(userId);
+            return new ResponseEntity<>(userDetails, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    @PostMapping("/users/{userId}/userDetails")
+    public ResponseEntity<UserDetailsDTO> createUserDetails(
+            @PathVariable("userId") UUID userId,
+            @RequestBody UserDetailsDTO userDetailsDTO) {
+        try {
+            UserDetailsDTO createdDetails = userDetailsService.createUserDetails(userId, userDetailsDTO);
+            return new ResponseEntity<>(createdDetails, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }
