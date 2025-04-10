@@ -1,8 +1,12 @@
 package com.example.RunAgainstTheWind.domain.userDetails.service;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.domain.userDetails.model.UserDetails;
 import com.example.RunAgainstTheWind.domain.userDetails.repository.UserDetailsRepository;
@@ -20,13 +24,48 @@ public class UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public UserDetailsDTO getUserDetailsById(Long userId) {
-        Long userDetailsId = userRepository.findById(userId.intValue()).map(user -> user.getUserDetails().getUserDetailsId()).orElse(null);
-        UserDetails userDetails = userDetailsRepository.findById(userId).orElse(null);
+    @Transactional
+    public UserDetailsDTO getUserDetailsById(UUID userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        UserDetails userDetails = user.getUserDetails();
+
+        if (userDetails == null) {
+            throw new RuntimeException("User details not found for userId: " + userId);
+        }
 
         UserDetailsDTO dto = new UserDetailsDTO();
-        dto.setUserDetailsId(userDetailsId);
+        dto.setUserDetailsId(userDetails.getUserDetailsId());
+        dto.setTotalDistance(userDetails.getTotalDistance());
+        dto.setTotalDuration(userDetails.getTotalDuration());
+        dto.setWeeklyDistance(userDetails.getWeeklyDistance());
+        dto.setRunCount(userDetails.getRunCount());
+        return dto;
     }
 
+    @Transactional
+    public UserDetailsDTO createUserDetails(UUID userId, UserDetailsDTO userDetailsDTO) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
+        UserDetails userDetails = new UserDetails();
+        userDetails.setTotalDistance(userDetailsDTO.getTotalDistance() != null ? userDetailsDTO.getTotalDistance() : 0.0);
+        userDetails.setTotalDuration(userDetailsDTO.getTotalDuration() != null ? userDetailsDTO.getTotalDuration() : 0.0);
+        userDetails.setWeeklyDistance(userDetailsDTO.getWeeklyDistance() != null ? userDetailsDTO.getWeeklyDistance() : 0.0);
+        userDetails.setRunCount(userDetailsDTO.getRunCount() != null ? userDetailsDTO.getRunCount() : 0);
+        userDetails.setUser(user);
+
+        UserDetails savedUserDetails = userDetailsRepository.save(userDetails);
+        user.setUserDetails(savedUserDetails);
+        userRepository.save(user);
+
+        UserDetailsDTO responseDto = new UserDetailsDTO();
+        responseDto.setUserDetailsId(savedUserDetails.getUserDetailsId());
+        responseDto.setTotalDistance(savedUserDetails.getTotalDistance());
+        responseDto.setTotalDuration(savedUserDetails.getTotalDuration());
+        responseDto.setWeeklyDistance(savedUserDetails.getWeeklyDistance());
+        responseDto.setRunCount(savedUserDetails.getRunCount());
+
+        return responseDto;
+    }
 }
