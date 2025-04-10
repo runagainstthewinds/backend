@@ -74,4 +74,17 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Transactional
+    @PutMapping("/users/{userId}/userDetails")
+    public ResponseEntity<UserDetailsDTO> updateUserDetails(
+            @PathVariable("userId") UUID userId,
+            @RequestBody UserDetailsDTO userDetailsDTO) {
+        try {
+            UserDetailsDTO updatedDetails = userDetailsService.updateUserDetails(userId, userDetailsDTO);
+            return new ResponseEntity<>(updatedDetails, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
