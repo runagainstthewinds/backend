@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -146,5 +147,102 @@ class ShoeServiceTest {
         assertEquals("Shoe not found with id: 1", exception.getMessage());
         verify(shoeRepository).findById(1L);
         verify(shoeRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void updateShoe_Success_PartialUpdate() {
+        // Arrange
+        ShoeDTO updateDTO = new ShoeDTO();
+        updateDTO.setTotalMileage(50.5); // Partial update with just mileage
+        
+        when(shoeRepository.findById(1L)).thenReturn(Optional.of(testShoe));
+        when(shoeRepository.save(any(Shoe.class))).thenReturn(testShoe);
+
+        // Act
+        ShoeDTO result = shoeService.updateShoe(1L, updateDTO);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(testShoeDTO.getShoeId(), result.getShoeId());
+        assertEquals(testShoeDTO.getBrand(), result.getBrand()); // Unchanged
+        assertEquals(testShoeDTO.getModel(), result.getModel()); // Unchanged
+        assertEquals(50.5, result.getTotalMileage()); // Updated
+        assertEquals(testShoeDTO.getPrice(), result.getPrice()); // Unchanged
+        assertEquals(testShoeDTO.getUserId(), result.getUserId()); // Unchanged
+        verify(shoeRepository).findById(1L);
+        verify(shoeRepository).save(any(Shoe.class));
+        verify(userRepository, never()).findById(any()); // No user update attempted
+    }
+
+    @Test
+    void updateShoe_Success_FullUpdate() {
+        // Arrange
+        ShoeDTO updateDTO = new ShoeDTO();
+        updateDTO.setBrand("Adidas");
+        updateDTO.setModel("Ultraboost");
+        updateDTO.setSize(11.0);
+        updateDTO.setTotalMileage(100.0);
+        updateDTO.setPrice(150.0);
+        updateDTO.setUserId(testUserId);
+
+        Shoe updatedShoe = new Shoe("Adidas", "Ultraboost", 11.0, 100.0, 150.0);
+        updatedShoe.setShoeId(1L);
+        updatedShoe.setUser(testUser);
+
+        when(shoeRepository.findById(1L)).thenReturn(Optional.of(testShoe));
+        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
+        when(shoeRepository.save(any(Shoe.class))).thenReturn(updatedShoe);
+
+        // Act
+        ShoeDTO result = shoeService.updateShoe(1L, updateDTO);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1L, result.getShoeId());
+        assertEquals("Adidas", result.getBrand());
+        assertEquals("Ultraboost", result.getModel());
+        assertEquals(11.0, result.getSize());
+        assertEquals(100.0, result.getTotalMileage());
+        assertEquals(150.0, result.getPrice());
+        assertEquals(testUserId, result.getUserId());
+        verify(shoeRepository).findById(1L);
+        verify(userRepository).findById(testUserId);
+        verify(shoeRepository).save(any(Shoe.class));
+    }
+
+    @Test
+    void updateShoe_ShoeNotFound_ThrowsException() {
+        // Arrange
+        ShoeDTO updateDTO = new ShoeDTO();
+        updateDTO.setTotalMileage(50.5);
+
+        when(shoeRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> shoeService.updateShoe(1L, updateDTO));
+        assertEquals("Shoe not found with id: 1", exception.getMessage());
+        verify(shoeRepository).findById(1L);
+        verify(shoeRepository, never()).save(any());
+        verify(userRepository, never()).findById(any());
+    }
+
+    @Test
+    void updateShoe_UserNotFound_ThrowsException() {
+        // Arrange
+        UUID newUserId = UUID.randomUUID();
+        ShoeDTO updateDTO = new ShoeDTO();
+        updateDTO.setUserId(newUserId); // Attempting to update with a new user
+
+        when(shoeRepository.findById(1L)).thenReturn(Optional.of(testShoe));
+        when(userRepository.findById(newUserId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> shoeService.updateShoe(1L, updateDTO));
+        assertEquals("User not found with id: " + newUserId, exception.getMessage());
+        verify(shoeRepository).findById(1L);
+        verify(userRepository).findById(newUserId);
+        verify(shoeRepository, never()).save(any());
     }
 }
