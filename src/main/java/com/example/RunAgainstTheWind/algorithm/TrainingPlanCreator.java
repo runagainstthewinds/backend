@@ -43,6 +43,9 @@ public class TrainingPlanCreator {
 
         countTrainingTypes();
         setLongRun();
+        setTempoRun();
+        setRecoveryRun();
+        setIntervalRun();
     }
 
     private void countTrainingTypes() {
@@ -63,12 +66,6 @@ public class TrainingPlanCreator {
                 }
             }
         }
-
-        // Print counts for debugging or further logic
-        System.out.println("Tempo sessions: " + tempoCount);
-        System.out.println("Long Run sessions: " + longRunCount);
-        System.out.println("Interval sessions: " + intervalCount);
-        System.out.println("Recovery Run sessions: " + recoveryRunCount);
     }
 
     // Distance: Starts at 50% of goal distance. Increases to 100%
@@ -110,14 +107,119 @@ public class TrainingPlanCreator {
     }
 
     private void setTempoRun() {
+        double mediumIntensityMeanTime = this.runnerStatistics.getMediumIntensityMeanTime();
 
+        Map<Integer, List<TrainingSession>> plan = trainingPlanSkeleton.getPlan();
+        
+        // Get all tempo run sessions
+        List<TrainingSession> tempoRunSessions = new ArrayList<>();
+        for (List<TrainingSession> sessions : plan.values()) {
+            for (TrainingSession session : sessions) {
+                if (session != null && session.getTrainingType() == TrainingType.TEMPO) {
+                    tempoRunSessions.add(session);
+                }
+            }
+        }
+
+        if (this.tempoCount > 0) {
+            double distance = goalDistance * 0.4; // 40%
+
+            // Duration progression: from 110% to 90% of mediumIntensityMeanTime
+            double startDurationFactor = 1.0; // 100%
+            double endDurationFactor = 0.90;   // 90%
+            double durationIncrement = this.tempoCount > 1 ?
+                (endDurationFactor - startDurationFactor) / (this.tempoCount - 1) :
+                0.0;
+
+            for (int i = 0; i < this.tempoCount; i++) {
+                // Calculate duration factor for this session
+                double durationFactor = startDurationFactor + (i * durationIncrement);
+                double duration = mediumIntensityMeanTime * durationFactor;
+
+                // Set session attributes
+                tempoRunSessions.get(i).setDistance(distance);
+                tempoRunSessions.get(i).setDuration(Math.round(duration * 100.0) / 100.0);
+
+                // Calculate pace
+                double pace = duration / (distance / 1000);
+                tempoRunSessions.get(i).setGoalPace(Math.round(pace * 100.0) / 100.0);
+            }
+        }
     }
 
     private void setIntervalRun() {
+        double highIntensityMeanTime = this.runnerStatistics.getHighIntensityMeanTime();
 
+        Map<Integer, List<TrainingSession>> plan = trainingPlanSkeleton.getPlan();
+        
+        // Get all interval run sessions
+        List<TrainingSession> intervalRunSessions = new ArrayList<>();
+        for (List<TrainingSession> sessions : plan.values()) {
+            for (TrainingSession session : sessions) {
+                if (session != null && session.getTrainingType() == TrainingType.INTERVAL) {
+                    intervalRunSessions.add(session);
+                }
+            }
+        }
+
+        if (this.intervalCount > 0) {
+            // Distance progression: from floor((goalDistance / 400) / 4) * 400 to floor((goalDistance / 400) / 2) * 400
+            double startDistance = Math.floor((goalDistance / 400.0) / 4.0) * 400.0;
+            double endDistance = Math.floor((goalDistance / 400.0) / 2.0) * 400.0;
+            double distanceIncrement = this.intervalCount > 1 ?
+                (endDistance - startDistance) / (this.intervalCount - 1) :
+                0.0;
+
+            // Calculate pace using highIntensityMeanTime
+            // Assume highIntensityMeanTime is for standardDistance (e.g., 5K)
+            double referenceDistance = this.standardDistance.getMeters();
+            double highIntensityPace = highIntensityMeanTime / (referenceDistance / 1000); // seconds/km
+
+            for (int i = 0; i < this.intervalCount; i++) {
+                // Calculate distance for this session
+                double rawDistance = startDistance + (i * distanceIncrement);
+                double distance = Math.floor(rawDistance / 400.0) * 400.0;
+
+                // Calculate duration based on highIntensityPace
+                double duration = highIntensityPace * (distance / 1000); // seconds
+
+                // Set session attributes
+                intervalRunSessions.get(i).setDistance(distance);
+                intervalRunSessions.get(i).setDuration(Math.round(duration * 100.0) / 100.0);
+                intervalRunSessions.get(i).setGoalPace(Math.round(highIntensityPace * 100.0) / 100.0);
+            }
+        }
     }
 
     private void setRecoveryRun() { 
-    
+        double lowIntensityMeanTime = this.runnerStatistics.getLowIntensityMeanTime();
+
+        Map<Integer, List<TrainingSession>> plan = trainingPlanSkeleton.getPlan();
+        
+        // Get all recovery run sessions
+        List<TrainingSession> recoveryRunSessions = new ArrayList<>();
+        for (List<TrainingSession> sessions : plan.values()) {
+            for (TrainingSession session : sessions) {
+                if (session != null && session.getTrainingType() == TrainingType.RECOVERY_RUN) {
+                    recoveryRunSessions.add(session);
+                }
+            }
+        }
+
+        if (this.recoveryRunCount > 0) {
+            double distance = goalDistance * 0.25; // 25%
+
+            // Calculate duration using lowIntensityMeanTime
+            double referenceDistance = this.standardDistance.getMeters();
+            double lowIntensityPace = lowIntensityMeanTime / (referenceDistance / 1000); 
+            double duration = lowIntensityPace * (distance / 1000); 
+
+            for (int i = 0; i < this.recoveryRunCount; i++) {
+                // Set session attributes
+                recoveryRunSessions.get(i).setDistance(distance);
+                recoveryRunSessions.get(i).setDuration(Math.round(duration * 100.0) / 100.0);
+                recoveryRunSessions.get(i).setGoalPace(Math.round(lowIntensityPace * 100.0) / 100.0);
+            }
+        }
     }
 }

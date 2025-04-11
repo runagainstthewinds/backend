@@ -16,7 +16,7 @@ public class RunnerStatistics {
     private final StandardDistance standardDistance;
 
     private List<Double> highIntensitySessions = new ArrayList<>();
-    private List<Double> averageIntensitySessions = new ArrayList<>();
+    private List<Double> mediumIntensitySessions = new ArrayList<>();
     private List<Double> lowIntensitySessions = new ArrayList<>();
 
     private double fastCutoff; // Every time faster than this is considered high intensity
@@ -32,7 +32,7 @@ public class RunnerStatistics {
 
     // This is the important data we want (IMPORTANT)
     private double highIntensityMeanTime;
-    private double averageIntensityMeanTime;
+    private double mediumIntensityMeanTime;
     private double lowIntensityMeanTime;
 
     // Default constructor if no deviation factors are provided
@@ -84,14 +84,14 @@ public class RunnerStatistics {
             } else if (standardizedTime > slowCutoff) {
                 this.lowIntensitySessions.add(standardizedTime);
             } else {
-                this.averageIntensitySessions.add(standardizedTime);
+                this.mediumIntensitySessions.add(standardizedTime);
             }
         }
     }
 
     private void setAllMeanTimes() {
         this.highIntensityMeanTime = getMeanTime(this.highIntensitySessions);
-        this.averageIntensityMeanTime = getMeanTime(this.averageIntensitySessions);
+        this.mediumIntensityMeanTime = getMeanTime(this.mediumIntensitySessions);
         this.lowIntensityMeanTime = getMeanTime(this.lowIntensitySessions);
     }
 
