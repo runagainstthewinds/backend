@@ -30,6 +30,11 @@ public class RunnerStatistics {
     double lowerDeviationFactor; 
     double upperDeviationFactor;
 
+    // This is the important data we want (IMPORTANT)
+    private double highIntensityMeanTime;
+    private double averageIntensityMeanTime;
+    private double lowIntensityMeanTime;
+
     // Default constructor if no deviation factors are provided
     public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance) {
         this(trainingSessions, standardDistance, 0.7, 0.7);
@@ -48,6 +53,7 @@ public class RunnerStatistics {
         // Standardized training sessions
         this.standardizedTrainingSessions = RiegelConverter.convertAll(this.trainingSessions, this.standardDistance);
         getPaceZones();
+        setAllMeanTimes();
     }
 
     // Pace Zones
@@ -81,5 +87,19 @@ public class RunnerStatistics {
                 this.averageIntensitySessions.add(standardizedTime);
             }
         }
+    }
+
+    private void setAllMeanTimes() {
+        this.highIntensityMeanTime = getMeanTime(this.highIntensitySessions);
+        this.averageIntensityMeanTime = getMeanTime(this.averageIntensitySessions);
+        this.lowIntensityMeanTime = getMeanTime(this.lowIntensitySessions);
+    }
+
+    private double getMeanTime(List<Double> sessions) {
+        double sum = 0.0;
+        for (double time : sessions) {
+            sum += time;
+        }
+        return sum / sessions.size();
     }
 }
