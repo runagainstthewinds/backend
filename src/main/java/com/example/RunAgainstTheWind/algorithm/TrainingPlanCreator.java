@@ -106,6 +106,9 @@ public class TrainingPlanCreator {
         }
     }
 
+    // Distance: Distance always at 40% of goal distance
+    // Duration: Lower duration each week, so pace increases
+
     private void setTempoRun() {
         double mediumIntensityMeanTime = this.runnerStatistics.getMediumIntensityMeanTime();
 
@@ -146,6 +149,10 @@ public class TrainingPlanCreator {
             }
         }
     }
+
+    // General: We do intervals of 400 meters. We increase # of sets each week
+    // Distance: Start of with X sets of 400m where total is around 25% of goal distance. We finish where total is around 50%.
+    // Duration: High intensity pace
 
     private void setIntervalRun() {
         double highIntensityMeanTime = this.runnerStatistics.getHighIntensityMeanTime();
@@ -190,6 +197,9 @@ public class TrainingPlanCreator {
             }
         }
     }
+
+    // Distance: 25% of goal distance
+    // Duration: Low intensity pace
 
     private void setRecoveryRun() { 
         double lowIntensityMeanTime = this.runnerStatistics.getLowIntensityMeanTime();
