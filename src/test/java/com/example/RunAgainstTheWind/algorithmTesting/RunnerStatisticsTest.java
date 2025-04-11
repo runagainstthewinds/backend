@@ -98,7 +98,7 @@ class RunnerStatisticsTest {
         // We expect roughly 30% high intensity, 40% average intensity, 30% low intensity given 0.7 deviation factor
         assertEquals(3, stats.getHighIntensitySessions().size(), 
             "Should have 3 high intensity sessions");
-        assertEquals(4, stats.getAverageIntensitySessions().size(), 
+        assertEquals(4, stats.getMediumIntensitySessions().size(), 
             "Should have 4 average intensity sessions");
         assertEquals(3, stats.getLowIntensitySessions().size(), 
             "Should have 3 low intensity sessions");
@@ -106,7 +106,7 @@ class RunnerStatisticsTest {
         // Check that total count matches
         assertEquals(trainingSessions.length, 
             stats.getHighIntensitySessions().size() + 
-            stats.getAverageIntensitySessions().size() + 
+            stats.getMediumIntensitySessions().size() + 
             stats.getLowIntensitySessions().size(),
             "Sum of all categorized sessions should equal total sessions");
     }
@@ -121,7 +121,7 @@ class RunnerStatisticsTest {
             "With narrow deviation bands, should have fewer high intensity sessions");
         assertTrue(stats.getLowIntensitySessions().size() <= 2, 
             "With narrow deviation bands, should have fewer low intensity sessions");
-        assertTrue(stats.getAverageIntensitySessions().size() >= 6, 
+        assertTrue(stats.getMediumIntensitySessions().size() >= 6, 
             "With narrow deviation bands, should have more average intensity sessions");
     }
     
