@@ -14,7 +14,7 @@ public class RiegelConverter {
      * @param targetDistance Target distance in meters
      * @return Predicted time in minutes and decimal seconds
      */
-    private static double predictTime(double knownDistance, double knownTime, double targetDistance) {
+    public static double predictTime(double knownDistance, double knownTime, double targetDistance) {
         return knownTime * Math.pow(targetDistance / knownDistance, FATIGUE_FACTOR);
     }
 
