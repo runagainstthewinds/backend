@@ -57,7 +57,10 @@ public class RunnerStatistics {
     }
 
     // Pace Zones
-    private void getPaceZones() {     
+    private void getPaceZones() {   
+        if (this.standardizedTrainingSessions.length == 0) {
+            return;
+        }  
 
         // Mean
         double sum = 0.0;
@@ -96,6 +99,10 @@ public class RunnerStatistics {
     }
 
     private double getMeanTime(List<Double> sessions) {
+        if (sessions.isEmpty()) {
+            return 0.0; 
+        }
+
         double sum = 0.0;
         for (double time : sessions) {
             sum += time;

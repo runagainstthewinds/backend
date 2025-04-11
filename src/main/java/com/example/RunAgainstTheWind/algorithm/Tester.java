@@ -39,7 +39,7 @@ public class Tester {
         // Print RunnerStatistics information
         System.out.println("Sessions: ");
         System.out.println("High Intensity Sessions: " + runnerStatistics.getHighIntensitySessions());
-        System.out.println("Average Intensity Sessions: " + runnerStatistics.getMediumIntensitySessions());
+        System.out.println("Medium Intensity Sessions: " + runnerStatistics.getMediumIntensitySessions());
         System.out.println("Low Intensity Sessions: " + runnerStatistics.getLowIntensitySessions());
         //System.out.println("Statistics: ");
         //System.out.println("Mean time: " + runnerStatistics.getMeanTime());
