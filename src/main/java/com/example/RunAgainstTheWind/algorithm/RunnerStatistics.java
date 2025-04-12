@@ -39,7 +39,6 @@ public class RunnerStatistics {
     // Default constructor if no deviation factors are provided
     public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance) throws MissingDataException {
         this(trainingSessions, standardDistance, 0.7, 0.7);
-        this.standardizedTrainingSessions = RiegelConverter.convertAll(this.trainingSessions, this.standardDistance);
     }
 
     public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance, double lowerDeviationFactor, double upperDeviationFactor) throws MissingDataException {
@@ -60,10 +59,7 @@ public class RunnerStatistics {
 
     // Pace Zones
     private void getPaceZones() {   
-        if (this.standardizedTrainingSessions.length == 0) {
-            return;
-        }  
-
+        
         // Mean
         double sum = 0.0;
         for (double time : this.standardizedTrainingSessions) {
