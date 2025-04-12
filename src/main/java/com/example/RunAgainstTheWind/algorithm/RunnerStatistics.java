@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
+import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
 import lombok.Data;
 
@@ -36,11 +37,12 @@ public class RunnerStatistics {
     private double lowIntensityMeanTime;
 
     // Default constructor if no deviation factors are provided
-    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance) {
+    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance) throws MissingDataException {
         this(trainingSessions, standardDistance, 0.7, 0.7);
+        this.standardizedTrainingSessions = RiegelConverter.convertAll(this.trainingSessions, this.standardDistance);
     }
 
-    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance, double lowerDeviationFactor, double upperDeviationFactor) {
+    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance, double lowerDeviationFactor, double upperDeviationFactor) throws MissingDataException {
         if (trainingSessions == null || trainingSessions.length == 0) {
             throw new IllegalArgumentException("Training sessions array cannot be null or empty");
         }
@@ -92,17 +94,17 @@ public class RunnerStatistics {
         }
     }
 
-    private void setAllMeanTimes() {
+    private void setAllMeanTimes() throws MissingDataException {
+        if (this.highIntensitySessions.isEmpty() || this.mediumIntensitySessions.isEmpty() || this.lowIntensitySessions.isEmpty()) {
+            throw new MissingDataException("Sessions have not been correctly categorized into three levels");
+        }
+
         this.highIntensityMeanTime = getMeanTime(this.highIntensitySessions);
         this.mediumIntensityMeanTime = getMeanTime(this.mediumIntensitySessions);
         this.lowIntensityMeanTime = getMeanTime(this.lowIntensitySessions);
     }
 
     private double getMeanTime(List<Double> sessions) {
-        if (sessions.isEmpty()) {
-            return 0.0; 
-        }
-
         double sum = 0.0;
         for (double time : sessions) {
             sum += time;
