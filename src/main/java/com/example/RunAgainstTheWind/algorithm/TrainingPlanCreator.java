@@ -41,7 +41,7 @@ public class TrainingPlanCreator {
         this.difficulty = difficulty;
         this.length = length;
         this.goalDistance = goalDistance;
-        this.runnerStatistics = new RunnerStatistics(this.runHistory, StandardDistance.FIVE_KM, 1.0, 1.0);
+        this.runnerStatistics = new RunnerStatistics(this.runHistory, StandardDistance.FIVE_KM);
         this.trainingPlanSkeleton = new TrainingPlanSkeleton(this.difficulty, this.length);
 
         countTrainingTypes();
