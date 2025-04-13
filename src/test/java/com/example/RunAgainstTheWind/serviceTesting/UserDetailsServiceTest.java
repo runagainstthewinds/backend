@@ -18,7 +18,7 @@ import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.domain.userDetails.model.UserDetails;
 import com.example.RunAgainstTheWind.domain.userDetails.repository.UserDetailsRepository;
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
-import com.example.RunAgainstTheWind.dto.UserDetailsDTO;
+import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 
 public class UserDetailsServiceTest {
 

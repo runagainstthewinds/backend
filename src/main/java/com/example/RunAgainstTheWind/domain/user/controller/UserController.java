@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.service.UserService;
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
-import com.example.RunAgainstTheWind.dto.UserDetailsDTO;
+import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 
 /*
  * Controller responsible for handling authentication for a user trying to access the api.
