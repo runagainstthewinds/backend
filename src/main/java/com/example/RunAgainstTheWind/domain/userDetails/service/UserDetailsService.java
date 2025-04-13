@@ -10,7 +10,7 @@ import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.domain.userDetails.model.UserDetails;
 import com.example.RunAgainstTheWind.domain.userDetails.repository.UserDetailsRepository;
-import com.example.RunAgainstTheWind.dto.UserDetailsDTO;
+import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 
 @Service
 public class UserDetailsService {
