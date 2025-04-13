@@ -19,9 +19,13 @@ public class TrainingPlanSkeleton {
     private String difficulty; // Easy, Medium, Hard
     private int length; // Weeks
 
+    private HashMap<Integer, List<TrainingSession>> plan = new HashMap<>();
+
     public TrainingPlanSkeleton(String difficulty, int length) {
         this.difficulty = difficulty;
         this.length = length;
+
+        this.plan = createTrainingPlanSkeleton();
     }
 
     public HashMap<Integer, List<TrainingSession>> createTrainingPlanSkeleton() {

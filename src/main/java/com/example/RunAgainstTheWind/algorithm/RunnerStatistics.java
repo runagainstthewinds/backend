@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
+import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public class RunnerStatistics {
     private final StandardDistance standardDistance;
 
     private List<Double> highIntensitySessions = new ArrayList<>();
-    private List<Double> averageIntensitySessions = new ArrayList<>();
+    private List<Double> mediumIntensitySessions = new ArrayList<>();
     private List<Double> lowIntensitySessions = new ArrayList<>();
 
     private double fastCutoff; // Every time faster than this is considered high intensity
@@ -30,12 +31,17 @@ public class RunnerStatistics {
     double lowerDeviationFactor; 
     double upperDeviationFactor;
 
+    // This is the important data we want (IMPORTANT)
+    private double highIntensityMeanTime;
+    private double mediumIntensityMeanTime;
+    private double lowIntensityMeanTime;
+
     // Default constructor if no deviation factors are provided
-    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance) {
+    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance) throws MissingDataException {
         this(trainingSessions, standardDistance, 0.7, 0.7);
     }
 
-    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance, double lowerDeviationFactor, double upperDeviationFactor) {
+    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance, double lowerDeviationFactor, double upperDeviationFactor) throws MissingDataException {
         if (trainingSessions == null || trainingSessions.length == 0) {
             throw new IllegalArgumentException("Training sessions array cannot be null or empty");
         }
@@ -48,11 +54,12 @@ public class RunnerStatistics {
         // Standardized training sessions
         this.standardizedTrainingSessions = RiegelConverter.convertAll(this.trainingSessions, this.standardDistance);
         getPaceZones();
+        setAllMeanTimes();
     }
 
     // Pace Zones
-    private void getPaceZones() {     
-
+    private void getPaceZones() {   
+        
         // Mean
         double sum = 0.0;
         for (double time : this.standardizedTrainingSessions) {
@@ -78,8 +85,26 @@ public class RunnerStatistics {
             } else if (standardizedTime > slowCutoff) {
                 this.lowIntensitySessions.add(standardizedTime);
             } else {
-                this.averageIntensitySessions.add(standardizedTime);
+                this.mediumIntensitySessions.add(standardizedTime);
             }
         }
+    }
+
+    private void setAllMeanTimes() throws MissingDataException {
+        if (this.highIntensitySessions.isEmpty() || this.mediumIntensitySessions.isEmpty() || this.lowIntensitySessions.isEmpty()) {
+            throw new MissingDataException("Sessions have not been correctly categorized into three levels");
+        }
+
+        this.highIntensityMeanTime = getMeanTime(this.highIntensitySessions);
+        this.mediumIntensityMeanTime = getMeanTime(this.mediumIntensitySessions);
+        this.lowIntensityMeanTime = getMeanTime(this.lowIntensitySessions);
+    }
+
+    private double getMeanTime(List<Double> sessions) {
+        double sum = 0.0;
+        for (double time : sessions) {
+            sum += time;
+        }
+        return sum / sessions.size();
     }
 }
