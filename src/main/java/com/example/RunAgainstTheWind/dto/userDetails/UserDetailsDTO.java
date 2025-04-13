@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.dto;
+package com.example.RunAgainstTheWind.dto.userDetails;
 
 import lombok.Data;
 
