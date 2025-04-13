@@ -9,9 +9,10 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
@@ -20,6 +21,7 @@ import com.example.RunAgainstTheWind.domain.userDetails.repository.UserDetailsRe
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 
+@ExtendWith(MockitoExtension.class)
 public class UserDetailsServiceTest {
 
     @Mock
@@ -38,8 +40,6 @@ public class UserDetailsServiceTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
-
         // Initialize test data
         userId = UUID.randomUUID();
         
