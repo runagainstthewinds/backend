@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.example.RunAgainstTheWind.algorithm.RunnerStatistics;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
+import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
 class RunnerStatisticsTest {
     
@@ -68,7 +69,7 @@ class RunnerStatisticsTest {
     }
     
     @Test
-    void testStatisticsCalculation() {
+    void testStatisticsCalculation() throws MissingDataException {
 
         RunnerStatistics stats = new RunnerStatistics(trainingSessions, StandardDistance.FIVE_KM);
         
@@ -92,13 +93,13 @@ class RunnerStatisticsTest {
     }
     
     @Test
-    void testPaceZoneDistribution() {
+    void testPaceZoneDistribution() throws MissingDataException {
         RunnerStatistics stats = new RunnerStatistics(trainingSessions, StandardDistance.FIVE_KM);
         
         // We expect roughly 30% high intensity, 40% average intensity, 30% low intensity given 0.7 deviation factor
         assertEquals(3, stats.getHighIntensitySessions().size(), 
             "Should have 3 high intensity sessions");
-        assertEquals(4, stats.getAverageIntensitySessions().size(), 
+        assertEquals(4, stats.getMediumIntensitySessions().size(), 
             "Should have 4 average intensity sessions");
         assertEquals(3, stats.getLowIntensitySessions().size(), 
             "Should have 3 low intensity sessions");
@@ -106,13 +107,13 @@ class RunnerStatisticsTest {
         // Check that total count matches
         assertEquals(trainingSessions.length, 
             stats.getHighIntensitySessions().size() + 
-            stats.getAverageIntensitySessions().size() + 
+            stats.getMediumIntensitySessions().size() + 
             stats.getLowIntensitySessions().size(),
             "Sum of all categorized sessions should equal total sessions");
     }
     
     @Test
-    void testCustomDeviationFactors() {
+    void testCustomDeviationFactors() throws MissingDataException {
         RunnerStatistics stats = new RunnerStatistics(trainingSessions, StandardDistance.FIVE_KM, 1.0, 1.0);
         
         // Test with more extreme deviation factors (1.0) should categorize more runs as average
@@ -121,12 +122,12 @@ class RunnerStatisticsTest {
             "With narrow deviation bands, should have fewer high intensity sessions");
         assertTrue(stats.getLowIntensitySessions().size() <= 2, 
             "With narrow deviation bands, should have fewer low intensity sessions");
-        assertTrue(stats.getAverageIntensitySessions().size() >= 6, 
+        assertTrue(stats.getMediumIntensitySessions().size() >= 6, 
             "With narrow deviation bands, should have more average intensity sessions");
     }
     
     @Test
-    void testRiegelConversion() {
+    void testRiegelConversion() throws MissingDataException {
 
         // Actual
         RunnerStatistics stats = new RunnerStatistics(trainingSessions, StandardDistance.FIVE_KM);
@@ -142,7 +143,7 @@ class RunnerStatisticsTest {
     }
     
     @Test
-    void testDifferentStandardDistances() {
+    void testDifferentStandardDistances() throws MissingDataException {
 
         RunnerStatistics statsFor10K = new RunnerStatistics(trainingSessions, StandardDistance.TEN_KM);
         RunnerStatistics statsFor5K = new RunnerStatistics(trainingSessions, StandardDistance.FIVE_KM);

@@ -156,11 +156,10 @@ public class TrainingPlanSkeletonTest {
     @Test
     void testInvalidDifficultyThrowsException() {
         // Test invalid difficulty
-        plan = new TrainingPlanSkeleton("Invalid", 6);
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            plan.createTrainingPlanSkeleton();
-        });
-        assertEquals("Invalid difficulty level: Invalid", exception.getMessage());
+                plan = new TrainingPlanSkeleton("Invalid", 6);
+            });
+            assertEquals("Invalid difficulty level: Invalid", exception.getMessage());
     }
 
     @Test
