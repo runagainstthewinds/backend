@@ -25,11 +25,18 @@ public class TrainingPlanSkeleton {
     private HashMap<Integer, List<TrainingSession>> plan = new HashMap<>();
 
     public TrainingPlanSkeleton(Difficulty difficulty, int length) {
+        if (difficulty == null || length <= 0) throw new IllegalArgumentException("Invalid parameters");
+
         this.difficulty = difficulty;
         this.length = length;
         this.plan = createTrainingPlanSkeleton();
     }
 
+    /**
+     * Creates a training plan skeleton with weekly sessions based on difficulty and duration.
+     *
+     * @return A HashMap mapping each week to a list of training sessions
+     */
     public HashMap<Integer, List<TrainingSession>> createTrainingPlanSkeleton() {
         HashMap<Integer, List<TrainingSession>> newPlan = new HashMap<>();
 
@@ -41,7 +48,6 @@ public class TrainingPlanSkeleton {
         };
 
         int halfwayPoint = (int) Math.ceil(length / 2.0);  
-
         for (int week = 1; week <= length; week++) {
             List<TrainingSession> weeklySessions = new ArrayList<>();
             // Increase sessions by 1 after halfway point
@@ -51,38 +57,18 @@ public class TrainingPlanSkeleton {
 
             // Easy: Tempo and Long Run, add Interval after halfway
             if (difficulty == Difficulty.EASY) {
-                TrainingSession tempo = new TrainingSession();
-                tempo.setTrainingType(TrainingType.TEMPO);
-                weeklySessions.add(tempo);
-
-                TrainingSession longRun = new TrainingSession();
-                longRun.setTrainingType(TrainingType.LONG_RUN);
-                weeklySessions.add(longRun);
-
-                if (week > halfwayPoint) {
-                    TrainingSession interval = new TrainingSession();
-                    interval.setTrainingType(TrainingType.INTERVAL);
-                    weeklySessions.add(interval);
-                }
+                weeklySessions.add(createSession(TrainingType.TEMPO));
+                weeklySessions.add(createSession(TrainingType.LONG_RUN));
+                if (week > halfwayPoint) weeklySessions.add(createSession(TrainingType.INTERVAL));
             } else {
                 // Medium and Hard: Interval, Tempo, Long Run, rest Recovery
-                TrainingSession interval = new TrainingSession();
-                interval.setTrainingType(TrainingType.INTERVAL);
-                weeklySessions.add(interval);
-
-                TrainingSession tempo = new TrainingSession();
-                tempo.setTrainingType(TrainingType.TEMPO);
-                weeklySessions.add(tempo);
-
-                TrainingSession longRun = new TrainingSession();
-                longRun.setTrainingType(TrainingType.LONG_RUN);
-                weeklySessions.add(longRun);
+                weeklySessions.add(createSession(TrainingType.INTERVAL));
+                weeklySessions.add(createSession(TrainingType.TEMPO));
+                weeklySessions.add(createSession(TrainingType.LONG_RUN));
 
                 // Fill remaining sessions with Recovery Runs
                 for (int i = 3; i < sessionsThisWeek; i++) {
-                    TrainingSession recovery = new TrainingSession();
-                    recovery.setTrainingType(TrainingType.RECOVERY_RUN);
-                    weeklySessions.add(recovery);
+                    weeklySessions.add(createSession(TrainingType.RECOVERY_RUN));
                 }
             }
 
@@ -90,5 +76,17 @@ public class TrainingPlanSkeleton {
         }
 
         return newPlan;
+    }
+
+    /**
+     * Creates a training session with the specified type.
+     *
+     * @param type The type of training session
+     * @return A new TrainingSession instance
+     */
+    private TrainingSession createSession(TrainingType type) {
+        TrainingSession session = new TrainingSession();
+        session.setTrainingType(type);
+        return session;
     }
 }
