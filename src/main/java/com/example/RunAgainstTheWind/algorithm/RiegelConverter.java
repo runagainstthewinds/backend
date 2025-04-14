@@ -9,7 +9,7 @@ import com.example.RunAgainstTheWind.enumeration.StandardDistance;
  */
 public class RiegelConverter {
 
-    private static final double RIEGEL_FATIGUE_FACTOR = 1.06; 
+    private static final double RIEGEL_FATIGUE_FACTOR = 1.06; // Riegel's fatigue factor
 
     /**
      * Predicts a time for a target distance based on a known performance
