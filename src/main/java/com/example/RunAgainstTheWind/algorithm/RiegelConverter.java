@@ -9,7 +9,7 @@ import com.example.RunAgainstTheWind.enumeration.StandardDistance;
  */
 public class RiegelConverter {
 
-    private static final double FATIGUE_FACTOR = 1.06; // Riegel's fatigue factor
+    private static final double RIEGEL_FATIGUE_FACTOR = 1.06; 
 
     /**
      * Predicts a time for a target distance based on a known performance
@@ -21,7 +21,7 @@ public class RiegelConverter {
     public static double predictTime(double knownDistance, double knownTime, double targetDistance) {
         if (knownDistance <= 0 || knownTime <= 0 || targetDistance <= 0) throw new IllegalArgumentException("Distances and time must be positive");
         
-        return knownTime * Math.pow(targetDistance / knownDistance, FATIGUE_FACTOR);
+        return knownTime * Math.pow(targetDistance / knownDistance, RIEGEL_FATIGUE_FACTOR);
     }
 
     /**
