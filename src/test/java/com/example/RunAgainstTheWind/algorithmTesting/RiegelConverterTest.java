@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.algorithmTesting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Date;
 
@@ -60,8 +61,9 @@ public class RiegelConverterTest {
     @Test
     public void testEmptySessionsArray() {
         TrainingSession[] emptySessions = new TrainingSession[0];
-        double[] predictions = RiegelConverter.convertAllRunsToStandardDistance(emptySessions, StandardDistance.FIVE_KM);
-        assertEquals(0, predictions.length, "Empty input array should return empty predictions array");
+        assertThrows(IllegalArgumentException.class, () -> {
+            RiegelConverter.convertAllRunsToStandardDistance(emptySessions, StandardDistance.FIVE_KM);
+        }, "Empty input array should throw IllegalArgumentException");
     }
 
     @Test
