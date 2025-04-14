@@ -23,10 +23,12 @@ public class TrainingPlanService {
     public TrainingPlanDTO getTrainingPlanByUserId(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        
         TrainingPlan trainingPlan = user.getTrainingPlan();
         if (trainingPlan == null) {
-            throw new EntityNotFoundException("Training plan not found for user id: " + userId);
+            return null; 
         }
+        
         return toDTO(trainingPlan);
     }
 
