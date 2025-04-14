@@ -5,48 +5,43 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.enumeration.Difficulty;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
 
 import lombok.Data;
 
-/*
- * Input: Training plan difficulty (Easy, Medium, Hard), Program length (week)
- * Output: Dictionary mapping {week:sessions}
+/**
+ * A class representing a skeleton for a training plan, defining weekly sessions based on difficulty and duration.
  */
 @Data
 public class TrainingPlanSkeleton {
-    
-    private String difficulty; // Easy, Medium, Hard
-    private int length; // Weeks
 
+    private static final int EASY_SESSIONS_PER_WEEK = 2;
+    private static final int MEDIUM_SESSIONS_PER_WEEK = 4;
+    private static final int HARD_SESSIONS_PER_WEEK = 6;
+    
+    private final Difficulty difficulty; // Easy, Medium, Hard
+    private final int length; // Weeks
     private HashMap<Integer, List<TrainingSession>> plan = new HashMap<>();
 
-    public TrainingPlanSkeleton(String difficulty, int length) {
+    public TrainingPlanSkeleton(Difficulty difficulty, int length) {
         this.difficulty = difficulty;
         this.length = length;
-
         this.plan = createTrainingPlanSkeleton();
     }
 
     public HashMap<Integer, List<TrainingSession>> createTrainingPlanSkeleton() {
-        HashMap<Integer, List<TrainingSession>> plan = new HashMap<>();
+        HashMap<Integer, List<TrainingSession>> newPlan = new HashMap<>();
 
-        int baseSessionsPerWeek;
-        switch (difficulty.toLowerCase()) {
-            case "easy":
-                baseSessionsPerWeek = 2;
-                break;
-            case "medium":
-                baseSessionsPerWeek = 4;
-                break;
-            case "hard":
-                baseSessionsPerWeek = 6;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid difficulty level: " + difficulty);
-        }
+        int baseSessionsPerWeek = switch (difficulty) {
+            case EASY -> EASY_SESSIONS_PER_WEEK;
+            case MEDIUM -> MEDIUM_SESSIONS_PER_WEEK;
+            case HARD -> HARD_SESSIONS_PER_WEEK;
+            default -> throw new IllegalArgumentException("Invalid difficulty level: " + difficulty);
+        };
 
-        int halfwayPoint = (int) Math.ceil(length / 2.0);
+        int halfwayPoint = (int) Math.ceil(length / 2.0);  
+
         for (int week = 1; week <= length; week++) {
             List<TrainingSession> weeklySessions = new ArrayList<>();
             // Increase sessions by 1 after halfway point
@@ -55,7 +50,7 @@ public class TrainingPlanSkeleton {
                 baseSessionsPerWeek + 1;
 
             // Easy: Tempo and Long Run, add Interval after halfway
-            if (difficulty.equalsIgnoreCase("easy")) {
+            if (difficulty == Difficulty.EASY) {
                 TrainingSession tempo = new TrainingSession();
                 tempo.setTrainingType(TrainingType.TEMPO);
                 weeklySessions.add(tempo);
@@ -91,9 +86,9 @@ public class TrainingPlanSkeleton {
                 }
             }
 
-            plan.put(week, weeklySessions);
+            newPlan.put(week, weeklySessions);
         }
 
-        return plan;
+        return newPlan;
     }
 }

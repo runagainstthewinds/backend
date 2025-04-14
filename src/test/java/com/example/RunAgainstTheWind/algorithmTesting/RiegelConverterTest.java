@@ -34,7 +34,7 @@ public class RiegelConverterTest {
     @Test
     public void testPredicted5KTimes() {
 
-        double[] predicted5KTimes = RiegelConverter.convertAll(trainingSessions, StandardDistance.FIVE_KM);
+        double[] predicted5KTimes = RiegelConverter.convertAllRunsToStandardDistance(trainingSessions, StandardDistance.FIVE_KM);
         assertEquals(3, predicted5KTimes.length, "Should have predictions for all 3 training sessions");
 
         double[] expectedTimes = new double[] {
@@ -60,7 +60,7 @@ public class RiegelConverterTest {
     @Test
     public void testEmptySessionsArray() {
         TrainingSession[] emptySessions = new TrainingSession[0];
-        double[] predictions = RiegelConverter.convertAll(emptySessions, StandardDistance.FIVE_KM);
+        double[] predictions = RiegelConverter.convertAllRunsToStandardDistance(emptySessions, StandardDistance.FIVE_KM);
         assertEquals(0, predictions.length, "Empty input array should return empty predictions array");
     }
 
@@ -71,7 +71,7 @@ public class RiegelConverterTest {
                 new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.UNSPECIFIED
             )
         };
-        double[] predictions = RiegelConverter.convertAll(singleSession, StandardDistance.FIVE_KM);
+        double[] predictions = RiegelConverter.convertAllRunsToStandardDistance(singleSession, StandardDistance.FIVE_KM);
         assertEquals(1, predictions.length, "Single session should return one prediction");
         assertEquals(19.185, predictions[0], 0.001, "Single session prediction should match expected value");
     }

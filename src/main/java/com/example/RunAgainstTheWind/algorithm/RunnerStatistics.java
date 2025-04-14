@@ -52,7 +52,7 @@ public class RunnerStatistics {
         this.upperDeviationFactor = upperDeviationFactor;
 
         // Standardized training sessions
-        this.standardizedTrainingSessions = RiegelConverter.convertAll(this.trainingSessions, this.standardDistance);
+        this.standardizedTrainingSessions = RiegelConverter.convertAllRunsToStandardDistance(this.trainingSessions, this.standardDistance);
         getPaceZones();
         setAllMeanTimes();
     }
