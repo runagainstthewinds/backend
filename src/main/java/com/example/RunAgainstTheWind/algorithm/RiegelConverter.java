@@ -19,6 +19,8 @@ public class RiegelConverter {
      * @return Predicted time in minutes and decimal seconds
      */
     public static double predictTime(double knownDistance, double knownTime, double targetDistance) {
+        if (knownDistance <= 0 || knownTime <= 0 || targetDistance <= 0) throw new IllegalArgumentException("Distances and time must be positive");
+        
         return knownTime * Math.pow(targetDistance / knownDistance, FATIGUE_FACTOR);
     }
 
@@ -29,8 +31,10 @@ public class RiegelConverter {
      * @return Array of predicted times in seconds for standard distance
      */
     public static double[] convertAllRunsToStandardDistance(TrainingSession[] trainingSessions, StandardDistance standardDistance) {
-        double[] standardizedTimes = new double[trainingSessions.length];
+        if (trainingSessions == null || trainingSessions.length == 0 || standardDistance == null) throw new IllegalArgumentException("Invalid input");
+        
 
+        double[] standardizedTimes = new double[trainingSessions.length];
         for (int i = 0; i< trainingSessions.length; i++) {
             standardizedTimes[i] = predictTime(trainingSessions[i].getAchievedDistance(), trainingSessions[i].getAchievedDuration(), standardDistance.getMeters());
         }
