@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.enumeration.Difficulty;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
@@ -30,7 +31,7 @@ public class Tester {
         try {
             TrainingPlanCreator planCreator = new TrainingPlanCreator(
                 trainingSessions, // runHistory
-                "hard",          // difficulty
+                Difficulty.HARD,          // difficulty
                 6,               // length (weeks)
                 10000             // distance (meters, e.g., 5K)
             );
