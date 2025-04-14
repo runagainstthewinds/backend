@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.enumeration.Difficulty;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
@@ -19,7 +20,7 @@ public class TrainingPlanCreator {
 
     // INPUTS
     private TrainingSession[] runHistory;
-    private String difficulty;
+    private Difficulty difficulty; // Easy, Medium, Hard
     private int length; // weeks
     private int goalDistance; // m 
     private StandardDistance standardDistance = StandardDistance.FIVE_KM; 
@@ -32,7 +33,7 @@ public class TrainingPlanCreator {
     private int intervalCount = 0;
     private int recoveryRunCount = 0;
 
-    public TrainingPlanCreator(TrainingSession[] runHistory, String difficulty, int length, int goalDistance) throws MissingDataException {
+    public TrainingPlanCreator(TrainingSession[] runHistory, Difficulty difficulty, int length, int goalDistance) throws MissingDataException {
         if (runHistory == null || runHistory.length == 0 || difficulty == null || length <= 0 || goalDistance <= 0) {
             throw new MissingDataException("Missing Data to create training plan.");
         }
