@@ -35,7 +35,10 @@ public class TrainingPlanService {
         
         TrainingPlan trainingPlan = user.getTrainingPlan();
         if (trainingPlan == null) {
-            return null; 
+            TrainingPlanDTO emptyPlan = new TrainingPlanDTO();
+            emptyPlan.setUserId(userId);
+            emptyPlan.setTrainingSessions(List.of()); // Empty list of sessions
+            return emptyPlan;
         }
         
         return toDTO(trainingPlan);
