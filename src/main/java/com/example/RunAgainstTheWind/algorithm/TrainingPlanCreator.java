@@ -1,7 +1,9 @@
 package com.example.RunAgainstTheWind.algorithm;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.enumeration.Difficulty;
@@ -9,34 +11,42 @@ import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
-import lombok.Data;
+import lombok.Getter;
 
-// INPUT: 
-// Training plan difficulty (Easy, Medium, Hard), Program length (week), Distance (m), RunnerStatistics
-// OUTPUT: Training plan mapping {week:sessions}
-
-@Data
+/**
+ * Creates a training plan based on runner history, difficulty, length, and goal distance.
+ * Configures sessions for long runs, tempo runs, intervals, and recovery runs.
+ */
+@Getter
 public class TrainingPlanCreator {
 
-    // INPUTS
-    private TrainingSession[] runHistory;
-    private Difficulty difficulty; // Easy, Medium, Hard
-    private int length; // weeks
-    private int goalDistance; // m 
-    private StandardDistance standardDistance = StandardDistance.FIVE_KM; 
+    // Constants
+    private static final double LONG_RUN_START_FACTOR = 0.5;
+    private static final double LONG_RUN_END_FACTOR = 1.0;
+    private static final double TEMPO_RUN_DISTANCE_FACTOR = 0.4;
+    private static final double TEMPO_START_DURATION_FACTOR = 1.0;
+    private static final double TEMPO_END_DURATION_FACTOR = 0.9;
+    private static final double INTERVAL_START_FACTOR = 0.25;
+    private static final double INTERVAL_END_FACTOR = 0.5;
+    private static final double RECOVERY_RUN_DISTANCE_FACTOR = 0.25;
+    private static final double INTERVAL_SET_DISTANCE = 400.0;
+    private static final int ROUNDING_SCALE = 100;
 
-    private RunnerStatistics runnerStatistics;
-    private TrainingPlanSkeleton trainingPlanSkeleton;
+    // Inputs
+    private final TrainingSession[] runHistory;
+    private final Difficulty difficulty; // Easy, Medium, Hard
+    private final int length; // weeks
+    private final int goalDistance; // m 
+    private final StandardDistance standardDistance = StandardDistance.FIVE_KM; 
+    private final RunnerStatistics runnerStatistics;
+    private final TrainingPlanSkeleton trainingPlanSkeleton;
 
-    private int longRunCount = 0;
-    private int tempoCount = 0;
-    private int intervalCount = 0;
-    private int recoveryRunCount = 0;
+    // Session counts
+    private final Map<TrainingType, Integer> sessionCounts;
+    private final Map<TrainingType, List<TrainingSession>> sessionsByType;
 
     public TrainingPlanCreator(TrainingSession[] runHistory, Difficulty difficulty, int length, int goalDistance) throws MissingDataException {
-        if (runHistory == null || runHistory.length == 0 || difficulty == null || length <= 0 || goalDistance <= 0) {
-            throw new MissingDataException("Missing Data to create training plan.");
-        }
+        validateInputs(runHistory, difficulty, length, goalDistance, standardDistance);
 
         this.runHistory = runHistory;
         this.difficulty = difficulty;
@@ -45,66 +55,109 @@ public class TrainingPlanCreator {
         this.runnerStatistics = new RunnerStatistics(this.runHistory, StandardDistance.FIVE_KM);
         this.trainingPlanSkeleton = new TrainingPlanSkeleton(this.difficulty, this.length);
 
-        countTrainingTypes();
-        setAllRuns();
+        this.sessionCounts = new EnumMap<>(TrainingType.class);
+        this.sessionsByType = new EnumMap<>(TrainingType.class);
+        initializeSessionData();
+        configureAllRuns();
+    }
+
+    /**
+     * Validates constructor inputs.
+     */
+    private void validateInputs(TrainingSession[] runHistory, Difficulty difficulty, int length,
+                               int goalDistance, StandardDistance standardDistance) {
+        if (runHistory == null || runHistory.length == 0) {
+            throw new MissingDataException("Run history cannot be null or empty");
+        }
+        for (TrainingSession session : runHistory) {
+            if (session == null) {
+                throw new MissingDataException("Run history contains null sessions");
+            }
+        }
+        if (difficulty == null) {
+            throw new MissingDataException("Difficulty cannot be null");
+        }
+        if (length <= 0) {
+            throw new MissingDataException("Plan length must be positive");
+        }
+        if (goalDistance <= 0) {
+            throw new MissingDataException("Goal distance must be positive");
+        }
+        if (standardDistance == null) {
+            throw new MissingDataException("Standard distance cannot be null");
+        }
+    }
+
+    /**
+     * Initializes session counts and organizes sessions by type.
+     */
+    private void initializeSessionData() {
+        // Initialize maps
+        for (TrainingType type : TrainingType.values()) {
+            sessionsByType.put(type, new ArrayList<>());
+            sessionCounts.put(type, 0);
+        }
+
+        // Populate counts and sessions
+        for (List<TrainingSession> weekSessions : trainingPlanSkeleton.getPlan().values()) {
+            for (TrainingSession session : weekSessions) {
+                if (session != null && session.getTrainingType() != null) {
+                    TrainingType type = session.getTrainingType();
+                    sessionCounts.compute(type, (k, v) -> v == null ? 1 : v + 1);
+                    sessionsByType.get(type).add(session);
+                }
+            }
+        }
     }
 
     /*
      * Creates the training sessions for all types of run.
      */
-    private void setAllRuns() {
-        if (this.longRunCount != 0) setLongRun();
-        if (this.tempoCount != 0) setTempoRun();
-        if (this.intervalCount != 0) setIntervalRun();
-        if (this.recoveryRunCount != 0) setRecoveryRun();
+    private void configureAllRuns() {
+        configureLongRun();
+        configureTempoRun();
+        configureIntervalRun();
+        configureRecoveryRun();
     }
 
     /*
-     * Long run intensity is always low, but we increase the distance each week
-     * Distance: Starts at 50% of goal distance. Increases to 100%
-     * Duration: Low intensity pace
+     * Configures long run sessions with increasing distance at low intensity.
      */
-    private void setLongRun() {
+    private void configureLongRun() {
+        List<TrainingSession> longRunSessions = sessionsByType.get(TrainingType.LONG_RUN);
+        int count = sessionCounts.getOrDefault(TrainingType.LONG_RUN, 0);
+
         double lowIntensityMeanTime = this.runnerStatistics.getLowIntensityMeanTime();
-        List<TrainingSession> longRunSessions = getSessionsByType(TrainingType.LONG_RUN);
-
-        // Calculate distance increment
-        double startDistance = goalDistance * 0.5;
-        double endDistance = goalDistance;      
-        double increment = this.longRunCount > 1 ? 
-            (endDistance - startDistance) / (this.longRunCount - 1) : 
-            0.0;
+        double startDistance = goalDistance * LONG_RUN_START_FACTOR;
+        double endDistance = goalDistance * LONG_RUN_END_FACTOR;      
+        double increment = count > 1 ? (endDistance - startDistance) / (count - 1) : 0.0;
     
-        for (int i = 0; i < this.longRunCount; i++) {
+        for (int i = 0; i < count; i++) {
+            TrainingSession session = longRunSessions.get(i);
             double distance = startDistance + (i * increment);
-            longRunSessions.get(i).setDistance(distance);
-
             double duration = RiegelConverter.predictTime(this.standardDistance.getMeters(), lowIntensityMeanTime, distance);
-            longRunSessions.get(i).setDuration(Math.round(duration * 100.0) / 100.0);
-
             double pace = duration / (distance / 1000);
-            longRunSessions.get(i).setGoalPace(Math.round(pace * 100.0) / 100.0);
+
+            session.setDistance(distance);
+            session.setDuration(roundToScale(duration));
+            session.setGoalPace(roundToScale(pace));
         }
     }
 
-    /*
-     * Tempo run distance is the same, but we attempt to increase speed each week
-     * Distance: 40% of goal distance
-     * Duration: Starts at medium instensity pace and decreases each week
+    /**
+     * Configures tempo run sessions with fixed distance and increasing speed.
      */
-    private void setTempoRun() {
+    private void configureTempoRun() {
+        List<TrainingSession> tempoRunSessions = sessionsByType.get(TrainingType.TEMPO);
+        int count = sessionCounts.getOrDefault(TrainingType.TEMPO, 0);
+
         double mediumIntensityMeanTime = this.runnerStatistics.getMediumIntensityMeanTime();
-        List<TrainingSession> tempoRunSessions = getSessionsByType(TrainingType.TEMPO);
+        double distance = goalDistance * TEMPO_RUN_DISTANCE_FACTOR; 
+        double startDurationFactor = TEMPO_START_DURATION_FACTOR; 
+        double endDurationFactor = TEMPO_END_DURATION_FACTOR; 
+        double durationIncrement = count > 1 ?(endDurationFactor - startDurationFactor) / (count - 1) : 0.0;
 
-        // Calculate pace decrease
-        double distance = goalDistance * 0.4; 
-        double startDurationFactor = 1.0; 
-        double endDurationFactor = 0.90; 
-        double durationIncrement = this.tempoCount > 1 ?
-            (endDurationFactor - startDurationFactor) / (this.tempoCount - 1) :
-            0.0;
-
-        for (int i = 0; i < this.tempoCount; i++) {
+        for (int i = 0; i < count; i++) {
             tempoRunSessions.get(i).setDistance(distance);
             
             double durationFactor = startDurationFactor + (i * durationIncrement);
@@ -116,95 +169,56 @@ public class TrainingPlanCreator {
         }
     }
 
-    /*
-     * We do intervals of 400 meters. Each week, we increase the numbers of set rather than the distance or speed
-     * Distance is the total distance of the intervals. It does not include the recoeery in-between. 
-     * Distance: Start of with X sets of 400m where total is around 25% of goal distance. We finish where total is around 50%.
-     * Duration: High intensity pace
+    /**
+     * Configures interval run sessions with increasing sets at high intensity.
      */
-    private void setIntervalRun() {
+    private void configureIntervalRun() {
+        List<TrainingSession> intervalRunSessions = sessionsByType.get(TrainingType.INTERVAL);
+        int count = sessionCounts.getOrDefault(TrainingType.INTERVAL, 0);
+
         double highIntensityMeanTime = this.runnerStatistics.getHighIntensityMeanTime();
-        List<TrainingSession> intervalRunSessions = getSessionsByType(TrainingType.INTERVAL);
-
-        // Calculate sets of 400m intervals
-        double startDistance = Math.floor((goalDistance / 400.0) / 4.0) * 400.0;
-        double endDistance = Math.floor((goalDistance / 400.0) / 2.0) * 400.0;
-        double distanceIncrement = this.intervalCount > 1 ?
-            (endDistance - startDistance) / (this.intervalCount - 1) :
-            0.0;
-
-        // Calculate duration
+        double startDistance = Math.floor((goalDistance * INTERVAL_START_FACTOR) / INTERVAL_SET_DISTANCE) * INTERVAL_SET_DISTANCE;
+        double endDistance = Math.floor((goalDistance * INTERVAL_END_FACTOR) / INTERVAL_SET_DISTANCE) * INTERVAL_SET_DISTANCE;
+        double distanceIncrement = count > 1 ? (endDistance - startDistance) / (count - 1) : 0.0;
         double setDuration = RiegelConverter.predictTime(this.standardDistance.getMeters(), highIntensityMeanTime, 400.0);
 
-        for (int i = 0; i < this.intervalCount; i++) {
+        for (int i = 0; i < count; i++) {
+            TrainingSession session = intervalRunSessions.get(i);
             double rawDistance = startDistance + (i * distanceIncrement);
-            double distance = Math.floor(rawDistance / 400.0) * 400.0;
-            intervalRunSessions.get(i).setDistance(distance);
-
-            double totalDuration = setDuration * (distance / 400.0);
-            intervalRunSessions.get(i).setDuration(Math.round(totalDuration * 100.0) / 100.0);
-
+            double distance = Math.floor(rawDistance / INTERVAL_SET_DISTANCE) * INTERVAL_SET_DISTANCE;
+            double totalDuration = setDuration * (distance / INTERVAL_SET_DISTANCE);
             double pace = totalDuration / (distance / 1000);
-            intervalRunSessions.get(i).setGoalPace(Math.round(pace * 100.0) / 100.0);
+
+            session.setDistance(distance);
+            session.setDuration(roundToScale(totalDuration));
+            session.setGoalPace(roundToScale(pace));
         }
     }
 
-    /*
-     * All recovery runs are the same.
-     * Distance: 25% of goal distance
-     * Duration: Low intensity pace
+    /**
+     * Configures recovery run sessions with fixed distance and low intensity.
      */
-    private void setRecoveryRun() { 
-        double lowIntensityMeanTime = this.runnerStatistics.getLowIntensityMeanTime();
-        List<TrainingSession> recoveryRunSessions = getSessionsByType(TrainingType.RECOVERY_RUN);
+    private void configureRecoveryRun() { 
+        List<TrainingSession> recoveryRunSessions = sessionsByType.get(TrainingType.RECOVERY_RUN);
+        int count = sessionCounts.getOrDefault(TrainingType.RECOVERY_RUN, 0);
 
-        double distance = goalDistance * 0.25; 
+        double lowIntensityMeanTime = this.runnerStatistics.getLowIntensityMeanTime();
+        double distance = goalDistance * RECOVERY_RUN_DISTANCE_FACTOR; 
         double lowIntensityPace = lowIntensityMeanTime / (this.standardDistance.getMeters() / 1000); 
         double duration = lowIntensityPace * (distance / 1000); 
 
-        for (int i = 0; i < this.recoveryRunCount; i++) {
-            recoveryRunSessions.get(i).setDistance(distance);
-            recoveryRunSessions.get(i).setDuration(Math.round(duration * 100.0) / 100.0);
-            recoveryRunSessions.get(i).setGoalPace(Math.round(lowIntensityPace * 100.0) / 100.0);
+        for (int i = 0; i < count; i++) {
+            TrainingSession session = recoveryRunSessions.get(i);
+            session.setDistance(distance);
+            session.setDuration(roundToScale(duration));
+            session.setGoalPace(roundToScale(lowIntensityPace));
         }
     }
 
-    /* 
-     * Helper method to count the number of each training type in the run history.
+    /**
+     * Rounds a value to two decimal places.
      */
-    private void countTrainingTypes() {
-        // Count the number of each training type in the run history
-        for (List<TrainingSession> sessions : this.trainingPlanSkeleton.getPlan().values()) {
-            for (TrainingSession session : sessions) {
-                if (session != null) {
-                    TrainingType type = session.getTrainingType();
-                    if (type == TrainingType.TEMPO) {
-                        tempoCount++;
-                    } else if (type == TrainingType.LONG_RUN) {
-                        longRunCount++;
-                    } else if (type == TrainingType.INTERVAL) {
-                        intervalCount++;
-                    } else if (type == TrainingType.RECOVERY_RUN) {
-                        recoveryRunCount++;
-                    }
-                }
-            }
-        }
+    private double roundToScale(double value) {
+        return Math.round(value * ROUNDING_SCALE) / (double) ROUNDING_SCALE;
     }
-
-    /*
-     * Helper method to get sessions of a specific type from the training plan skeleton.
-     */
-    private List<TrainingSession> getSessionsByType(TrainingType runType) {
-        List<TrainingSession> sessions = new ArrayList<>();
-        for (List<TrainingSession> weekSessions : this.trainingPlanSkeleton.getPlan().values()) {
-            for (TrainingSession session : weekSessions) {
-                if (session != null && session.getTrainingType() == runType) {
-                    sessions.add(session);
-                }
-            }
-        }
-        return sessions;
-    }
-
 }

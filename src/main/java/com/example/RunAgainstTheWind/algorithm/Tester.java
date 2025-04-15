@@ -51,11 +51,10 @@ public class Tester {
             //System.out.println("Slow Cutoff: " + runnerStatistics.getSlowCutoff());
 
             // Print training type counts (set by TrainingPlanCreator)
-            System.out.println("Training Type Counts: ");
-            System.out.println("Tempo sessions: " + planCreator.getTempoCount());
-            System.out.println("Long Run sessions: " + planCreator.getLongRunCount());
-            System.out.println("Interval sessions: " + planCreator.getIntervalCount());
-            System.out.println("Recovery Run sessions: " + planCreator.getRecoveryRunCount());
+            for (TrainingType type : TrainingType.values()) {
+                int count = planCreator.getSessionCounts().getOrDefault(type, 0);
+                System.out.println(type + " sessions: " + count);
+            }
             System.out.println();
 
             // Access TrainingPlanSkeleton via TrainingPlanCreator
