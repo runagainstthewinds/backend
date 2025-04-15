@@ -9,38 +9,49 @@ import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
 import lombok.Data;
 
+/**
+ * Calculates and categorizes running session statistics based on pace zones.
+ * Sessions are standardized to a given distance and classified into high, medium, and low intensity.
+ */
 @Data
 public class RunnerStatistics {
 
-    private TrainingSession[] trainingSessions;
+    private static final double DEFAULT_DEVIATION_FACTOR = 0.7; 
+
+    private final TrainingSession[] trainingSessions;
     private double[] standardizedTrainingSessions;
     private final StandardDistance standardDistance;
+    private final double lowerDeviationFactor;   // Smaller value mean more data in extremeties
+    private final double upperDeviationFactor;
 
     private List<Double> highIntensitySessions = new ArrayList<>();
     private List<Double> mediumIntensitySessions = new ArrayList<>();
     private List<Double> lowIntensitySessions = new ArrayList<>();
 
-    private double fastCutoff; // Every time faster than this is considered high intensity
-    private double slowCutoff; // Every time slower than this is considered low intensity
+    private double fastCutoff; 
+    private double slowCutoff; 
     private double meanTime;
     private double standardDeviation;
-
-    // Deviation factor
-    // A factor of 1 means that you roughly have 68% data in the middel (average run) and 16% on each side (high and low intensity)
-    // We will likely want more data in each extremity, so we will set the factor to 0.7 for now
-    double lowerDeviationFactor; 
-    double upperDeviationFactor;
-
-    // This is the important data we want (IMPORTANT)
+    
     private double highIntensityMeanTime;
     private double mediumIntensityMeanTime;
     private double lowIntensityMeanTime;
 
     // Default constructor if no deviation factors are provided
     public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance) throws MissingDataException {
-        this(trainingSessions, standardDistance, 0.7, 0.7);
+        this(trainingSessions, standardDistance, DEFAULT_DEVIATION_FACTOR, DEFAULT_DEVIATION_FACTOR);
     }
 
+    /**
+     * Constructs a RunnerStatistics instance with custom deviation factors.
+     *
+     * @param trainingSessions      Array of training sessions
+     * @param standardDistance      The standard distance for normalization
+     * @param lowerDeviationFactor  Factor for high-intensity cutoff
+     * @param upperDeviationFactor  Factor for low-intensity cutoff
+     * @throws IllegalArgumentException if inputs are invalid
+     * @throws MissingDataException if sessions cannot be categorized into all intensity levels
+     */
     public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance, double lowerDeviationFactor, double upperDeviationFactor) throws MissingDataException {
         if (trainingSessions == null || trainingSessions.length == 0) {
             throw new IllegalArgumentException("Training sessions array cannot be null or empty");
@@ -53,12 +64,12 @@ public class RunnerStatistics {
 
         // Standardized training sessions
         this.standardizedTrainingSessions = RiegelConverter.convertAllRunsToStandardDistance(this.trainingSessions, this.standardDistance);
-        getPaceZones();
+        calculatePaceZones();
         setAllMeanTimes();
     }
 
     // Pace Zones
-    private void getPaceZones() {   
+    private void calculatePaceZones() {   
         
         // Mean
         double sum = 0.0;
