@@ -1,6 +1,8 @@
 package com.example.RunAgainstTheWind.algorithm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
@@ -8,12 +10,13 @@ import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
 import lombok.Data;
+import lombok.Getter;
 
 /**
  * Calculates and categorizes running session statistics based on pace zones.
  * Sessions are standardized to a given distance and classified into high, medium, and low intensity.
  */
-@Data
+@Getter
 public class RunnerStatistics {
 
     private static final double DEFAULT_DEVIATION_FACTOR = 0.7; 
@@ -49,73 +52,128 @@ public class RunnerStatistics {
      * @param standardDistance      The standard distance for normalization
      * @param lowerDeviationFactor  Factor for high-intensity cutoff
      * @param upperDeviationFactor  Factor for low-intensity cutoff
-     * @throws IllegalArgumentException if inputs are invalid
-     * @throws MissingDataException if sessions cannot be categorized into all intensity levels
      */
-    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance, double lowerDeviationFactor, double upperDeviationFactor) throws MissingDataException {
-        if (trainingSessions == null || trainingSessions.length == 0) {
-            throw new IllegalArgumentException("Training sessions array cannot be null or empty");
-        }
-        
+    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance,
+                            double lowerDeviationFactor, double upperDeviationFactor)
+            throws MissingDataException {
+        validateInputs(trainingSessions, standardDistance, lowerDeviationFactor, upperDeviationFactor);
+
         this.trainingSessions = trainingSessions;
         this.standardDistance = standardDistance;
         this.lowerDeviationFactor = lowerDeviationFactor;
         this.upperDeviationFactor = upperDeviationFactor;
 
-        // Standardized training sessions
-        this.standardizedTrainingSessions = RiegelConverter.convertAllRunsToStandardDistance(this.trainingSessions, this.standardDistance);
-        calculatePaceZones();
-        setAllMeanTimes();
+        // Standardize sessions
+        this.standardizedTrainingSessions = RiegelConverter.convertAllRunsToStandardDistance(
+                trainingSessions, standardDistance);
+
+        // Calculate statistics
+        this.highIntensitySessions = new ArrayList<>();
+        this.mediumIntensitySessions = new ArrayList<>();
+        this.lowIntensitySessions = new ArrayList<>();
+        this.meanTime = calculateMeanTime();
+        this.standardDeviation = calculateStandardDeviation();
+        this.fastCutoff = meanTime - (lowerDeviationFactor * standardDeviation);
+        this.slowCutoff = meanTime + (upperDeviationFactor * standardDeviation);
+
+        categorizeSessions();
+        this.highIntensityMeanTime = calculateMeanTime(highIntensitySessions, "high-intensity");
+        this.mediumIntensityMeanTime = calculateMeanTime(mediumIntensitySessions, "medium-intensity");
+        this.lowIntensityMeanTime = calculateMeanTime(lowIntensitySessions, "low-intensity");
     }
 
-    // Pace Zones
-    private void calculatePaceZones() {   
-        
-        // Mean
-        double sum = 0.0;
-        for (double time : this.standardizedTrainingSessions) {
-            sum += time;
+    /**
+     * Validates constructor inputs.
+     */
+    private void validateInputs(TrainingSession[] sessions, StandardDistance distance,
+                               double lowerFactor, double upperFactor) {
+        if (sessions == null || sessions.length == 0) {
+            throw new IllegalArgumentException("Training sessions array cannot be null or empty");
         }
-        this.meanTime = sum / this.standardizedTrainingSessions.length;
-
-        // Standard Deviation
-        double sumSquaredDif = 0.0;
-        for (double time : this.standardizedTrainingSessions) {
-            sumSquaredDif += Math.pow(time - this.meanTime, 2);
-        }
-        this.standardDeviation = Math.sqrt(sumSquaredDif / this.standardizedTrainingSessions.length);
-
-        // Pace cutoffs
-        this.fastCutoff = this.meanTime - (this.lowerDeviationFactor * this.standardDeviation);
-        this.slowCutoff = this.meanTime + (this.upperDeviationFactor * this.standardDeviation);
-
-        for (int i = 0; i < this.standardizedTrainingSessions.length; i++) {
-            double standardizedTime = this.standardizedTrainingSessions[i];
-            if (standardizedTime < fastCutoff) {
-                this.highIntensitySessions.add(standardizedTime);
-            } else if (standardizedTime > slowCutoff) {
-                this.lowIntensitySessions.add(standardizedTime);
-            } else {
-                this.mediumIntensitySessions.add(standardizedTime);
+        for (TrainingSession session : sessions) {
+            if (session == null) {
+                throw new IllegalArgumentException("Training session cannot be null");
             }
         }
+        if (distance == null) {
+            throw new IllegalArgumentException("Standard distance cannot be null");
+        }
+        if (lowerFactor <= 0 || upperFactor <= 0) {
+            throw new IllegalArgumentException("Deviation factors must be positive");
+        }
     }
 
-    private void setAllMeanTimes() throws MissingDataException {
-        if (this.highIntensitySessions.isEmpty() || this.mediumIntensitySessions.isEmpty() || this.lowIntensitySessions.isEmpty()) {
-            throw new MissingDataException("Sessions have not been correctly categorized into three levels");
-        }
-
-        this.highIntensityMeanTime = getMeanTime(this.highIntensitySessions);
-        this.mediumIntensityMeanTime = getMeanTime(this.mediumIntensitySessions);
-        this.lowIntensityMeanTime = getMeanTime(this.lowIntensitySessions);
+    /**
+     * Calculates the mean time of standardized sessions.
+     */
+    private double calculateMeanTime() {
+        return Arrays.stream(standardizedTrainingSessions)
+                     .average()
+                     .orElseThrow(() -> new IllegalStateException("Failed to compute mean time"));
     }
 
-    private double getMeanTime(List<Double> sessions) {
-        double sum = 0.0;
-        for (double time : sessions) {
-            sum += time;
+    /**
+     * Calculates the standard deviation of standardized sessions.
+     */
+    private double calculateStandardDeviation() {
+        return Math.sqrt(
+                Arrays.stream(standardizedTrainingSessions)
+                      .map(time -> Math.pow(time - meanTime, 2))
+                      .average()
+                      .orElse(0.0)
+        );
+    }
+
+    /**
+     * Categorizes sessions into high, medium, and low intensity based on cutoffs.
+     */
+    private void categorizeSessions() {
+        for (double time : standardizedTrainingSessions) {
+            if (time < fastCutoff) {
+                highIntensitySessions.add(time);
+            } else if (time > slowCutoff) {
+                lowIntensitySessions.add(time);
+            } else {
+                mediumIntensitySessions.add(time);
+            }
         }
-        return sum / sessions.size();
+
+        if (highIntensitySessions.isEmpty() || mediumIntensitySessions.isEmpty() || lowIntensitySessions.isEmpty()) {
+            throw new MissingDataException("Not all intensity levels have sessions: " +
+                    "High=" + highIntensitySessions.size() +
+                    ", Medium=" + mediumIntensitySessions.size() +
+                    ", Low=" + lowIntensitySessions.size());
+        }
+    }
+
+    /**
+     * Calculates the mean time for a list of sessions.
+     *
+     * @param sessions    List of session times
+     * @param intensity   Intensity level for error messaging
+     * @return Mean time
+     * @throws MissingDataException if the session list is empty
+     */
+    private double calculateMeanTime(List<Double> sessions, String intensity) throws MissingDataException {
+        if (sessions.isEmpty()) {
+            throw new MissingDataException("No " + intensity + " sessions available");
+        }
+        return sessions.stream()
+                       .mapToDouble(Double::doubleValue)
+                       .average()
+                       .orElseThrow(() -> new IllegalStateException("Failed to compute mean for " + intensity));
+    }
+
+    // Defensive getters for collections
+    public List<Double> getHighIntensitySessions() {
+        return Collections.unmodifiableList(highIntensitySessions);
+    }
+
+    public List<Double> getMediumIntensitySessions() {
+        return Collections.unmodifiableList(mediumIntensitySessions);
+    }
+
+    public List<Double> getLowIntensitySessions() {
+        return Collections.unmodifiableList(lowIntensitySessions);
     }
 }
