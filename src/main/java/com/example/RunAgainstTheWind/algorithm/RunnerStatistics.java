@@ -9,7 +9,6 @@ import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSessio
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
-import lombok.Data;
 import lombok.Getter;
 
 /**
@@ -27,9 +26,9 @@ public class RunnerStatistics {
     private final double lowerDeviationFactor;   // Smaller value mean more data in extremeties
     private final double upperDeviationFactor;
 
-    private List<Double> highIntensitySessions = new ArrayList<>();
-    private List<Double> mediumIntensitySessions = new ArrayList<>();
-    private List<Double> lowIntensitySessions = new ArrayList<>();
+    private List<Double> highIntensitySessions;
+    private List<Double> mediumIntensitySessions;
+    private List<Double> lowIntensitySessions;
 
     private double fastCutoff; 
     private double slowCutoff; 
@@ -164,7 +163,7 @@ public class RunnerStatistics {
                        .orElseThrow(() -> new IllegalStateException("Failed to compute mean for " + intensity));
     }
 
-    // Defensive getters for collections
+    // Unmodifiable getters
     public List<Double> getHighIntensitySessions() {
         return Collections.unmodifiableList(highIntensitySessions);
     }
