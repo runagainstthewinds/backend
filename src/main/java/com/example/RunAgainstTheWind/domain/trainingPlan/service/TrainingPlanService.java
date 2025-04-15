@@ -37,7 +37,7 @@ public class TrainingPlanService {
         if (trainingPlan == null) {
             TrainingPlanDTO emptyPlan = new TrainingPlanDTO();
             emptyPlan.setUserId(userId);
-            emptyPlan.setTrainingSessions(List.of()); // Empty list of sessions
+            emptyPlan.setTrainingSessions(List.of()); 
             return emptyPlan;
         }
         
@@ -73,9 +73,9 @@ public class TrainingPlanService {
                 })
                 .collect(Collectors.toList());
 
-        savedTrainingPlan.setTrainingSessions(sessions);
-        trainingSessionRepository.saveAll(sessions);
-        userRepository.save(user); // Update user to maintain the relationship
+        List<TrainingSession> savedSessions = trainingSessionRepository.saveAll(sessions);
+        savedTrainingPlan.setTrainingSessions(savedSessions);
+        userRepository.save(user);
 
         return toDTO(savedTrainingPlan);
     }
