@@ -93,6 +93,7 @@ public class TrainingPlanService {
     private TrainingPlanDTO toDTO(TrainingPlan trainingPlan) {
         TrainingPlanDTO dto = new TrainingPlanDTO();
         dto.setTrainingPlanId(trainingPlan.getTrainingPlanId());
+        dto.setUserId(trainingPlan.getUser().getUserId());
         dto.setStartDate(trainingPlan.getStartDate());
         dto.setEndDate(trainingPlan.getEndDate());
         dto.setPlanType(trainingPlan.getPlanType());
@@ -130,6 +131,7 @@ public class TrainingPlanService {
     private TrainingSessionDTO toTrainingSessionDTO(TrainingSession session) {
         TrainingSessionDTO dto = new TrainingSessionDTO();
         dto.setTrainingSessionId(session.getTrainingSessionId());
+        dto.setUserId(session.getUser().getUserId()); 
         dto.setDate(session.getDate());
         dto.setDistance(session.getDistance());
         dto.setDuration(session.getDuration());
