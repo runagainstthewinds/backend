@@ -7,10 +7,12 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class TrainingPlanDTO {
     private Long trainingPlanId;
+    private UUID userId;
     private Date startDate;
     private Date endDate;
     private String planType;
