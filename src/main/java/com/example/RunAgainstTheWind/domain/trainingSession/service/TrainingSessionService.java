@@ -72,6 +72,7 @@ public class TrainingSessionService {
     private TrainingSessionDTO toDTO(TrainingSession trainingSession) {
         TrainingSessionDTO dto = new TrainingSessionDTO();
         dto.setTrainingSessionId(trainingSession.getTrainingSessionId());
+        dto.setUserId(trainingSession.getUser().getUserId());
         dto.setDate(trainingSession.getDate());
         dto.setDistance(trainingSession.getDistance());
         dto.setDuration(trainingSession.getDuration());
@@ -88,7 +89,7 @@ public class TrainingSessionService {
             userDTO.setUserId(trainingSession.getUser().getUserId());
             userDTO.setUsername(trainingSession.getUser().getUsername());
             userDTO.setEmail(trainingSession.getUser().getEmail());
-            dto.setUser(userDTO);
+            userDTO.setUserId(trainingSession.getUser().getUserId());
         }
 
         return dto;

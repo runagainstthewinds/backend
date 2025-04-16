@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @Table(name = "`user`")
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"userDetails", "trainingPlan", "trainingSessions", "shoes"})
 @NoArgsConstructor
 @Entity
 public class User {

@@ -6,7 +6,6 @@ import com.example.RunAgainstTheWind.domain.trainingSession.service.TrainingSess
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
-import com.example.RunAgainstTheWind.dto.user.UserDTO;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +62,8 @@ class TrainingSessionServiceTest {
         trainingSession.setUser(user);
 
         trainingSessionDTO = new TrainingSessionDTO();
-        trainingSessionDTO.setTrainingSessionId(1L);
+        trainingSessionDTO.setTrainingSessionId(null); 
+        trainingSessionDTO.setUserId(userId);
         trainingSessionDTO.setDate(new Date());
         trainingSessionDTO.setDistance(10000.0);
         trainingSessionDTO.setDuration(60.0);
@@ -71,12 +71,6 @@ class TrainingSessionServiceTest {
         trainingSessionDTO.setIsCompleted(false);
         trainingSessionDTO.setEffort(4);
         trainingSessionDTO.setTrainingType(TrainingType.LONG_RUN);
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUserId(userId);
-        userDTO.setUsername("test1");
-        userDTO.setEmail("test1@gmail.com");
-        trainingSessionDTO.setUser(userDTO);
     }
 
     @Test
@@ -95,9 +89,9 @@ class TrainingSessionServiceTest {
         assertEquals(trainingSession.getTrainingSessionId(), dto.getTrainingSessionId());
         assertEquals(trainingSession.getDistance(), dto.getDistance());
         assertEquals(trainingSession.getTrainingType(), dto.getTrainingType());
-        assertEquals(userId, dto.getUser().getUserId());
-        verify(userRepository).findById(userId);
-        verify(trainingSessionRepository).findByUser(user);
+        assertEquals(userId, dto.getUserId());
+        verify(userRepository, times(1)).findById(userId);
+        verify(trainingSessionRepository, times(1)).findByUser(user);
     }
 
     @Test
@@ -124,10 +118,10 @@ class TrainingSessionServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(trainingSessionDTO.getTrainingSessionId(), result.getTrainingSessionId());
+        assertEquals(trainingSession.getTrainingSessionId(), result.getTrainingSessionId());
         assertEquals(trainingSessionDTO.getDistance(), result.getDistance());
         assertEquals(trainingSessionDTO.getTrainingType(), result.getTrainingType());
-        assertEquals(userId, result.getUser().getUserId());
+        assertEquals(userId, result.getUserId());
         verify(userRepository).findById(userId);
         verify(trainingSessionRepository).save(any(TrainingSession.class));
     }
@@ -185,10 +179,10 @@ class TrainingSessionServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(trainingSessionDTO.getTrainingSessionId(), result.getTrainingSessionId());
+        assertEquals(trainingSession.getTrainingSessionId(), result.getTrainingSessionId());
         assertEquals(trainingSessionDTO.getDistance(), result.getDistance());
         assertEquals(trainingSessionDTO.getTrainingType(), result.getTrainingType());
-        assertEquals(userId, result.getUser().getUserId());
+        assertEquals(userId, result.getUserId());
         verify(trainingSessionRepository).findById(sessionId);
         verify(trainingSessionRepository).save(any(TrainingSession.class));
     }
