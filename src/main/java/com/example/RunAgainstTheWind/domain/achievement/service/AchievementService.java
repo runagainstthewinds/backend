@@ -19,7 +19,7 @@ public class AchievementService {
 
     static {
         // Not sure if this is correct for production
-        String basePath = System.getProperty("user.dir") + "/src/main/java/com/example/RunAgainstTheWind/domain/achievement/";
+        String basePath = System.getProperty("user.dir") + "/data/";
         FILE_PATH = basePath + "Achievement.csv";
     }
     
