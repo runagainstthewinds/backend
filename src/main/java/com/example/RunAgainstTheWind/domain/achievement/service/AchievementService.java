@@ -2,22 +2,26 @@ package com.example.RunAgainstTheWind.domain.achievement.service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class AchievementService {
-    
-    private static final String FILE_PATH = "Achievement.csv"; // File in src/main/resources
-    private static final String OUTPUT_PATH = "Achievement.csv"; // Writable location (e.g., working directory)
+
+    private static final String FILE_PATH;
     private static final String DELIMITER = ",";
+
+    static {
+        // Not sure if this is correct for production
+        String basePath = System.getProperty("user.dir") + "/src/main/java/com/example/RunAgainstTheWind/domain/achievement/";
+        FILE_PATH = basePath + "Achievement.csv";
+    }
     
     /**
      * Get all achieved achievements for a specific user
@@ -105,10 +109,7 @@ public class AchievementService {
      * @throws IOException If file cannot be read
      */
     private List<String> readFile() throws IOException {
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        Objects.requireNonNull(
-                                getClass().getClassLoader().getResourceAsStream(FILE_PATH))))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             return reader.lines().collect(Collectors.toList());
         }
     }
@@ -119,7 +120,7 @@ public class AchievementService {
      * @throws IOException If file cannot be written
      */
     private void writeFile(List<String> lines) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
             for (String line : lines) {
                 writer.write(line);
                 writer.newLine();
