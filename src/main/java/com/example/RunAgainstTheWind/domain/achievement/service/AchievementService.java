@@ -33,17 +33,26 @@ public class AchievementService {
         List<String> lines = readFile();
         List<String> achievedAchievements = new ArrayList<>();
         
-        for (String line : lines) {
+        // Parse header to get achievement names
+        String[] headerParts = lines.get(0).trim().split(DELIMITER);
+        List<String> achievementNames = new ArrayList<>();
+        
+        // Start from index 1 to skip USER_ID column
+        for (int i = 1; i < headerParts.length; i++) {
+            achievementNames.add(headerParts[i]);
+        }
+        
+        // Look for the user's achievements
+        for (int i = 1; i < lines.size(); i++) {  
+            String line = lines.get(i);
             String[] parts = line.trim().split(DELIMITER);
-            if (parts.length >= 4 && parts[0].equals(userId)) {
-                if ("1".equals(parts[1])) {
-                    achievedAchievements.add("ACHIEVEMENT_1");
-                }
-                if ("1".equals(parts[2])) {
-                    achievedAchievements.add("ACHIEVEMENT_2");
-                }
-                if ("1".equals(parts[3])) {
-                    achievedAchievements.add("ACHIEVEMENT_3");
+            
+            if (parts.length >= achievementNames.size() + 1 && parts[0].equals(userId)) {
+                // Check each achievement column
+                for (int j = 0; j < achievementNames.size(); j++) {
+                    if ("1".equals(parts[j + 1])) {  
+                        achievedAchievements.add(achievementNames.get(j));
+                    }
                 }
                 break;
             }
@@ -61,41 +70,52 @@ public class AchievementService {
      * @throws IllegalArgumentException If achievement name is invalid
      */
     public boolean markAchievement(String userId, String achievementName) throws IOException {
-        // Convert achievement name to index
-        int achievementIndex;
-        switch (achievementName.toUpperCase()) {
-            case "ACHIEVEMENT_1":
-                achievementIndex = 1;
-                break;
-            case "ACHIEVEMENT_2":
-                achievementIndex = 2;
-                break;
-            case "ACHIEVEMENT_3":
-                achievementIndex = 3;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid achievement name: " + achievementName);
+        List<String> lines = readFile();
+        
+        if (lines.isEmpty()) {
+            throw new IOException("Achievement file is empty");
         }
         
-        List<String> lines = readFile();
+        // Parse header to get achievement names and their indices
+        String[] headerParts = lines.get(0).trim().split(DELIMITER);
+        int achievementIndex = -1;
+        
+        // Find the index of the specified achievement
+        for (int i = 1; i < headerParts.length; i++) {  // Start from 1 to skip USER_ID
+            if (headerParts[i].equalsIgnoreCase(achievementName)) {
+                achievementIndex = i;
+                break;
+            }
+        }
+        
+        if (achievementIndex == -1) {
+            throw new IllegalArgumentException("Invalid achievement name: " + achievementName);
+        }
+        
         boolean userFound = false;
         List<String> updatedLines = new ArrayList<>();
+        updatedLines.add(lines.get(0));  // Add header row
         
-        for (String line : lines) {
+        for (int i = 1; i < lines.size(); i++) {  // Start from 1 to skip header
+            String line = lines.get(i);
             String[] parts = line.trim().split(DELIMITER);
             
-            if (parts.length >= 4 && parts[0].equals(userId)) {
+            if (parts.length >= headerParts.length && parts[0].equals(userId)) {
                 userFound = true;
-                parts[achievementIndex] = "1"; // Mark achievement as achieved
+                parts[achievementIndex] = "1";  // Mark achievement as achieved
                 updatedLines.add(String.join(DELIMITER, parts));
             } else {
                 updatedLines.add(line);
             }
         }
         
-        // If user wasn't found, add a new entry
         if (!userFound) {
-            throw new IllegalArgumentException("User ID not found: " + userId);
+            String[] newRow = new String[headerParts.length];
+            newRow[0] = userId;  // Set USER_ID
+            for (int i = 1; i < headerParts.length; i++) {
+                newRow[i] = (i == achievementIndex) ? "1" : "0";  
+            }
+            updatedLines.add(String.join(DELIMITER, newRow));
         }
         
         // Write back to file
