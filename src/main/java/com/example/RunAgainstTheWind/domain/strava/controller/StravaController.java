@@ -49,7 +49,7 @@ public class StravaController {
      */
     @GetMapping("/auth-url")
     public ResponseEntity<Map<String, String>> getAuthorizationUrl(
-            @RequestParam(required = false) String username) {
+            @RequestParam(required = true) String username) {
         // Use state parameter to store username
         String url = stravaService.getAuthorizationUrl(username);
         return ResponseEntity.ok(Map.of("url", url));
