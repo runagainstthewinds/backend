@@ -3,11 +3,14 @@ package com.example.RunAgainstTheWind.domain.achievement.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import com.example.RunAgainstTheWind.domain.achievement.model.Achievement;
 import com.example.RunAgainstTheWind.domain.achievement.repository.AchievementRepository;
 import com.example.RunAgainstTheWind.domain.achievement.repository.UserAchievementRepository;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 
+@Service
 public class AchievementService {
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
@@ -38,7 +41,7 @@ public class AchievementService {
             throw new RuntimeException("Achievement not found");
         }
         // Check for duplicate assignment
-        if (userAchievementRepository.existsByUserIdAndAchievementId(userId, achievementId)) {
+        if (userAchievementRepository.existsUserAchievement(userId, achievementId) == 1) {
             throw new RuntimeException("Achievement already assigned to user");
         }
         // Assign achievement

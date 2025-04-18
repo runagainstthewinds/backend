@@ -8,4 +8,5 @@ import com.example.RunAgainstTheWind.domain.achievement.model.Achievement;
 @Repository
 public interface AchievementRepository extends JpaRepository<Achievement, Long> {
     boolean existsById(Long achievementId);
+    boolean existsByName(String name);
 }
