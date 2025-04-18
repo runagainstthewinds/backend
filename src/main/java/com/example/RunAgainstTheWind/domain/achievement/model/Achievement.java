@@ -16,7 +16,6 @@ public class Achievement {
 
     private String name;
     private String description;
-    private boolean isCompleted;
 
     public Achievement() {
     }
@@ -24,6 +23,5 @@ public class Achievement {
     public Achievement(String name, String description) {
         this.name = name;
         this.description = description;
-        this.isCompleted = false;
     }
 }
