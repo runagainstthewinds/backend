@@ -14,7 +14,7 @@ import com.example.RunAgainstTheWind.domain.achievement.model.Achievement;
 import com.example.RunAgainstTheWind.domain.achievement.service.AchievementService;
 
 @RestController
-@RequestMapping("users/{userId}/achievements")
+@RequestMapping("/achievements/{userId}")
 public class AchievementController {
     private final AchievementService achievementService;
 

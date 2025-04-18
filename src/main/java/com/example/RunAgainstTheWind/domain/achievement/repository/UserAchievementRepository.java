@@ -21,6 +21,6 @@ public interface UserAchievementRepository extends JpaRepository<Achievement, Lo
     @Query(value = "INSERT INTO user_achievement (user_id, achievement_id) VALUES (:userId, :achievementId)", nativeQuery = true)
     void assignAchievementToUser(UUID userId, Long achievementId);
 
-    @Query(value = "SELECT EXISTS (SELECT 1 FROM user_achievement WHERE user_id = :userId AND achievement_id = :achievementId)", nativeQuery = true)
-    boolean existsByUserIdAndAchievementId(UUID userId, Long achievementId);
+    @Query(value = "SELECT CAST(CASE WHEN EXISTS (SELECT 1 FROM user_achievement WHERE user_id = :userId AND achievement_id = :achievementId) THEN 1 ELSE 0 END AS SIGNED)", nativeQuery = true)
+    Integer existsUserAchievement(UUID userId, Long achievementId);
 }
