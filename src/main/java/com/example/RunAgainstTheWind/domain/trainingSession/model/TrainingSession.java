@@ -13,6 +13,7 @@ import java.util.Date;
 import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.user.model.User;
+import com.example.RunAgainstTheWind.enumeration.TrainingType;
 
 @Entity
 @Table(name = "training_session")
@@ -31,10 +32,11 @@ public class TrainingSession {
     private Double achievedDistance;
     private Double achievedDuration;
     private Integer effort;
+    private TrainingType trainingType; 
 
     public TrainingSession() {}
 
-    public TrainingSession(Date date, Double distance, Double duration, Double goalPace, Boolean isCompleted, Double achievedPace, Double achievedDistance, Double achievedDuration, Integer effort) {
+    public TrainingSession(Date date, Double distance, Double duration, Double goalPace, Boolean isCompleted, Double achievedPace, Double achievedDistance, Double achievedDuration, Integer effort, TrainingType trainingType) {
         this.date = date;
         this.distance = distance; // In meters
         this.duration = duration; // In minutes and decimal seconds
@@ -44,6 +46,7 @@ public class TrainingSession {
         this.achievedDistance = achievedDistance;
         this.achievedDuration = achievedDuration;
         this.effort = effort;
+        this.trainingType = trainingType; 
     }
 
     @ManyToOne
