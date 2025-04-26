@@ -9,7 +9,11 @@ public class StravaActivityResponse {
     private Long id;
     private String name;
     private Float distance;
+    
+    @JsonProperty("moving_time")
     private Integer movingTime;
+
+    @JsonProperty("elapsed_time")
     private Integer elapsedTime;
     
     @JsonProperty("total_elevation_gain")
