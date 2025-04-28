@@ -4,6 +4,7 @@ import com.example.RunAgainstTheWind.domain.strava.model.StravaActivityResponse;
 import com.example.RunAgainstTheWind.domain.strava.model.StravaTokenResponse;
 import com.example.RunAgainstTheWind.domain.strava.service.StravaService;
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
+import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,6 +215,7 @@ public class StravaController {
             Principal principal) {
         try {
             StravaActivityResponse activity = stravaService.getActivity(principal.getName(), activityId);
+            
             return ResponseEntity.ok(activity);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -235,7 +240,7 @@ public class StravaController {
             Map<String, Object> stats = stravaService.getAthleteStats(principal.getName());
             ObjectMapper objectMapper = new ObjectMapper();
             String statsJson = objectMapper.writeValueAsString(stats);
-            UserDetailsDTO userDetailsDTO = parseRunStats(statsJson);
+            UserDetailsDTO userDetailsDTO = parseStatsToUserDetailsDTO(statsJson);
             UserDetailsDTO createdDetails = userDetailsService.createUserDetails(UUID.fromString("bf299756-4de6-4bc4-99d9-bd68daeb76ad"), userDetailsDTO);
             return ResponseEntity.ok(createdDetails);
         } catch (IllegalArgumentException e) {
@@ -255,7 +260,7 @@ public class StravaController {
      * @param statsJson String representation of the Strava stats JSON
      * @return UserDetailsDTO containing parsed run data
      */
-    private UserDetailsDTO parseRunStats(String statsJson) {
+    private UserDetailsDTO parseStatsToUserDetailsDTO(String statsJson) {
         UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -273,5 +278,50 @@ public class StravaController {
             throw new RuntimeException("Failed to parse Strava stats JSON", e);
         }
         return userDetailsDTO;
+    }
+
+    /**
+     * Helper method to parse Strava activity into TrainingSessionDTO
+     * @param activityJson String representation of a single Strava activity JSON object
+     * @return TrainingSessionDTO containing parsed activity data
+     */
+    private TrainingSessionDTO parseActivityToTrainingSessionDTO(String activityJson) {
+        TrainingSessionDTO trainingSessionDTO = new TrainingSessionDTO();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(activityJson);
+
+            trainingSessionDTO.setAchievedDistance(rootNode.get("distance").asDouble());
+            trainingSessionDTO.setAchievedDuration(rootNode.get("moving_time").asDouble() / 60);
+            trainingSessionDTO.setIsCompleted(true);
+
+            double distanceMeters = rootNode.get("distance").asDouble();
+            double movingTimeSeconds = rootNode.get("moving_time").asDouble();
+            if (distanceMeters > 0 && movingTimeSeconds > 0) {
+                trainingSessionDTO.setAchievedPace((movingTimeSeconds / distanceMeters) * 1000 / 60);
+            }
+
+            String startDateString = rootNode.get("start_date").asText();
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            try {
+                Date parsedDate = inputFormat.parse(startDateString);
+                trainingSessionDTO.setDate(parsedDate);
+            } catch (ParseException e) {
+                logger.error("Error parsing start_date: {}", e.getMessage());
+                throw new RuntimeException("Failed to parse start_date", e);
+            }
+
+            // Set other fields to null as requested
+            trainingSessionDTO.setTrainingSessionId(null);
+            trainingSessionDTO.setUserId(null);
+            trainingSessionDTO.setGoalPace(null);
+            trainingSessionDTO.setEffort(null);
+            trainingSessionDTO.setTrainingType(null);
+
+        } catch (IOException e) {
+            logger.error("Error parsing Strava activity JSON: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to parse Strava activity JSON", e);
+        }
+        return trainingSessionDTO;
     }
 }
