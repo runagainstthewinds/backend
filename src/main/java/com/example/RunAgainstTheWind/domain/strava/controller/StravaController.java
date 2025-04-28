@@ -3,6 +3,7 @@ package com.example.RunAgainstTheWind.domain.strava.controller;
 import com.example.RunAgainstTheWind.domain.strava.model.StravaActivityResponse;
 import com.example.RunAgainstTheWind.domain.strava.model.StravaTokenResponse;
 import com.example.RunAgainstTheWind.domain.strava.service.StravaService;
+import com.example.RunAgainstTheWind.domain.trainingSession.service.TrainingSessionService;
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,9 @@ public class StravaController {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private TrainingSessionService trainingSessionService;
     
     /**
      * Check if current user is connected to Strava
@@ -190,7 +194,12 @@ public class StravaController {
         try {
             List<StravaActivityResponse> activities = stravaService.getAthleteActivities(
                     principal.getName(), page, perPage);
-            return ResponseEntity.ok(activities);
+            List<TrainingSessionDTO> trainingSessionDTOs = parseActivitiesToTrainingSessionDTOs(activities);
+            for (TrainingSessionDTO dto : trainingSessionDTOs) {
+                // TODO: Replace hard coded UUID with actual user ID
+                trainingSessionService.createTrainingSession(UUID.fromString("bf299756-4de6-4bc4-99d9-bd68daeb76ad"), dto); 
+            }
+            return ResponseEntity.ok(trainingSessionDTOs);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (IllegalStateException e) {
@@ -215,7 +224,6 @@ public class StravaController {
             Principal principal) {
         try {
             StravaActivityResponse activity = stravaService.getActivity(principal.getName(), activityId);
-            
             return ResponseEntity.ok(activity);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -241,6 +249,7 @@ public class StravaController {
             ObjectMapper objectMapper = new ObjectMapper();
             String statsJson = objectMapper.writeValueAsString(stats);
             UserDetailsDTO userDetailsDTO = parseStatsToUserDetailsDTO(statsJson);
+            // TODO: Replace hard coded UUID with actual user ID
             UserDetailsDTO createdDetails = userDetailsService.createUserDetails(UUID.fromString("bf299756-4de6-4bc4-99d9-bd68daeb76ad"), userDetailsDTO);
             return ResponseEntity.ok(createdDetails);
         } catch (IllegalArgumentException e) {
@@ -281,47 +290,37 @@ public class StravaController {
     }
 
     /**
-     * Helper method to parse Strava activity into TrainingSessionDTO
-     * @param activityJson String representation of a single Strava activity JSON object
-     * @return TrainingSessionDTO containing parsed activity data
+     * Convert Strava activities to TrainingSessionDTOs directly
+     * @param activities List of Strava activities
+     * @return List of TrainingSessionDTOs
      */
-    private TrainingSessionDTO parseActivityToTrainingSessionDTO(String activityJson) {
-        TrainingSessionDTO trainingSessionDTO = new TrainingSessionDTO();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode rootNode = objectMapper.readTree(activityJson);
-
-            trainingSessionDTO.setAchievedDistance(rootNode.get("distance").asDouble());
-            trainingSessionDTO.setAchievedDuration(rootNode.get("moving_time").asDouble() / 60);
-            trainingSessionDTO.setIsCompleted(true);
-
-            double distanceMeters = rootNode.get("distance").asDouble();
-            double movingTimeSeconds = rootNode.get("moving_time").asDouble();
-            if (distanceMeters > 0 && movingTimeSeconds > 0) {
-                trainingSessionDTO.setAchievedPace((movingTimeSeconds / distanceMeters) * 1000 / 60);
+    private List<TrainingSessionDTO> parseActivitiesToTrainingSessionDTOs(List<StravaActivityResponse> activities) {
+        List<TrainingSessionDTO> trainingSessionDTOs = new ArrayList<>();
+        
+        for (StravaActivityResponse activity : activities) {
+            TrainingSessionDTO dto = new TrainingSessionDTO();
+            
+            dto.setAchievedDistance(activity.getDistance().doubleValue());
+            dto.setAchievedDuration(activity.getMovingTime() / 60.0); // Convert seconds to minutes
+            dto.setIsCompleted(true);
+            
+            if (activity.getDistance() > 0 && activity.getMovingTime() > 0) {
+                // (seconds / meters) * 1000 meters/km / 60 seconds/minute = minutes/km
+                dto.setAchievedPace((activity.getMovingTime() / activity.getDistance().doubleValue()) * 1000 / 60);
             }
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            dto.setDate(java.sql.Date.valueOf(sdf.format(Date.from(activity.getStartDate()))));
 
-            String startDateString = rootNode.get("start_date").asText();
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            try {
-                Date parsedDate = inputFormat.parse(startDateString);
-                trainingSessionDTO.setDate(parsedDate);
-            } catch (ParseException e) {
-                logger.error("Error parsing start_date: {}", e.getMessage());
-                throw new RuntimeException("Failed to parse start_date", e);
-            }
-
-            // Set other fields to null as requested
-            trainingSessionDTO.setTrainingSessionId(null);
-            trainingSessionDTO.setUserId(null);
-            trainingSessionDTO.setGoalPace(null);
-            trainingSessionDTO.setEffort(null);
-            trainingSessionDTO.setTrainingType(null);
-
-        } catch (IOException e) {
-            logger.error("Error parsing Strava activity JSON: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to parse Strava activity JSON", e);
+            dto.setTrainingSessionId(null);
+            dto.setUserId(null);
+            dto.setGoalPace(null);
+            dto.setEffort(null);
+            dto.setTrainingType(null);
+            
+            trainingSessionDTOs.add(dto);
         }
-        return trainingSessionDTO;
+        
+        return trainingSessionDTOs;
     }
 }
