@@ -50,7 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 username = jwtService.extractUserName(token);
             } catch (Exception e) {
                 // Log invalid token (optional) and proceed
-                logger.debug("Invalid JWT token: " + e.getMessage());
+                logger.debug("Invalid JWT token: {}", e);
                 filterChain.doFilter(request, response);
                 return;
             }
