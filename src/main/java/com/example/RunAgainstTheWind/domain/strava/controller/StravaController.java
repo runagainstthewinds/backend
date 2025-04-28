@@ -3,16 +3,23 @@ package com.example.RunAgainstTheWind.domain.strava.controller;
 import com.example.RunAgainstTheWind.domain.strava.model.StravaActivityResponse;
 import com.example.RunAgainstTheWind.domain.strava.model.StravaTokenResponse;
 import com.example.RunAgainstTheWind.domain.strava.service.StravaService;
+import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
+import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/strava")
@@ -22,6 +29,9 @@ public class StravaController {
     
     @Autowired
     private StravaService stravaService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
     
     /**
      * Check if current user is connected to Strava
@@ -223,7 +233,11 @@ public class StravaController {
     public ResponseEntity<?> getAthleteStats(Principal principal) {
         try {
             Map<String, Object> stats = stravaService.getAthleteStats(principal.getName());
-            return ResponseEntity.ok(stats);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String statsJson = objectMapper.writeValueAsString(stats);
+            UserDetailsDTO userDetailsDTO = parseRunStats(statsJson);
+            UserDetailsDTO createdDetails = userDetailsService.createUserDetails(UUID.fromString("bf299756-4de6-4bc4-99d9-bd68daeb76ad"), userDetailsDTO);
+            return ResponseEntity.ok(createdDetails);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (IllegalStateException e) {
@@ -234,5 +248,30 @@ public class StravaController {
             logger.error("Error getting stats: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(Map.of("error", "Failed to retrieve statistics"));
         }
+    }
+
+    /**
+     * Helper method to parse Strava all_run_totals into UserDetailsDTO
+     * @param statsJson String representation of the Strava stats JSON
+     * @return UserDetailsDTO containing parsed run data
+     */
+    private UserDetailsDTO parseRunStats(String statsJson) {
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(statsJson);
+            JsonNode allRunTotalsNode = rootNode.get("all_run_totals");
+
+            if (allRunTotalsNode != null) {
+                userDetailsDTO.setRunCount(allRunTotalsNode.get("count").asInt());
+                userDetailsDTO.setTotalDistance(allRunTotalsNode.get("distance").asDouble() / 1000);
+                userDetailsDTO.setTotalDuration(allRunTotalsNode.get("moving_time").asDouble() / 60);
+                userDetailsDTO.setWeeklyDistance(0.0); // As per the requirement
+            }
+        } catch (IOException e) {
+            logger.error("Error parsing Strava stats JSON: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to parse Strava stats JSON", e);
+        }
+        return userDetailsDTO;
     }
 }
