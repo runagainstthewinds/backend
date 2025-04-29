@@ -85,7 +85,7 @@ public class TrainingSessionService {
         dto.setTrainingType(trainingSession.getTrainingType());
 
         if (trainingSession.getUser() != null) {
-            UserDTO userDTO = new UserDTO();
+            UserDTO userDTO = new UserDTO(null, null, null, null, null, null);
             userDTO.setUserId(trainingSession.getUser().getUserId());
             userDTO.setUsername(trainingSession.getUser().getUsername());
             userDTO.setEmail(trainingSession.getUser().getEmail());

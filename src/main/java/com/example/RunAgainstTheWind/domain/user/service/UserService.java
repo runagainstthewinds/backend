@@ -1,6 +1,8 @@
 package com.example.RunAgainstTheWind.domain.user.service;
 
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.RunAgainstTheWind.application.auth.JWTService;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
+import com.example.RunAgainstTheWind.dto.user.UserDTO;
 
 /*
  * Service responsible for handling user registration and login
@@ -29,6 +32,11 @@ public class UserService {
     AuthenticationManager authManager;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    @Transactional(readOnly = true)
+    public UserDTO findDtoByUsername(String username) {
+        return repo.findDTOByUsername(username);
+    }
 
     @Transactional
     public User register(User user) throws IllegalArgumentException {
