@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.RunAgainstTheWind.application.auth.JWTService;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
+import com.example.RunAgainstTheWind.dto.user.UserDTO;
 
 /*
  * Service responsible for handling user registration and login
@@ -48,5 +49,10 @@ public class UserService {
             return jwtService.generateToken(user.getUsername());
         
         return "Fail";
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO findDTOByUsername(String username) {
+        return repo.findDTOByUsername(username);
     }
 }

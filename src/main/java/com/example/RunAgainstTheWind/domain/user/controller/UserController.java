@@ -13,6 +13,7 @@ import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.service.UserService;
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
 import com.example.RunAgainstTheWind.dto.trainingPlan.TrainingPlanDTO;
+import com.example.RunAgainstTheWind.dto.user.UserDTO;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 
 /*
@@ -109,5 +110,14 @@ public class UserController {
     public ResponseEntity<Void> deleteTrainingPlan(@PathVariable UUID userId) {
         trainingPlanService.deleteTrainingPlan(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/users/{username}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
+        UserDTO dto = service.findDTOByUsername(username);
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
     }
 }
