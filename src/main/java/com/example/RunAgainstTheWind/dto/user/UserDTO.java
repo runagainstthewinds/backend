@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.dto.user;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
     private UUID    userId;
     private String  username;
