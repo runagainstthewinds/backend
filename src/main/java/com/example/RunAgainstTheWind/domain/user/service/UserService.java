@@ -52,7 +52,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDTO findDtoByUsername(String username) {
-        return repo.findDtoByUsername(username);
+    public UserDTO findDTOByUsername(String username) {
+        return repo.findDTOByUsername(username);
     }
 }

@@ -25,5 +25,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
       FROM User u
       WHERE u.username = :username
     """)
-    UserDTO findDtoByUsername(@Param("username") String username);
+    UserDTO findDTOByUsername(@Param("username") String username);
 }

@@ -127,7 +127,7 @@ public class UserController {
 
     @GetMapping("/users/{username}")
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
-        UserDTO dto = service.findDtoByUsername(username);
+        UserDTO dto = service.findDTOByUsername(username);
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }
