@@ -186,8 +186,9 @@ public class StravaController {
      * @param principal Currently authenticated user
      * @return List of activities
      */
-    @GetMapping("/activities")
+    @GetMapping("/activities/users/{userID}")
     public ResponseEntity<?> getActivities(
+            @PathVariable String userID,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "30") int perPage,
             Principal principal) {
@@ -196,8 +197,7 @@ public class StravaController {
                     principal.getName(), page, perPage);
             List<TrainingSessionDTO> trainingSessionDTOs = parseActivitiesToTrainingSessionDTOs(activities);
             for (TrainingSessionDTO dto : trainingSessionDTOs) {
-                // TODO: Replace hard coded UUID with actual user ID
-                trainingSessionService.createTrainingSession(UUID.fromString("bf299756-4de6-4bc4-99d9-bd68daeb76ad"), dto); 
+                trainingSessionService.createTrainingSession(UUID.fromString(userID), dto); 
             }
             return ResponseEntity.ok(trainingSessionDTOs);
         } catch (IllegalArgumentException e) {
@@ -242,15 +242,14 @@ public class StravaController {
      * @param principal Currently authenticated user
      * @return Map of statistics
      */
-    @GetMapping("/stats")
-    public ResponseEntity<?> getAthleteStats(Principal principal) {
+    @GetMapping("/stats/{userID}")
+    public ResponseEntity<?> getAthleteStats(@PathVariable String userID, Principal principal) {
         try {
             Map<String, Object> stats = stravaService.getAthleteStats(principal.getName());
             ObjectMapper objectMapper = new ObjectMapper();
             String statsJson = objectMapper.writeValueAsString(stats);
             UserDetailsDTO userDetailsDTO = parseStatsToUserDetailsDTO(statsJson);
-            // TODO: Replace hard coded UUID with actual user ID
-            UserDetailsDTO createdDetails = userDetailsService.createUserDetails(UUID.fromString("bf299756-4de6-4bc4-99d9-bd68daeb76ad"), userDetailsDTO);
+            UserDetailsDTO createdDetails = userDetailsService.createUserDetails(UUID.fromString(userID), userDetailsDTO);
             return ResponseEntity.ok(createdDetails);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
