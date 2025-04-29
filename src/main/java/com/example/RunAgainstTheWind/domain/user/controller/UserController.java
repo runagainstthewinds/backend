@@ -68,19 +68,6 @@ public class UserController {
     }
 
     @Transactional
-    @PostMapping("/users/{userId}/userDetails")
-    public ResponseEntity<UserDetailsDTO> createUserDetails(
-            @PathVariable("userId") UUID userId,
-            @RequestBody UserDetailsDTO userDetailsDTO) {
-        try {
-            UserDetailsDTO createdDetails = userDetailsService.createUserDetails(userId, userDetailsDTO);
-            return new ResponseEntity<>(createdDetails, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Transactional
     @PutMapping("/users/{userId}/userDetails")
     public ResponseEntity<UserDetailsDTO> updateUserDetails(
             @PathVariable("userId") UUID userId,

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,12 +33,22 @@ public class TrainingSessionService {
     }
 
     public TrainingSessionDTO createTrainingSession(UUID userId, TrainingSessionDTO trainingSessionDTO) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findById(trainingSessionDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        Optional<TrainingSession> existingSession = trainingSessionRepository.findDuplicateSession(
+            user,
+            trainingSessionDTO.getDate(),
+            trainingSessionDTO.getAchievedDistance(),
+            trainingSessionDTO.getAchievedDuration()
+        );
+
+        if (existingSession.isPresent()) {
+            return null;
+        }
         
         TrainingSession trainingSession = toEntity(trainingSessionDTO);
         trainingSession.setUser(user);
-        trainingSession.setTrainingSessionId(null); // Ensure ID is not set for new entity
         TrainingSession savedSession = trainingSessionRepository.save(trainingSession);
         return toDTO(savedSession);
     }
