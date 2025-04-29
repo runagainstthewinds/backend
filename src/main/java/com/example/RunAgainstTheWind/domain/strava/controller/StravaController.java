@@ -7,6 +7,7 @@ import com.example.RunAgainstTheWind.domain.trainingSession.service.TrainingSess
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
+import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -308,8 +309,8 @@ public class StravaController {
             TrainingSessionDTO dto = new TrainingSessionDTO();
             
             dto.setUserId(UUID.fromString(userID));
-            dto.setAchievedDistance(activity.getDistance().doubleValue());
-            dto.setAchievedDuration(activity.getMovingTime() / 60.0); // Convert seconds to minutes
+            dto.setAchievedDistance(activity.getDistance().doubleValue() / 1000.0); // Convert meters to kilometers
+            dto.setAchievedDuration(activity.getMovingTime().doubleValue() / 60.0); // Convert seconds to minutes
             dto.setIsCompleted(true);
             
             if (activity.getDistance() > 0 && activity.getMovingTime() > 0) {
@@ -331,7 +332,7 @@ public class StravaController {
             dto.setDuration(null);
             dto.setGoalPace(null);
             dto.setEffort(null);
-            dto.setTrainingType(null);
+            dto.setTrainingType(TrainingType.UNSPECIFIED);
             
             trainingSessionDTOs.add(dto);
         }
