@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -309,13 +311,21 @@ public class StravaController {
             TrainingSessionDTO dto = new TrainingSessionDTO();
             
             dto.setUserId(UUID.fromString(userID));
-            dto.setAchievedDistance(activity.getDistance().doubleValue() / 1000.0); // Convert meters to kilometers
-            dto.setAchievedDuration(activity.getMovingTime().doubleValue() / 60.0); // Convert seconds to minutes
             dto.setIsCompleted(true);
+
+            double distanceKm = BigDecimal.valueOf(activity.getDistance().doubleValue() / 1000.0)
+            .setScale(3, RoundingMode.HALF_UP).doubleValue();
+            dto.setAchievedDistance(distanceKm);
+
+            double durationMin = BigDecimal.valueOf(activity.getMovingTime().doubleValue() / 60.0)
+                .setScale(3, RoundingMode.HALF_UP).doubleValue();
+            dto.setAchievedDuration(durationMin);
             
             if (activity.getDistance() > 0 && activity.getMovingTime() > 0) {
-                // (seconds / meters) * 1000 meters/km / 60 seconds/minute = minutes/km
-                dto.setAchievedPace((activity.getMovingTime() / activity.getDistance().doubleValue()) * 1000 / 60);
+                double pace = (activity.getMovingTime() / activity.getDistance().doubleValue()) * 1000 / 60;
+                double paceRounded = BigDecimal.valueOf(pace)
+                    .setScale(3, RoundingMode.HALF_UP).doubleValue();
+                dto.setAchievedPace(paceRounded);
             }
             
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
