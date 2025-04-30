@@ -32,7 +32,7 @@ public class ShoeController {
     @GetMapping("/{userUUID}")
     public ResponseEntity<List<ShoeDTO>> getShoesByUser(@PathVariable UUID userUUID) {
         try {
-            List<ShoeDTO> shoes = shoeService.getShoesByUser(userUUID);
+            List<ShoeDTO> shoes = shoeService.getShoesByUserID(userUUID);
             return new ResponseEntity<>(shoes, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

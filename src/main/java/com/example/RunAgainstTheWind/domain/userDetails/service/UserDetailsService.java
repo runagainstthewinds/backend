@@ -26,21 +26,7 @@ public class UserDetailsService {
 
     @Transactional
     public UserDetailsDTO getUserDetailsById(UUID userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        UserDetails userDetails = user.getUserDetails();
-
-        if (userDetails == null) {
-            throw new RuntimeException("User details not found for userId: " + userId);
-        }
-
-        UserDetailsDTO dto = new UserDetailsDTO();
-        dto.setUserDetailsId(userDetails.getUserDetailsId());
-        dto.setTotalDistance(userDetails.getTotalDistance());
-        dto.setTotalDuration(userDetails.getTotalDuration());
-        dto.setWeeklyDistance(userDetails.getWeeklyDistance());
-        dto.setRunCount(userDetails.getRunCount());
-        return dto;
+        return userDetailsRepository.getUserDetailsByUserId(userId);
     }
 
     @Transactional
