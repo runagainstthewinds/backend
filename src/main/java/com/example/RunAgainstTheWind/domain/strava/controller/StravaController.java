@@ -7,6 +7,7 @@ import com.example.RunAgainstTheWind.domain.trainingSession.service.TrainingSess
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
+import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -308,13 +311,21 @@ public class StravaController {
             TrainingSessionDTO dto = new TrainingSessionDTO();
             
             dto.setUserId(UUID.fromString(userID));
-            dto.setAchievedDistance(activity.getDistance().doubleValue());
-            dto.setAchievedDuration(activity.getMovingTime() / 60.0); // Convert seconds to minutes
             dto.setIsCompleted(true);
+
+            double distanceKm = BigDecimal.valueOf(activity.getDistance().doubleValue() / 1000.0)
+            .setScale(3, RoundingMode.HALF_UP).doubleValue();
+            dto.setAchievedDistance(distanceKm);
+
+            double durationMin = BigDecimal.valueOf(activity.getMovingTime().doubleValue() / 60.0)
+                .setScale(3, RoundingMode.HALF_UP).doubleValue();
+            dto.setAchievedDuration(durationMin);
             
             if (activity.getDistance() > 0 && activity.getMovingTime() > 0) {
-                // (seconds / meters) * 1000 meters/km / 60 seconds/minute = minutes/km
-                dto.setAchievedPace((activity.getMovingTime() / activity.getDistance().doubleValue()) * 1000 / 60);
+                double pace = (activity.getMovingTime() / activity.getDistance().doubleValue()) * 1000 / 60;
+                double paceRounded = BigDecimal.valueOf(pace)
+                    .setScale(3, RoundingMode.HALF_UP).doubleValue();
+                dto.setAchievedPace(paceRounded);
             }
             
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -331,7 +342,7 @@ public class StravaController {
             dto.setDuration(null);
             dto.setGoalPace(null);
             dto.setEffort(null);
-            dto.setTrainingType(null);
+            dto.setTrainingType(TrainingType.UNSPECIFIED);
             
             trainingSessionDTOs.add(dto);
         }
