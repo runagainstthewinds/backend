@@ -1,10 +1,11 @@
-package com.example.RunAgainstTheWind.domain.strava.service;
+package com.example.RunAgainstTheWind.externalApi.strava.service;
 
 import com.example.RunAgainstTheWind.config.StravaConfig;
-import com.example.RunAgainstTheWind.domain.strava.model.StravaActivityResponse;
-import com.example.RunAgainstTheWind.domain.strava.model.StravaTokenResponse;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
+import com.example.RunAgainstTheWind.externalApi.strava.model.StravaActivityResponse;
+import com.example.RunAgainstTheWind.externalApi.strava.model.StravaTokenResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URLEncoder;

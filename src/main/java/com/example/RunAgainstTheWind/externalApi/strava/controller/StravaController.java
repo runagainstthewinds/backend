@@ -1,13 +1,13 @@
-package com.example.RunAgainstTheWind.domain.strava.controller;
+package com.example.RunAgainstTheWind.externalApi.strava.controller;
 
-import com.example.RunAgainstTheWind.domain.strava.model.StravaActivityResponse;
-import com.example.RunAgainstTheWind.domain.strava.model.StravaTokenResponse;
-import com.example.RunAgainstTheWind.domain.strava.service.StravaService;
 import com.example.RunAgainstTheWind.domain.trainingSession.service.TrainingSessionService;
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
+import com.example.RunAgainstTheWind.externalApi.strava.model.StravaActivityResponse;
+import com.example.RunAgainstTheWind.externalApi.strava.model.StravaTokenResponse;
+import com.example.RunAgainstTheWind.externalApi.strava.service.StravaService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
