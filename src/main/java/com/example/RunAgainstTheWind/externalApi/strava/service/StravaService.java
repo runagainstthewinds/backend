@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URLEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +20,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -319,7 +319,7 @@ public class StravaService {
                     .uri("/athletes/" + athleteId + "/stats")
                     .header("Authorization", "Bearer " + user.getStravaToken())
                     .retrieve()
-                    .bodyToMono(Map.class)
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                     .block();
         } catch (WebClientResponseException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -332,7 +332,7 @@ public class StravaService {
                         .uri("/athletes/" + athleteId + "/stats")
                         .header("Authorization", "Bearer " + user.getStravaToken())
                         .retrieve()
-                        .bodyToMono(Map.class)
+                        .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                         .block();
             } else {
                 throw e;
@@ -365,7 +365,7 @@ public class StravaService {
                 .uri("/athlete")
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
-                .bodyToMono(Map.class)
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .block();
         
         return Long.valueOf(athlete.get("id").toString());
