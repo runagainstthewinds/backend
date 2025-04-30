@@ -14,7 +14,6 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class TrainingSessionService {
@@ -26,10 +25,7 @@ public class TrainingSessionService {
     private UserRepository userRepository;
 
     public List<TrainingSessionDTO> getTrainingSessionsByUserId(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        List<TrainingSession> sessions = trainingSessionRepository.findByUser(user);
-        return sessions.stream().map(this::toDTO).collect(Collectors.toList());
+        return trainingSessionRepository.getTrainingSessionsByUserId(userId);
     }
 
     public TrainingSessionDTO createTrainingSession(UUID userId, TrainingSessionDTO trainingSessionDTO) {
