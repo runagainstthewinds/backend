@@ -3,7 +3,6 @@ package com.example.RunAgainstTheWind.domain.shoe.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,26 +25,8 @@ public class ShoeService {
         this.userRepository = userRepository;
     }
 
-    public List<ShoeDTO> getShoesByUser(UUID userUUID) {
-        Optional<User> userOptional = userRepository.findById(userUUID);
-        if (!userOptional.isPresent()) {
-            throw new RuntimeException("User not found with UUID: " + userUUID);
-        }
-
-        List<Shoe> shoes = shoeRepository.findByUser(userOptional.get());
-        return shoes.stream()
-                .map(shoe -> {
-                    ShoeDTO dto = new ShoeDTO();
-                    dto.setShoeId(shoe.getShoeId());
-                    dto.setBrand(shoe.getBrand());
-                    dto.setModel(shoe.getModel());
-                    dto.setSize(shoe.getSize());
-                    dto.setTotalMileage(shoe.getTotalMileage());
-                    dto.setPrice(shoe.getPrice());
-                    dto.setUserId(shoe.getUser().getUserId());
-                    return dto;
-                })
-                .collect(Collectors.toList());
+    public List<ShoeDTO> getShoesByUserID(UUID userUUID) {
+        return shoeRepository.getShoesByUserId(userUUID);
     }
 
     public ShoeDTO createShoe(ShoeDTO shoeDTO) {

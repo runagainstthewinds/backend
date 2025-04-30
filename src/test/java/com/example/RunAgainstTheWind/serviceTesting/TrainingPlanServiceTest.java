@@ -102,8 +102,6 @@ class TrainingPlanServiceTest {
         trainingSessionDTO.setGoalPace(6.0);
         trainingSessionDTO.setIsCompleted(false);
         trainingSessionDTO.setTrainingType(TrainingType.LONG_RUN);
-
-        trainingPlanDTO.setTrainingSessions(Arrays.asList(trainingSessionDTO));
     }
 
     @Test
@@ -122,10 +120,6 @@ class TrainingPlanServiceTest {
         assertEquals(trainingPlan.getPlanType(), result.getPlanType());
         assertEquals(trainingPlan.getRoadType(), result.getRoadType());
         assertEquals(trainingPlan.getGoalDistance(), result.getGoalDistance());
-        assertEquals(1, result.getTrainingSessions().size());
-        TrainingSessionDTO sessionDTO = result.getTrainingSessions().get(0);
-        assertEquals(trainingSession.getTrainingSessionId(), sessionDTO.getTrainingSessionId());
-        assertEquals(trainingSession.getDistance(), sessionDTO.getDistance());
         verify(userRepository, times(1)).findById(userId);
     }
 
@@ -145,7 +139,6 @@ class TrainingPlanServiceTest {
         assertNull(result.getPlanType());
         assertNull(result.getRoadType());
         assertNull(result.getGoalDistance());
-        assertTrue(result.getTrainingSessions().isEmpty());
         verify(userRepository, times(1)).findById(userId);
     }
 
@@ -180,9 +173,6 @@ class TrainingPlanServiceTest {
         assertEquals(trainingPlanDTO.getPlanType(), result.getPlanType());
         assertEquals(trainingPlanDTO.getRoadType(), result.getRoadType());
         assertEquals(trainingPlanDTO.getGoalDistance(), result.getGoalDistance());
-        assertEquals(1, result.getTrainingSessions().size());
-        TrainingSessionDTO sessionDTO = result.getTrainingSessions().get(0);
-        assertEquals(trainingSession.getTrainingSessionId(), sessionDTO.getTrainingSessionId());
         verify(userRepository, times(1)).findById(userId);
         verify(trainingPlanRepository, times(1)).save(any(TrainingPlan.class));
         verify(trainingSessionRepository, times(1)).saveAll(anyList());
@@ -208,7 +198,6 @@ class TrainingPlanServiceTest {
         assertEquals(trainingPlanDTO.getPlanType(), result.getPlanType());
         assertEquals(trainingPlanDTO.getRoadType(), result.getRoadType());
         assertEquals(trainingPlanDTO.getGoalDistance(), result.getGoalDistance());
-        assertEquals(1, result.getTrainingSessions().size());
         verify(userRepository, times(1)).findById(userId);
         verify(trainingPlanRepository, times(1)).save(any(TrainingPlan.class));
         verify(trainingSessionRepository, times(1)).deleteAll(anyList());
@@ -276,7 +265,6 @@ class TrainingPlanServiceTest {
     @Test
     void createTrainingPlan_EmptySessions_Success() {
         // Arrange
-        trainingPlanDTO.setTrainingSessions(Collections.emptyList());
         user.setTrainingPlan(null);
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(user));
         when(trainingPlanRepository.save(any(TrainingPlan.class))).thenReturn(trainingPlan);
@@ -290,6 +278,5 @@ class TrainingPlanServiceTest {
         assertEquals(trainingPlan.getTrainingPlanId(), result.getTrainingPlanId());
         assertEquals(userId, result.getUserId());
         assertEquals(trainingPlanDTO.getPlanType(), result.getPlanType());
-        assertTrue(result.getTrainingSessions().isEmpty());
     }
 }

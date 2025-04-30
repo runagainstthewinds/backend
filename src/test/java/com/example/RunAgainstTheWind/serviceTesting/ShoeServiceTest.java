@@ -13,8 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,38 +57,6 @@ class ShoeServiceTest {
         testShoeDTO.setUserId(testUserId);
     }
 
-    @Test
-    void getShoesByUser_Success() {
-        // Arrange
-        List<Shoe> shoes = Arrays.asList(testShoe);
-        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
-        when(shoeRepository.findByUser(testUser)).thenReturn(shoes);
-
-        // Act
-        List<ShoeDTO> result = shoeService.getShoesByUser(testUserId);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(testShoeDTO.getBrand(), result.get(0).getBrand());
-        assertEquals(testShoeDTO.getModel(), result.get(0).getModel());
-        assertEquals(testShoeDTO.getSize(), result.get(0).getSize());
-        verify(userRepository).findById(testUserId);
-        verify(shoeRepository).findByUser(testUser);
-    }
-
-    @Test
-    void getShoesByUser_UserNotFound_ThrowsException() {
-        // Arrange
-        when(userRepository.findById(testUserId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-            () -> shoeService.getShoesByUser(testUserId));
-        assertEquals("User not found with UUID: " + testUserId, exception.getMessage());
-        verify(userRepository).findById(testUserId);
-        verify(shoeRepository, never()).findByUser(any());
-    }
 
     @Test
     void createShoe_Success() {

@@ -1,12 +1,17 @@
 package com.example.RunAgainstTheWind.dto.trainingSession;
 
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.UUID;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TrainingSessionDTO {
     private Long trainingSessionId;
     private UUID userId;
