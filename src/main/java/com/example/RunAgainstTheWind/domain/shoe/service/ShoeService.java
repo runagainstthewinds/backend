@@ -16,20 +16,20 @@ import com.example.RunAgainstTheWind.dto.shoe.ShoeDTO;
 @Service
 public class ShoeService {
 
-    private final ShoeRepository shoeRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private ShoeRepository shoeRepository;
 
     @Autowired
-    public ShoeService(ShoeRepository shoeRepository, UserRepository userRepository) {
-        this.shoeRepository = shoeRepository;
-        this.userRepository = userRepository;
+    private UserRepository userRepository;
+
+    public List<ShoeDTO> getShoesByUserID(UUID userId) { 
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User with ID " + userId + " does not exist.");
+        }
+        return shoeRepository.getShoesByUserId(userId);
     }
 
-    public List<ShoeDTO> getShoesByUserID(UUID userUUID) {
-        return shoeRepository.getShoesByUserId(userUUID);
-    }
-
-    public ShoeDTO createShoe(ShoeDTO shoeDTO) {
+    public ShoeDTO createShoe(UUID userId, ShoeDTO shoeDTO) {
         Shoe shoe = new Shoe();
         shoe.setBrand(shoeDTO.getBrand());
         shoe.setModel(shoeDTO.getModel());
@@ -37,7 +37,7 @@ public class ShoeService {
         shoe.setTotalMileage(shoeDTO.getTotalMileage());
         shoe.setPrice(shoeDTO.getPrice());
 
-        Optional<User> userOptional = userRepository.findById(shoeDTO.getUserId());
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             shoe.setUser(userOptional.get());
         } else {

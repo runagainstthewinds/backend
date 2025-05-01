@@ -26,37 +26,17 @@ public class AchievementController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<AchievementDTO>> getUserAchievements(@PathVariable UUID userId) {
-        try {
-            List<AchievementDTO> achievements = achievementService.getUserAchievements(userId);
-            return ResponseEntity.ok(achievements);
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(List.of());
-        } catch (Exception e) {
-            return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(List.of());
-        }
+        List<AchievementDTO> achievements = achievementService.getUserAchievements(userId);
+        return ResponseEntity.ok(achievements);
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<?> assignAchievementToUser(
+    public ResponseEntity<AchievementDTO> assignAchievementToUser(
         @PathVariable UUID userId,
         @RequestBody Map<String, Object> request
     ) {
-        try {
-            String achievementName = (String) request.get("achievementName");
-            AchievementDTO createdAchievement = achievementService.assignAchievementToUser(userId, achievementName);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdAchievement);
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Unexpected error: " + e.getMessage()));
-        }
+        String achievementName = (String) request.get("achievementName");
+        AchievementDTO createdAchievement = achievementService.assignAchievementToUser(userId, achievementName);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAchievement);
     }
 }
