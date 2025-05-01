@@ -1,4 +1,4 @@
-package com.example.RunAgainstTheWind.domain.strava.model;
+package com.example.RunAgainstTheWind.externalApi.strava.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
