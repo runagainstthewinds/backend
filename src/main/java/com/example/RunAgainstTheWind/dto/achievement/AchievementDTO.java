@@ -19,4 +19,4 @@ public class AchievementDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateAchieved;
     private UUID userId;
-}
+} 
