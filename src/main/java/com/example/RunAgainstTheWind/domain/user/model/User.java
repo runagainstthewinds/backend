@@ -3,8 +3,6 @@ package com.example.RunAgainstTheWind.domain.user.model;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.RunAgainstTheWind.domain.achievement.model.UserAchievement;
-import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.domain.userDetails.model.UserDetails;
@@ -26,7 +24,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @Table(name = "`user`")
-@EqualsAndHashCode(exclude = {"userDetails", "trainingPlan", "trainingSessions", "shoes"})
+@EqualsAndHashCode(exclude = {"userDetails", "trainingPlan", "trainingSessions"})
 @NoArgsConstructor
 @Entity
 public class User {
@@ -54,10 +52,4 @@ public class User {
     
     @OneToMany(mappedBy = "user")
     private List<TrainingSession> trainingSessions;
-    
-    @OneToMany(mappedBy = "user")
-    private List<Shoe> shoes;
-
-    @OneToMany(mappedBy = "user")
-    private List<UserAchievement> userAchievements;
 }

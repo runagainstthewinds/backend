@@ -40,7 +40,8 @@ public class AchievementService {
                 (String) row[1],
                 row[2] instanceof java.sql.Date
                     ? ((java.sql.Date) row[2]).toLocalDate()
-                    : (LocalDate) row[2]
+                    : (LocalDate) row[2],
+                userId
             ))
             .toList(); 
     }
@@ -59,7 +60,7 @@ public class AchievementService {
         }
 
         try {
-            userAchievementRepository.assignAchievementToUser(userId, achievementName);
+            userAchievementRepository.assignAchievementToUser(userId.toString(), achievementName, LocalDate.now());
 
             UserAchievement userAchievement = userAchievementRepository
                 .findByUser_UserIdAndAchievement_AchievementName(userId, achievementName)
@@ -68,7 +69,8 @@ public class AchievementService {
             return new AchievementDTO(
                 achievement.getAchievementName(),
                 achievement.getDescription(),
-                userAchievement.getDateAchieved()
+                userAchievement.getDateAchieved(),
+                userId
             );
 
         } catch (Exception e) {

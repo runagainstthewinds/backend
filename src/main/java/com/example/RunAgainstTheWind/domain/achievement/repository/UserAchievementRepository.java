@@ -33,12 +33,9 @@ public interface UserAchievementRepository extends JpaRepository<UserAchievement
     //  Assign achievement to user
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO user_achievement (user_id, achievement_name, date_achieved) VALUES (?1, ?2, ?3)", nativeQuery = true)
-    void assignAchievementToUser(UUID userId, String achievementName, LocalDate dateAchieved);
-
-    //Overload the method to use the current date.
-    @Modifying
-    @Transactional
-    @Query(value = "INSERT INTO user_achievement (user_id, achievement_name, date_achieved) VALUES (?1, ?2, CURRENT_DATE)", nativeQuery = true)
-    void assignAchievementToUser(UUID userId, String achievementName);
+    @Query(value = """
+        INSERT INTO user_achievement (user_id, achievement_name, date_achieved)
+        VALUES (UNHEX(REPLACE(?1, '-', '')), ?2, ?3)
+        """, nativeQuery = true)
+    void assignAchievementToUser(String userId, String achievementName, LocalDate dateAchieved);
 }

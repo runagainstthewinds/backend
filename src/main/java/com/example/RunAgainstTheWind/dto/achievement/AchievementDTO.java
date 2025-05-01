@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.dto.achievement;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -17,4 +18,5 @@ public class AchievementDTO {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateAchieved;
+    private UUID userId;
 }

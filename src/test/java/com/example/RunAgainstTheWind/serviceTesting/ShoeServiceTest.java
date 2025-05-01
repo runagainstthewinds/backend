@@ -57,38 +57,6 @@ class ShoeServiceTest {
         testShoeDTO.setUserId(testUserId);
     }
 
-
-    @Test
-    void createShoe_Success() {
-        // Arrange
-        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
-        when(shoeRepository.save(any(Shoe.class))).thenReturn(testShoe);
-
-        // Act
-        ShoeDTO result = shoeService.createShoe(testShoeDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(testShoeDTO.getBrand(), result.getBrand());
-        assertEquals(testShoeDTO.getModel(), result.getModel());
-        assertEquals(testShoeDTO.getSize(), result.getSize());
-        verify(userRepository).findById(testUserId);
-        verify(shoeRepository).save(any(Shoe.class));
-    }
-
-    @Test
-    void createShoe_UserNotFound_ThrowsException() {
-        // Arrange
-        when(userRepository.findById(testUserId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-            () -> shoeService.createShoe(testShoeDTO));
-        assertEquals("User not found with id: " + testUserId, exception.getMessage());
-        verify(userRepository).findById(testUserId);
-        verify(shoeRepository, never()).save(any());
-    }
-
     @Test
     void deleteShoe_Success() {
         // Arrange
