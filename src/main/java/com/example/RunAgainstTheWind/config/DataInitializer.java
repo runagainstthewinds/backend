@@ -18,56 +18,40 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        if (!achievementRepository.existsByAchievementName("achievement1")) {
-            achievementRepository.save(new Achievement("first_5k", "First achievement for completing a milestone."));
+        if (!achievementRepository.existsByAchievementName("First Run")) {
+            achievementRepository.save(new Achievement("First Run", "Completed your first run"));
         }
 
-        if (!achievementRepository.existsByAchievementName("achievement2")) {
-            achievementRepository.save(new Achievement("achievement2", "Second achievement for consistent progress."));
+        if (!achievementRepository.existsByAchievementName("Early Bird")) {
+            achievementRepository.save(new Achievement("Early Bird", "Completed a run before 6 AM"));
         }
 
-        if (!achievementRepository.existsByAchievementName("achievement3")) {
-            achievementRepository.save(new Achievement("achievement3", "Third achievement for outstanding performance."));
+        if (!achievementRepository.existsByAchievementName("Rain Runner")) {
+            achievementRepository.save(new Achievement("Rain Runner", "Completed a run in the rain"));
         }
 
-        if (!achievementRepository.existsByAchievementName("first_1k")) {
-            achievementRepository.save(new Achievement("first_1k", "Completed your first 1K run."));
+        if (!achievementRepository.existsByAchievementName("Marathon Finisher")) {
+            achievementRepository.save(new Achievement("Marathon Finisher", "Completed a full marathon"));
         }
 
-        if (!achievementRepository.existsByAchievementName("first_5k")) {
-            achievementRepository.save(new Achievement("first_5k", "Completed your first 5K run."));
+        if (!achievementRepository.existsByAchievementName("Streak Master")) {
+            achievementRepository.save(new Achievement("Streak Master", "Run for 7 consecutive days"));
         }
 
-        if (!achievementRepository.existsByAchievementName("first_10k")) {
-            achievementRepository.save(new Achievement("first_10k", "Completed your first 10K run."));
+        if (!achievementRepository.existsByAchievementName("Trail Explorer")) {
+            achievementRepository.save(new Achievement("Trail Explorer", "Completed a trail run"));
         }
 
-        if (!achievementRepository.existsByAchievementName("half_marathon")) {
-            achievementRepository.save(new Achievement("half_marathon", "Completed your first half marathon."));
+        if (!achievementRepository.existsByAchievementName("Speed Demon")) {
+            achievementRepository.save(new Achievement("Speed Demon", "Ran 5K under 20 minutes"));
         }
 
-        if (!achievementRepository.existsByAchievementName("full_marathon")) {
-            achievementRepository.save(new Achievement("full_marathon", "Completed your first full marathon."));
+        if (!achievementRepository.existsByAchievementName("Globe Trotter")) {
+            achievementRepository.save(new Achievement("Globe Trotter", "Run in 5 different cities"));
         }
 
-        if (!achievementRepository.existsByAchievementName("fast_5k")) {
-            achievementRepository.save(new Achievement("fast_5k", "Ran a 5K in under 25 minutes."));
-        }
-
-        if (!achievementRepository.existsByAchievementName("fast_10k")) {
-            achievementRepository.save(new Achievement("fast_10k", "Ran a 10K in under 50 minutes."));
-        }
-
-        if (!achievementRepository.existsByAchievementName("consistent_10k_30")) {
-            achievementRepository.save(new Achievement("consistent_10k_30", "Ran 10K, 30 times."));
-        }
-
-        if (!achievementRepository.existsByAchievementName("consistent_5k_50")) {
-            achievementRepository.save(new Achievement("consistent_5k_50", "Ran 5K, 50 times."));
-        }
-
-        if (!achievementRepository.existsByAchievementName("long_distance_100")) {
-            achievementRepository.save(new Achievement("long_distance_100", "Ran more than 100K total."));
+        if (!achievementRepository.existsByAchievementName("Consistency King")) {
+            achievementRepository.save(new Achievement("Consistency King", "Run 20 times in a month"));
         }
     }
 }
