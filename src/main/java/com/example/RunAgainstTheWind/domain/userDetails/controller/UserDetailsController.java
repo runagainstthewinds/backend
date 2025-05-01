@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @RestController
 @RequestMapping("/userdetails")
 public class UserDetailsController {
@@ -29,7 +31,7 @@ public class UserDetailsController {
         try {
             UserDetailsDTO userDetails = userDetailsService.getUserDetailsById(userId);
             return new ResponseEntity<>(userDetails, HttpStatus.OK);
-        } catch (RuntimeException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -42,8 +44,12 @@ public class UserDetailsController {
         try {
             UserDetailsDTO updatedDetails = userDetailsService.updateUserDetails(userId, userDetailsDTO);
             return new ResponseEntity<>(updatedDetails, HttpStatus.OK);
-        } catch (RuntimeException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
