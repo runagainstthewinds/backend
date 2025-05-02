@@ -142,18 +142,25 @@ public class StravaController {
      * @return Token response
      */
     @PostMapping("/exchange-token")
-    public ResponseEntity<?> exchangeToken(@RequestParam String code, Principal principal) {
-        logger.info("Exchanging token with code: {}, user: {}", code, principal.getName());
+    public ResponseEntity<?> exchangeToken(@RequestBody Map<String, String> requestBody, Principal principal) {
+        String code = requestBody.get("code");
+        if (code == null || code.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "status", "error",
+                "message", "Authorization code is required"
+            ));
+        }
         try {
-            StravaTokenResponse response = stravaService.exchangeToken(code, principal.getName());
-            logger.info("Successfully exchanged token for user: {}", principal.getName());
-            return ResponseEntity.ok(response);
+            stravaService.exchangeToken(code, principal.getName());
+            return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Successfully connected Strava account"
+            ));
         } catch (Exception e) {
-            logger.error("Error exchanging token: {}", e.getMessage(), e);
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Failed to exchange token");
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(Map.of(
+                "status", "error",
+                "message", e.getMessage()
+            ));
         }
     }
     
