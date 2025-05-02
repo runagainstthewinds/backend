@@ -1,50 +1,66 @@
 package com.example.RunAgainstTheWind.domain.achievement.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.RunAgainstTheWind.application.validation.ValidationService;
 import com.example.RunAgainstTheWind.domain.achievement.model.Achievement;
+import com.example.RunAgainstTheWind.domain.achievement.model.UserAchievement;
 import com.example.RunAgainstTheWind.domain.achievement.repository.AchievementRepository;
 import com.example.RunAgainstTheWind.domain.achievement.repository.UserAchievementRepository;
-import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
+import com.example.RunAgainstTheWind.domain.user.model.User;
+import com.example.RunAgainstTheWind.dto.achievement.AchievementDTO;
+import com.example.RunAgainstTheWind.exceptions.achievement.AchievementAlreadyAssignedException;
+import com.example.RunAgainstTheWind.exceptions.achievement.AchievementNotFoundException;
 
 @Service
 public class AchievementService {
-    private final AchievementRepository achievementRepository;
-    private final UserAchievementRepository userAchievementRepository;
-    private final UserRepository userRepository;
+    
+    @Autowired
+    private AchievementRepository achievementRepository;
 
-    public AchievementService(AchievementRepository achievementRepository,
-                             UserAchievementRepository userAchievementRepository,
-                             UserRepository userRepository) {
-        this.achievementRepository = achievementRepository;
-        this.userAchievementRepository = userAchievementRepository;
-        this.userRepository = userRepository;
+    @Autowired
+    private UserAchievementRepository userAchievementRepository;
+
+    @Autowired
+    private ValidationService v;
+
+    @Transactional(readOnly = true)
+    public List<AchievementDTO> getUserAchievements(UUID userId) {
+        v.validateUserExists(userId);
+        
+        return achievementRepository.findAchievementsByUserId(userId);
     }
 
-    public List<Achievement> getUserAchievements(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found");
-        }
-        return userAchievementRepository.findAchievementsByUserId(userId);
-    }
+    @Transactional
+    public AchievementDTO assignAchievementToUser(UUID userId, Integer achievementId) {
+        User user = v.validateUserExistsAndReturn(userId);
+        v.validateIntegerInput(achievementId);
 
-    public void assignAchievementToUser(UUID userId, Long achievementId) {
-        // Validate user exists
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found");
+        Achievement achievement = achievementRepository.findById(achievementId)
+        .orElseThrow(() -> new AchievementNotFoundException("Achievement not found: " + achievementId));
+
+        if (userAchievementRepository.existsByUser_UserIdAndAchievement_AchievementId(userId, achievement.getAchievementId())) {
+            throw new AchievementAlreadyAssignedException("Achievement already assigned to user: " + achievementId);
         }
-        // Validate achievement exists
-        if (!achievementRepository.existsById(achievementId)) {
-            throw new RuntimeException("Achievement not found");
-        }
-        // Check for duplicate assignment
-        if (userAchievementRepository.existsUserAchievement(userId, achievementId) == 1) {
-            throw new RuntimeException("Achievement already assigned to user");
-        }
-        // Assign achievement
-        userAchievementRepository.assignAchievementToUser(userId, achievementId);
+
+        UserAchievement userAchievement = new UserAchievement();
+        userAchievement.setUser(user);
+        userAchievement.setAchievement(achievement);
+        userAchievement.setDateAchieved(LocalDate.now());
+        userAchievementRepository.save(userAchievement);
+
+        return new AchievementDTO(
+            achievement.getAchievementId(),
+            achievement.getAchievementName(),
+            achievement.getDescription(),
+            userAchievement.getDateAchieved(),
+            userId
+        );
     }
 }

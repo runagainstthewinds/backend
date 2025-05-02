@@ -52,7 +52,7 @@ public class TrainingSessionRepositoryTest {
         LocalDate localTrainingDate = LocalDate.of(2025, 3, 24);
         Date trainingDate = Date.valueOf(localTrainingDate);
 
-        Shoe shoe = new Shoe("Nike", "Alphafly", 10.0, 100.0, 250.0);
+        Shoe shoe = new Shoe();
         shoe = shoeRepository.save(shoe);
 
         User user = new User();
