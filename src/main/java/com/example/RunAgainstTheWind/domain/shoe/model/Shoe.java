@@ -1,5 +1,7 @@
 package com.example.RunAgainstTheWind.domain.shoe.model;
 
+import java.time.LocalDate;
+
 import com.example.RunAgainstTheWind.domain.user.model.User;
 
 import jakarta.persistence.Entity;
@@ -19,20 +21,20 @@ public class Shoe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long shoeId;
 
-    private String brand;
     private String model;
-    private Double size;
+    private String brand;
+    private String color;
     private Double totalMileage;
-    private Double price;
+    private LocalDate date;
 
     public Shoe() {}
 
-    public Shoe(String brand, String model, Double size, Double totalMileage, Double price) {
-        this.brand = brand;
+    public Shoe(String model, String brand, String color, LocalDate date, Double totalMileage) {
         this.model = model;
-        this.size = size;
+        this.brand = brand;
+        this.color = color;
+        this.date = date;
         this.totalMileage = totalMileage;
-        this.price = price;
     }
 
     @ManyToOne

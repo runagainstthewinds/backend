@@ -1,5 +1,6 @@
 package com.example.RunAgainstTheWind.domain.shoe.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,15 +31,17 @@ public class ShoeService {
         User user = v.validateUserExistsAndReturn(userId);
 
         Shoe shoe = new Shoe();
-        shoe.setBrand(shoeDTO.getBrand());
         shoe.setModel(shoeDTO.getModel());
-        shoe.setSize(shoeDTO.getSize());
+        shoe.setBrand(shoeDTO.getBrand());
+        shoe.setColor(shoeDTO.getColor());
+        shoe.setDate(shoeDTO.getDate());
         shoe.setTotalMileage(shoeDTO.getTotalMileage());
-        shoe.setPrice(shoeDTO.getPrice());
+        shoe.setDate(LocalDate.now());
         shoe.setUser(user);
         Shoe savedShoe = shoeRepository.save(shoe);
 
         shoeDTO.setShoeId(savedShoe.getShoeId());   
+        shoeDTO.setDate(savedShoe.getDate());
         shoeDTO.setUserId(user.getUserId());
         return shoeDTO;
     }
@@ -51,30 +54,27 @@ public class ShoeService {
     public ShoeDTO updateShoe(Long shoeId, ShoeDTO shoeDTO) {
         Shoe shoe = shoeRepository.findById(shoeId).orElseThrow(() -> new RuntimeException("Shoe not found with id: " + shoeId));
 
-        if (shoeDTO.getBrand() != null) {
-            shoe.setBrand(shoeDTO.getBrand());
-        }
         if (shoeDTO.getModel() != null) {
             shoe.setModel(shoeDTO.getModel());
         }
-        if (shoeDTO.getSize() != null) {
-            shoe.setSize(shoeDTO.getSize());
+        if (shoeDTO.getBrand() != null) {
+            shoe.setBrand(shoeDTO.getBrand());
+        }
+        if (shoeDTO.getColor() != null) {
+            shoe.setColor(shoeDTO.getColor());
         }
         if (shoeDTO.getTotalMileage() != null) {
             shoe.setTotalMileage(shoeDTO.getTotalMileage());
-        }
-        if (shoeDTO.getPrice() != null) {
-            shoe.setPrice(shoeDTO.getPrice());
         }
         Shoe updatedShoe = shoeRepository.save(shoe);
 
         ShoeDTO updatedDTO = new ShoeDTO();
         updatedDTO.setShoeId(updatedShoe.getShoeId());
-        updatedDTO.setBrand(updatedShoe.getBrand());
         updatedDTO.setModel(updatedShoe.getModel());
-        updatedDTO.setSize(updatedShoe.getSize());
+        updatedDTO.setBrand(updatedShoe.getBrand());
+        updatedDTO.setColor(updatedShoe.getColor());
+        updatedDTO.setDate(updatedShoe.getDate());
         updatedDTO.setTotalMileage(updatedShoe.getTotalMileage());
-        updatedDTO.setPrice(updatedShoe.getPrice());
         updatedDTO.setUserId(shoe.getUser().getUserId());
         return updatedDTO;
     }

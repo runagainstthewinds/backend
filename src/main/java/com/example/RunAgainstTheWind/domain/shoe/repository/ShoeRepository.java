@@ -18,11 +18,11 @@ public interface ShoeRepository extends JpaRepository<Shoe, Long> {
     @Query("""
         SELECT new com.example.RunAgainstTheWind.dto.shoe.ShoeDTO(
             s.shoeId,
-            s.brand,
             s.model,
-            s.size,
+            s.brand,
+            s.color,
             s.totalMileage,
-            s.price,
+            s.date,
             s.user.userId
         )
         FROM Shoe s
