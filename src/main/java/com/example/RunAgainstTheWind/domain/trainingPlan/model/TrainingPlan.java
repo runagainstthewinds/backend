@@ -1,18 +1,15 @@
 package com.example.RunAgainstTheWind.domain.trainingPlan.model;
 
 import java.util.Date;
-import java.util.List;
 
-import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.domain.user.model.User;
-import com.example.RunAgainstTheWind.enumeration.Road;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -24,27 +21,25 @@ public class TrainingPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long trainingPlanId;
 
+    private String planName;
     private Date startDate;
     private Date endDate;
-    private String planType;
-    private Road roadType;
+    private boolean isComplete;
     private Double goalDistance;
     private Double goalTime;
 
     public TrainingPlan() {}
 
-    public TrainingPlan(Date startDate, Date endDate, String planType, Road roadType, Double goalDistance, Double goalTime) {
+    public TrainingPlan(String planName, Date startDate, Date endDate, Boolean isComplete, Double goalDistance, Double goalTime) {
+        this.planName = planName;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.planType = planType;
-        this.roadType = roadType;
+        this.isComplete = isComplete;
         this.goalDistance = goalDistance;
         this.goalTime = goalTime;
     }
 
-    @OneToOne(mappedBy = "trainingPlan")
+    @ManyToOne
+    @JoinColumn(name = "userId")
     private User user;
-
-    @OneToMany(mappedBy = "trainingPlan")
-    private List<TrainingSession> trainingSessions;
 }   

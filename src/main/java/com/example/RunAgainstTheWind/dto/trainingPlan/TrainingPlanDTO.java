@@ -1,7 +1,5 @@
 package com.example.RunAgainstTheWind.dto.trainingPlan;
 
-import com.example.RunAgainstTheWind.enumeration.Road;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,11 +12,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TrainingPlanDTO {
     private Long trainingPlanId;
-    private UUID userId;
+    private String planName;
     private Date startDate;
     private Date endDate;
-    private String planType;
-    private Road roadType;
+    private boolean isComplete;
     private Double goalDistance;
     private Double goalTime;
+    private UUID userId;
 }
