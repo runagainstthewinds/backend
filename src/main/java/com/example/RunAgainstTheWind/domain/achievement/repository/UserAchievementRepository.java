@@ -15,5 +15,5 @@ public interface UserAchievementRepository extends JpaRepository<UserAchievement
     List<UserAchievement> findByUser_UserId(UUID userId);
     
     //  Check for duplicate assignment
-    boolean existsByUser_UserIdAndAchievement_AchievementName(UUID userId, String achievementName);
+    boolean existsByUser_UserIdAndAchievement_AchievementId(UUID userId, Integer achievementId);
 }

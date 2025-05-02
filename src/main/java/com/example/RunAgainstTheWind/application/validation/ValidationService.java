@@ -29,4 +29,10 @@ public class ValidationService {
             throw new IllegalArgumentException("Input cannot be null or empty");
         }
     }
+
+    public void validateIntegerInput(Integer input) {
+        if (input == null || input <= 0) {
+            throw new IllegalArgumentException("Input must be a positive integer");
+        }
+    }
 }

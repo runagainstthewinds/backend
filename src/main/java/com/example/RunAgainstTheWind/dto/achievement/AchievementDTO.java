@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AchievementDTO {
+    private Integer achievementId;
     private String achievementName;
     private String description;
 

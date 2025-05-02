@@ -3,55 +3,53 @@ package com.example.RunAgainstTheWind.config;
 import com.example.RunAgainstTheWind.domain.achievement.model.Achievement;
 import com.example.RunAgainstTheWind.domain.achievement.repository.AchievementRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
-    private final AchievementRepository achievementRepository;
-
-    public DataInitializer(AchievementRepository achievementRepository) {
-        this.achievementRepository = achievementRepository;
-    }
+    @Autowired
+    private AchievementRepository achievementRepository;
 
     @Override
     public void run(String... args) throws Exception {
         
-        if (!achievementRepository.existsByAchievementName("First Run")) {
-            achievementRepository.save(new Achievement("First Run", "Completed your first run"));
+        if (!achievementRepository.existsByAchievementId(1)) {
+            achievementRepository.save(new Achievement(1, "First Run", "Completed your first run"));
         }
 
-        if (!achievementRepository.existsByAchievementName("Early Bird")) {
-            achievementRepository.save(new Achievement("Early Bird", "Completed a run before 6 AM"));
+        if (!achievementRepository.existsByAchievementId(2)) {
+            achievementRepository.save(new Achievement(2, "Early Bird", "Completed a run before 6 AM"));
         }
 
-        if (!achievementRepository.existsByAchievementName("Rain Runner")) {
-            achievementRepository.save(new Achievement("Rain Runner", "Completed a run in the rain"));
+        if (!achievementRepository.existsByAchievementId(3)) {
+            achievementRepository.save(new Achievement(3, "Rain Runner", "Completed a run in the rain"));
         }
 
-        if (!achievementRepository.existsByAchievementName("Marathon Finisher")) {
-            achievementRepository.save(new Achievement("Marathon Finisher", "Completed a full marathon"));
+        if (!achievementRepository.existsByAchievementId(4)) {
+            achievementRepository.save(new Achievement(4, "Marathon Finisher", "Completed a full marathon"));
         }
 
-        if (!achievementRepository.existsByAchievementName("Streak Master")) {
-            achievementRepository.save(new Achievement("Streak Master", "Run for 7 consecutive days"));
+        if (!achievementRepository.existsByAchievementId(5)) {
+            achievementRepository.save(new Achievement(5, "Streak Master", "Run for 7 consecutive days"));
         }
 
-        if (!achievementRepository.existsByAchievementName("Trail Explorer")) {
-            achievementRepository.save(new Achievement("Trail Explorer", "Completed a trail run"));
+        if (!achievementRepository.existsByAchievementId(6)) {
+            achievementRepository.save(new Achievement(6, "Trail Explorer", "Completed a trail run"));
         }
 
-        if (!achievementRepository.existsByAchievementName("Speed Demon")) {
-            achievementRepository.save(new Achievement("Speed Demon", "Ran 5K under 20 minutes"));
+        if (!achievementRepository.existsByAchievementId(7)) {
+            achievementRepository.save(new Achievement(7, "Speed Demon", "Ran 5K under 20 minutes"));
         }
 
-        if (!achievementRepository.existsByAchievementName("Globe Trotter")) {
-            achievementRepository.save(new Achievement("Globe Trotter", "Run in 5 different cities"));
+        if (!achievementRepository.existsByAchievementId(8)) {
+            achievementRepository.save(new Achievement(8, "Globe Trotter", "Run in 5 different cities"));
         }
 
-        if (!achievementRepository.existsByAchievementName("Consistency King")) {
-            achievementRepository.save(new Achievement("Consistency King", "Run 20 times in a month"));
+        if (!achievementRepository.existsByAchievementId(9)) {
+            achievementRepository.save(new Achievement(9, "Consistency King", "Run 20 times in a month"));
         }
     }
 }
