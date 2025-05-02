@@ -34,7 +34,6 @@ public class ShoeService {
         shoe.setModel(shoeDTO.getModel());
         shoe.setBrand(shoeDTO.getBrand());
         shoe.setColor(shoeDTO.getColor());
-        shoe.setDate(shoeDTO.getDate());
         shoe.setTotalMileage(shoeDTO.getTotalMileage());
         shoe.setDate(LocalDate.now());
         shoe.setUser(user);

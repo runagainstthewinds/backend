@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Achievement {
     @Id
+    private Integer achievementId;
     private String achievementName;
     private String description;
 }

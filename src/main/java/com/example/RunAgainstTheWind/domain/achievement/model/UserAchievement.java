@@ -31,7 +31,7 @@ public class UserAchievement {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "achievement_name", referencedColumnName = "achievementName")
+    @JoinColumn(name = "achievement_id", referencedColumnName = "achievementId")
     private Achievement achievement;
 
     private LocalDate dateAchieved;

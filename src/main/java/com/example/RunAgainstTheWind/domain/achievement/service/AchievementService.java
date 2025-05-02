@@ -34,27 +34,19 @@ public class AchievementService {
     public List<AchievementDTO> getUserAchievements(UUID userId) {
         v.validateUserExists(userId);
         
-        return userAchievementRepository.findByUser_UserId(userId)
-            .stream()
-            .map(ua -> new AchievementDTO(
-                ua.getAchievement().getAchievementName(),
-                ua.getAchievement().getDescription(),
-                ua.getDateAchieved(),
-                userId
-            ))
-            .toList();
+        return achievementRepository.findAchievementsByUserId(userId);
     }
 
     @Transactional
-    public AchievementDTO assignAchievementToUser(UUID userId, String achievementName) {
+    public AchievementDTO assignAchievementToUser(UUID userId, Integer achievementId) {
         User user = v.validateUserExistsAndReturn(userId);
-        v.validateStringInput(achievementName);
+        v.validateIntegerInput(achievementId);
 
-        Achievement achievement = achievementRepository.findById(achievementName)
-        .orElseThrow(() -> new AchievementNotFoundException("Achievement not found: " + achievementName));
+        Achievement achievement = achievementRepository.findById(achievementId)
+        .orElseThrow(() -> new AchievementNotFoundException("Achievement not found: " + achievementId));
 
-        if (userAchievementRepository.existsByUser_UserIdAndAchievement_AchievementName(userId, achievement.getAchievementName())) {
-            throw new AchievementAlreadyAssignedException("Achievement already assigned to user: " + achievementName);
+        if (userAchievementRepository.existsByUser_UserIdAndAchievement_AchievementId(userId, achievement.getAchievementId())) {
+            throw new AchievementAlreadyAssignedException("Achievement already assigned to user: " + achievementId);
         }
 
         UserAchievement userAchievement = new UserAchievement();
@@ -64,6 +56,7 @@ public class AchievementService {
         userAchievementRepository.save(userAchievement);
 
         return new AchievementDTO(
+            achievement.getAchievementId(),
             achievement.getAchievementName(),
             achievement.getDescription(),
             userAchievement.getDateAchieved(),
