@@ -1,6 +1,6 @@
 package com.example.RunAgainstTheWind.domain.trainingPlan.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.example.RunAgainstTheWind.domain.user.model.User;
 
@@ -22,21 +22,21 @@ public class TrainingPlan {
     private Long trainingPlanId;
 
     private String planName;
-    private Date startDate;
-    private Date endDate;
-    private boolean isComplete;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Double goalDistance;
     private Double goalTime;
+    private boolean isComplete;
 
     public TrainingPlan() {}
 
-    public TrainingPlan(String planName, Date startDate, Date endDate, Boolean isComplete, Double goalDistance, Double goalTime) {
+    public TrainingPlan(String planName, LocalDate startDate, LocalDate endDate, Double goalDistance, Double goalTime, Boolean isComplete) {
         this.planName = planName;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.isComplete = isComplete;
         this.goalDistance = goalDistance;
         this.goalTime = goalTime;
+        this.isComplete = isComplete;
     }
 
     @ManyToOne

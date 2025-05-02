@@ -1,5 +1,6 @@
 package com.example.RunAgainstTheWind.domain.trainingPlan.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,16 +17,16 @@ public interface TrainingPlanRepository extends JpaRepository<TrainingPlan, Long
     @Query("""
         SELECT new com.example.RunAgainstTheWind.dto.trainingPlan.TrainingPlanDTO(
             tp.trainingPlanId,
-            tp.user.userId,
+            tp.planName,
             tp.startDate,
             tp.endDate,
-            tp.planType,
-            tp.roadType,
             tp.goalDistance,
-            tp.goalTime
+            tp.goalTime,
+            tp.isComplete,
+            tp.user.userId
         )
         FROM TrainingPlan tp
         WHERE tp.user.userId = :userUUID
     """)
-    TrainingPlanDTO getTrainingPlanByUserId(@Param("userUUID") UUID userUUID);
+    List<TrainingPlanDTO> getTrainingPlanByUserId(@Param("userUUID") UUID userUUID);
 }
