@@ -1,16 +1,15 @@
 package com.example.RunAgainstTheWind.domain.shoe.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.RunAgainstTheWind.application.validation.ValidationService;
 import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.shoe.repository.ShoeRepository;
 import com.example.RunAgainstTheWind.domain.user.model.User;
-import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.dto.shoe.ShoeDTO;
 
 @Service
@@ -20,51 +19,37 @@ public class ShoeService {
     private ShoeRepository shoeRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private ValidationService v;
 
     public List<ShoeDTO> getShoesByUserID(UUID userId) { 
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User with ID " + userId + " does not exist.");
-        }
+        v.validateUserExists(userId);
         return shoeRepository.getShoesByUserId(userId);
     }
 
     public ShoeDTO createShoe(UUID userId, ShoeDTO shoeDTO) {
+        User user = v.validateUserExistsAndReturn(userId);
+
         Shoe shoe = new Shoe();
         shoe.setBrand(shoeDTO.getBrand());
         shoe.setModel(shoeDTO.getModel());
         shoe.setSize(shoeDTO.getSize());
         shoe.setTotalMileage(shoeDTO.getTotalMileage());
         shoe.setPrice(shoeDTO.getPrice());
-
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            shoe.setUser(userOptional.get());
-        } else {
-            throw new RuntimeException("User not found with id: " + shoeDTO.getUserId());
-        }
-
+        shoe.setUser(user);
         Shoe savedShoe = shoeRepository.save(shoe);
-        shoeDTO.setShoeId(savedShoe.getShoeId());
+
+        shoeDTO.setShoeId(savedShoe.getShoeId());   
+        shoeDTO.setUserId(user.getUserId());
         return shoeDTO;
     }
 
     public void deleteShoe(Long shoeId) {
-        Optional<Shoe> shoeOptional = shoeRepository.findById(shoeId);
-        if (shoeOptional.isPresent()) {
-            shoeRepository.deleteById(shoeId);
-        } else {
-            throw new RuntimeException("Shoe not found with id: " + shoeId);
-        }
+        if (!shoeRepository.existsById(shoeId)) throw new RuntimeException("Shoe not found with id: " + shoeId);
+        shoeRepository.deleteById(shoeId);
     }
 
     public ShoeDTO updateShoe(Long shoeId, ShoeDTO shoeDTO) {
-        Optional<Shoe> shoeOptional = shoeRepository.findById(shoeId);
-        if (!shoeOptional.isPresent()) {
-            throw new RuntimeException("Shoe not found with id: " + shoeId);
-        }
-
-        Shoe shoe = shoeOptional.get();
+        Shoe shoe = shoeRepository.findById(shoeId).orElseThrow(() -> new RuntimeException("Shoe not found with id: " + shoeId));
 
         if (shoeDTO.getBrand() != null) {
             shoe.setBrand(shoeDTO.getBrand());
@@ -81,21 +66,8 @@ public class ShoeService {
         if (shoeDTO.getPrice() != null) {
             shoe.setPrice(shoeDTO.getPrice());
         }
-
-
-        // Valid user check
-        if (shoeDTO.getUserId() != null) {
-            Optional<User> userOptional = userRepository.findById(shoeDTO.getUserId());
-            if (userOptional.isPresent()) {
-                shoe.setUser(userOptional.get());
-            } else {
-                throw new RuntimeException("User not found with id: " + shoeDTO.getUserId());
-            }
-        }
-
         Shoe updatedShoe = shoeRepository.save(shoe);
 
-        // Return DTO
         ShoeDTO updatedDTO = new ShoeDTO();
         updatedDTO.setShoeId(updatedShoe.getShoeId());
         updatedDTO.setBrand(updatedShoe.getBrand());
@@ -103,8 +75,7 @@ public class ShoeService {
         updatedDTO.setSize(updatedShoe.getSize());
         updatedDTO.setTotalMileage(updatedShoe.getTotalMileage());
         updatedDTO.setPrice(updatedShoe.getPrice());
-        updatedDTO.setUserId(updatedShoe.getUser().getUserId());
-
+        updatedDTO.setUserId(shoe.getUser().getUserId());
         return updatedDTO;
     }
 }

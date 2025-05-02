@@ -13,7 +13,7 @@ import com.example.RunAgainstTheWind.domain.achievement.model.Achievement;
 import com.example.RunAgainstTheWind.domain.achievement.model.UserAchievement;
 import com.example.RunAgainstTheWind.domain.achievement.repository.AchievementRepository;
 import com.example.RunAgainstTheWind.domain.achievement.repository.UserAchievementRepository;
-import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
+import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.dto.achievement.AchievementDTO;
 import com.example.RunAgainstTheWind.exceptions.achievement.AchievementAlreadyAssignedException;
 import com.example.RunAgainstTheWind.exceptions.achievement.AchievementNotFoundException;
@@ -26,9 +26,6 @@ public class AchievementService {
 
     @Autowired
     private UserAchievementRepository userAchievementRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ValidationService v;
@@ -50,7 +47,7 @@ public class AchievementService {
 
     @Transactional
     public AchievementDTO assignAchievementToUser(UUID userId, String achievementName) {
-        v.validateUserExists(userId);
+        User user = v.validateUserExistsAndReturn(userId);
         v.validateStringInput(achievementName);
 
         Achievement achievement = achievementRepository.findById(achievementName)
@@ -61,7 +58,7 @@ public class AchievementService {
         }
 
         UserAchievement userAchievement = new UserAchievement();
-        userAchievement.setUser(userRepository.getReferenceById(userId));
+        userAchievement.setUser(user);
         userAchievement.setAchievement(achievement);
         userAchievement.setDateAchieved(LocalDate.now());
         userAchievementRepository.save(userAchievement);
