@@ -13,31 +13,16 @@ import com.example.RunAgainstTheWind.dto.shoe.ShoeDTO;
 
 @Repository
 public interface ShoeRepository extends JpaRepository<Shoe, Long> {
-    // Find a single shoe by its ID
-    @Query("""
-        SELECT new com.example.RunAgainstTheWind.dto.shoe.ShoeDTO(
-            s.shoeId, 
-            s.brand, 
-            s.model, 
-            s.size, 
-            s.totalMileage, 
-            s.price,
-            s.user.userId
-        )
-        FROM Shoe s
-        WHERE s.shoeId = :shoeId
-    """)
-    ShoeDTO getShoeById(@Param("shoeID") Long shoeId);
-
+    
     // Find all the shoes of a user by their UUID
     @Query("""
         SELECT new com.example.RunAgainstTheWind.dto.shoe.ShoeDTO(
             s.shoeId,
-            s.brand,
             s.model,
-            s.size,
+            s.brand,
+            s.color,
             s.totalMileage,
-            s.price,
+            s.date,
             s.user.userId
         )
         FROM Shoe s

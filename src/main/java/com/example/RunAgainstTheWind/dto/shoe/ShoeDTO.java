@@ -1,5 +1,6 @@
 package com.example.RunAgainstTheWind.dto.shoe;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -11,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ShoeDTO {
     private Long shoeId;
-    private String brand;
     private String model;
-    private Double size;
+    private String brand;
+    private String color;
     private Double totalMileage;
-    private Double price;
+    private LocalDate date;
     private UUID userId;
 }
