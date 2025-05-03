@@ -1,8 +1,5 @@
 package com.example.RunAgainstTheWind.domain.user.service;
 
-
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,7 +51,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDTO getUserById(UUID userId) {
-        return userRepository.getUserById(userId);
+    public UserDTO getUserByUsername(String username) {
+        return userRepository.getUserByUsername(username);
     }
 }

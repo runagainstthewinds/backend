@@ -1,6 +1,5 @@
 package com.example.RunAgainstTheWind.domain.user.controller;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,9 +46,9 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users/{userId}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable UUID userId) {
-        UserDTO user = userService.getUserById(userId);
+    @GetMapping("/users/{username}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
+        UserDTO user = userService.getUserByUsername(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

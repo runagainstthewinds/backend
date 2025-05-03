@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
         u.stravaRefreshToken
       )
       FROM User u
-      WHERE u.userId = :userId
+      WHERE u.username = :username
     """)
-    UserDTO getUserById(@Param("userId") UUID userId);
+    UserDTO getUserByUsername(@Param("username") String username);
 }
