@@ -140,7 +140,7 @@ public class TrainingPlanCreator {
 
             session.setDistance(distance);
             session.setDuration(roundToScale(duration));
-            session.setGoalPace(roundToScale(pace));
+            session.setPace(roundToScale(pace));
         }
     }
 
@@ -165,7 +165,7 @@ public class TrainingPlanCreator {
             tempoRunSessions.get(i).setDuration(Math.round(duration * 100.0) / 100.0);
 
             double pace = duration / (distance / 1000);
-            tempoRunSessions.get(i).setGoalPace(Math.round(pace * 100.0) / 100.0);
+            tempoRunSessions.get(i).setPace(Math.round(pace * 100.0) / 100.0);
         }
     }
 
@@ -191,7 +191,7 @@ public class TrainingPlanCreator {
 
             session.setDistance(distance);
             session.setDuration(roundToScale(totalDuration));
-            session.setGoalPace(roundToScale(pace));
+            session.setPace(roundToScale(pace));
         }
     }
 
@@ -211,7 +211,7 @@ public class TrainingPlanCreator {
             TrainingSession session = recoveryRunSessions.get(i);
             session.setDistance(distance);
             session.setDuration(roundToScale(duration));
-            session.setGoalPace(roundToScale(lowIntensityPace));
+            session.setPace(roundToScale(lowIntensityPace));
         }
     }
 

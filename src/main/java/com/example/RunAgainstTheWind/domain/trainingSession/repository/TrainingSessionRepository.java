@@ -1,6 +1,6 @@
 package com.example.RunAgainstTheWind.domain.trainingSession.repository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +25,7 @@ public interface TrainingSessionRepository extends JpaRepository<TrainingSession
            "AND ABS(ts.achievedDuration - :achievedDuration) < 0.1")
     Optional<TrainingSession> findDuplicateSession(
             @Param("user") User user,
-            @Param("date") Date date,
+            @Param("date") LocalDate date,
             @Param("achievedDistance") Double achievedDistance,
             @Param("achievedDuration") Double achievedDuration
     );
@@ -34,20 +34,46 @@ public interface TrainingSessionRepository extends JpaRepository<TrainingSession
     @Query("""
         SELECT new com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO(
             ts.trainingSessionId,
-            ts.user.userId,
+            ts.trainingPlan.trainingPlanId,
+            ts.trainingType,
             ts.date,
             ts.distance,
             ts.duration,
-            ts.goalPace,
-            ts.isCompleted,
-            ts.achievedPace,
+            ts.pace,
+            ts.isComplete,
             ts.achievedDistance,
             ts.achievedDuration,
+            ts.achievedPace,
             ts.effort,
-            ts.trainingType
+            ts.notes,
+            ts.shoe.shoeId,
+            ts.user.userId
         )
         FROM TrainingSession ts
         WHERE ts.user.userId = :userUUID
     """)
     List<TrainingSessionDTO> getTrainingSessionsByUserId(@Param("userUUID") UUID userUUID);
+
+    @Query("""
+        SELECT new com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO(
+            ts.trainingSessionId,
+            ts.trainingPlan.trainingPlanId,
+            ts.trainingType,
+            ts.date,
+            ts.distance,
+            ts.duration,
+            ts.pace,
+            ts.isComplete,
+            ts.achievedDistance,
+            ts.achievedDuration,
+            ts.achievedPace,
+            ts.effort,
+            ts.notes,
+            ts.shoe.shoeId,
+            ts.user.userId
+        )
+        FROM TrainingSession ts
+        WHERE ts.trainingPlan.trainingPlanId = :trainingPlanId
+    """)
+    List<TrainingSessionDTO> findByTrainingPlanId(@Param("trainingPlanId") Long trainingPlanId);
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -18,9 +19,15 @@ public class TrainingSessionController {
     @Autowired
     private TrainingSessionService trainingSessionService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<List<TrainingSessionDTO>> getTrainingSessionsByUserId(@PathVariable UUID userId) {
         List<TrainingSessionDTO> sessions = trainingSessionService.getTrainingSessionsByUserId(userId);
+        return new ResponseEntity<>(sessions, HttpStatus.OK);
+    }
+
+    @GetMapping("/trainingplans/{trainingPlanId}")
+    public ResponseEntity<List<TrainingSessionDTO>> getTrainingSessionsByTrainingPlanId(@PathVariable Long trainingPlanId) {
+        List<TrainingSessionDTO> sessions = trainingSessionService.getTrainingSessionsByTrainingPlanId(trainingPlanId);
         return new ResponseEntity<>(sessions, HttpStatus.OK);
     }
 
@@ -33,9 +40,9 @@ public class TrainingSessionController {
     }
 
     @DeleteMapping("/{trainingSessionId}")
-    public ResponseEntity<Void> deleteTrainingSession(@PathVariable Long trainingSessionId) {
+    public ResponseEntity<?> deleteTrainingSession(@PathVariable Long trainingSessionId) {
         trainingSessionService.deleteTrainingSession(trainingSessionId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok(Map.of("message", "Training Session with ID " + trainingSessionId + " has been deleted"));
     }
 
     @PutMapping("/{trainingSessionId}")
