@@ -25,15 +25,14 @@ public class UserDetails {
     private Double weeklyDistance;
     private Integer runCount;
 
-    public UserDetails() {}
-
-    public UserDetails(Double totalDistance, Double totalDuration, Double weeklyDistance, Integer runCount) {
+    @OneToOne(mappedBy = "userDetails")
+    private User user;
+    
+    public UserDetails(Double totalDistance, Double totalDuration, Double weeklyDistance, Integer runCount, User user) {
         this.totalDistance = totalDistance;
         this.totalDuration = totalDuration;
         this.weeklyDistance = weeklyDistance;
         this.runCount = runCount;
+        this.user = user;
     }
-
-    @OneToOne(mappedBy = "userDetails")
-    private User user;
 }
