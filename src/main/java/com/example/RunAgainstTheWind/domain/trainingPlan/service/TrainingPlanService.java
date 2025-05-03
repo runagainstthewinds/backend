@@ -27,6 +27,7 @@ public class TrainingPlanService {
     }
 
     public TrainingPlanDTO getCurrentTrainingPlanByUserId(UUID userId) {
+        v.validateUserExistsAndReturn(userId);
         return trainingPlanRepository.getCurrentTrainingPlanByUserId(userId);
     }
 
