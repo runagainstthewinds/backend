@@ -111,7 +111,7 @@ public class TrainingSessionService {
         existingSession.setShoe(shoe);
         TrainingSession updatedSession = trainingSessionRepository.save(existingSession);
 
-        trainingSessionDTO.setTrainingSessionId(updatedSession.getTrainingSessionId());
+        trainingSessionDTO.setTrainingSessionId(updatedSession.getTrainingPlan().getTrainingPlanId());
         trainingSessionDTO.setUserId(updatedSession.getUser().getUserId());
         trainingSessionDTO.setTrainingPlanId(trainingSessionId);
 

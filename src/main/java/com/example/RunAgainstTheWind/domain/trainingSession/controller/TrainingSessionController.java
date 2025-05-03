@@ -31,7 +31,7 @@ public class TrainingSessionController {
         return new ResponseEntity<>(sessions, HttpStatus.OK);
     }
 
-    @PostMapping("/{userId}")
+    @PostMapping("/users/{userId}")
     public ResponseEntity<TrainingSessionDTO> createTrainingSession(
             @PathVariable UUID userId,
             @RequestBody TrainingSessionDTO trainingSessionDTO) {
