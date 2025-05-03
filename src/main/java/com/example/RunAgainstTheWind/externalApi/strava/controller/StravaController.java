@@ -196,31 +196,23 @@ public class StravaController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "30") int perPage,
             Principal principal) {
-        try {
-            List<StravaActivityResponse> activities = stravaService.getAthleteActivities(
-                    principal.getName(), page, perPage);
+        List<StravaActivityResponse> activities = stravaService.getAthleteActivities(
+                principal.getName(), page, perPage);
 
-            List<TrainingSessionDTO> trainingSessionDTOs = parseActivitiesToTrainingSessionDTOs(activities, userID);
-            List<TrainingSessionDTO> createdSessions = new ArrayList<>();
+        List<TrainingSessionDTO> trainingSessionDTOs = parseActivitiesToTrainingSessionDTOs(activities, userID);
+        List<TrainingSessionDTO> createdSessions = new ArrayList<>();
 
-            for (TrainingSessionDTO dto : trainingSessionDTOs) {
-                TrainingSessionDTO created = trainingSessionService.createTrainingSession(UUID.fromString(userID), dto); 
-                if (created != null) {
-                    createdSessions.add(created);
-                }
+        logger.info("Parsed {} activities into TrainingSessionDTOs", trainingSessionDTOs.size());
+
+        for (TrainingSessionDTO dto : trainingSessionDTOs) {
+            TrainingSessionDTO created = trainingSessionService.createTrainingSession(UUID.fromString(userID), dto); 
+            if (created != null) {
+                createdSessions.add(created);
             }
-
-            return ResponseEntity.ok(createdSessions);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "error", "Not connected to Strava",
-                    "authUrl", stravaService.getAuthorizationUrl()));
-        } catch (Exception e) {
-            logger.error("Error getting activities: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(Map.of("error", "Failed to retrieve activities"));
         }
+
+        return ResponseEntity.ok(createdSessions);
+
     }
     
     /**

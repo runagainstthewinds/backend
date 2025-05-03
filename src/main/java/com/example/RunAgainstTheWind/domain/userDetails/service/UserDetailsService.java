@@ -58,6 +58,10 @@ public class UserDetailsService {
         if (userDetailsDTO.getRunCount() != null) userDetails.setRunCount(userDetailsDTO.getRunCount());
         
         userDetailsDTO.setUserDetailsId(userDetails.getUserDetailsId());
+        userDetailsDTO.setTotalDistance(userDetails.getTotalDistance());
+        userDetailsDTO.setTotalDuration(userDetails.getTotalDuration());
+        userDetailsDTO.setWeeklyDistance(userDetails.getWeeklyDistance());
+        userDetailsDTO.setRunCount(userDetails.getRunCount());
         userDetailsDTO.setUserId(user.getUserId());
         return userDetailsDTO;
     }

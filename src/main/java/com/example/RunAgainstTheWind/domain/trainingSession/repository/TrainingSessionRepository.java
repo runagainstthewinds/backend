@@ -34,7 +34,6 @@ public interface TrainingSessionRepository extends JpaRepository<TrainingSession
     @Query("""
         SELECT new com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO(
             ts.trainingSessionId,
-            ts.trainingPlan.trainingPlanId,
             ts.trainingType,
             ts.date,
             ts.distance,
@@ -46,6 +45,7 @@ public interface TrainingSessionRepository extends JpaRepository<TrainingSession
             ts.achievedPace,
             ts.effort,
             ts.notes,
+            ts.trainingPlan.trainingPlanId,
             ts.shoe.shoeId,
             ts.user.userId
         )
@@ -57,7 +57,6 @@ public interface TrainingSessionRepository extends JpaRepository<TrainingSession
     @Query("""
         SELECT new com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO(
             ts.trainingSessionId,
-            ts.trainingPlan.trainingPlanId,
             ts.trainingType,
             ts.date,
             ts.distance,
@@ -69,6 +68,7 @@ public interface TrainingSessionRepository extends JpaRepository<TrainingSession
             ts.achievedPace,
             ts.effort,
             ts.notes,
+            ts.trainingPlan.trainingPlanId,
             ts.shoe.shoeId,
             ts.user.userId
         )

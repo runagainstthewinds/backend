@@ -10,11 +10,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user_details")
 @Data
 @EqualsAndHashCode(exclude = "user")
+@NoArgsConstructor
 public class UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +29,7 @@ public class UserDetails {
 
     @OneToOne(mappedBy = "userDetails")
     private User user;
-    
+
     public UserDetails(Double totalDistance, Double totalDuration, Double weeklyDistance, Integer runCount, User user) {
         this.totalDistance = totalDistance;
         this.totalDuration = totalDuration;

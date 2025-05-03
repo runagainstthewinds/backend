@@ -60,16 +60,18 @@ public class TrainingSessionService {
 
         // Find the training plan if it exists
         TrainingPlan trainingPlan = null;
-        if (trainingSessionDTO.getTrainingPlanId() != null) {
-            trainingPlan = trainingPlanRepository.findById(trainingSessionDTO.getTrainingPlanId())
-                .orElseThrow(() -> new EntityNotFoundException("Training plan not found with id: " + trainingSessionDTO.getTrainingPlanId()));
+        Long trainingPlanId = trainingSessionDTO.getTrainingPlanId();
+        if (trainingPlanId != null) {
+            trainingPlan = trainingPlanRepository.findById(trainingPlanId)
+                .orElseThrow(() -> new EntityNotFoundException("Training plan not found with id: " + trainingPlanId));
         }
 
         // Find the shoe if it exists
         Shoe shoe = null;
-        if (trainingSessionDTO.getShoeId() != null) {
-            shoe = shoeRepository.findById(trainingSessionDTO.getShoeId())
-                .orElseThrow(() -> new EntityNotFoundException("Shoe not found with id: " + trainingSessionDTO.getShoeId()));
+        Long shoeId = trainingSessionDTO.getShoeId();
+        if (shoeId != null) {
+            shoe = shoeRepository.findById(shoeId)
+                .orElseThrow(() -> new EntityNotFoundException("Shoe not found with id: " + shoeId));
         }
 
         TrainingSession trainingSession = new TrainingSession(
@@ -91,8 +93,8 @@ public class TrainingSessionService {
         TrainingSession savedSession = trainingSessionRepository.save(trainingSession);
 
         trainingSessionDTO.setTrainingSessionId(savedSession.getTrainingSessionId());
-        trainingSessionDTO.setTrainingPlanId(trainingPlan.getTrainingPlanId());
-        trainingSessionDTO.setShoeId(shoe.getShoeId());
+        trainingSessionDTO.setTrainingPlanId(trainingPlan != null ? trainingPlan.getTrainingPlanId() : null);
+        trainingSessionDTO.setShoeId(shoe != null ? shoe.getShoeId() : null);
         trainingSessionDTO.setUserId(user.getUserId());
         return trainingSessionDTO;
     }

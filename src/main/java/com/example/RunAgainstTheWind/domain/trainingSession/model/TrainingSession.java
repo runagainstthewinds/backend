@@ -62,5 +62,8 @@ public class TrainingSession {
         this.achievedDuration = achievedDuration;
         this.effort = effort;
         this.notes = notes;
+        this.trainingPlan = trainingPlan;
+        this.shoe = shoe;
+        this.user = user;
     }
 }
