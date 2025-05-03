@@ -1,6 +1,5 @@
 package com.example.RunAgainstTheWind.domain.user.service;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +20,7 @@ import com.example.RunAgainstTheWind.dto.user.UserDTO;
 public class UserService {
 
     @Autowired
-    private UserRepository repo;
+    private UserRepository userRepository;
 
     @Autowired
     private JWTService jwtService;
@@ -33,12 +32,12 @@ public class UserService {
 
     @Transactional
     public User register(User user) throws IllegalArgumentException {
-        if (repo.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(user.getUsername())) {
             throw new IllegalArgumentException("Username already exists");
         }
         
         user.setPassword(encoder.encode(user.getPassword()));
-        return repo.save(user);
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -52,7 +51,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDTO findDTOByUsername(String username) {
-        return repo.findDTOByUsername(username);
+    public UserDTO getUserByUsername(String username) {
+        return userRepository.getUserByUsername(username);
     }
 }

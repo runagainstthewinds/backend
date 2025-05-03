@@ -2,6 +2,7 @@ package com.example.RunAgainstTheWind.domain.user.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -47,10 +48,7 @@ public class UserController {
 
     @GetMapping("/users/{username}")
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
-        UserDTO dto = userService.findDTOByUsername(username);
-        if (dto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(dto);
+        UserDTO user = userService.getUserByUsername(username);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

@@ -19,7 +19,8 @@ public interface UserDetailsRepository extends JpaRepository<UserDetails, Long> 
             ud.totalDistance,
             ud.totalDuration,
             ud.weeklyDistance,
-            ud.runCount
+            ud.runCount,
+            ud.user.userId
         )
         FROM UserDetails ud
         WHERE ud.user.userId = :userUUID
