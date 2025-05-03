@@ -25,6 +25,12 @@ public class TrainingPlanController {
         return new ResponseEntity<>(trainingPlan, HttpStatus.OK);
     }
 
+    @GetMapping("/current/{userId}")
+    public ResponseEntity<TrainingPlanDTO> getCurrentTrainingPlanByUserId(@PathVariable UUID userId) {
+        TrainingPlanDTO trainingPlan = trainingPlanService.getCurrentTrainingPlanByUserId(userId);
+        return new ResponseEntity<>(trainingPlan, HttpStatus.OK);
+    }
+
     @PostMapping("/{userId}")
     public ResponseEntity<TrainingPlanDTO> createTrainingPlan(
             @PathVariable UUID userId,

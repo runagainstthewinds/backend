@@ -26,6 +26,10 @@ public class TrainingPlanService {
         return trainingPlanRepository.getTrainingPlanByUserId(userId);
     }
 
+    public TrainingPlanDTO getCurrentTrainingPlanByUserId(UUID userId) {
+        return trainingPlanRepository.getCurrentTrainingPlanByUserId(userId);
+    }
+
     public TrainingPlanDTO createTrainingPlan(UUID userId, TrainingPlanDTO trainingPlanDTO) {
         User user = v.validateUserExistsAndReturn(userId);
 
