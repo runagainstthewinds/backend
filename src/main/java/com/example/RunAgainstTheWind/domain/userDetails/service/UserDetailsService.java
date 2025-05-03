@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.RunAgainstTheWind.application.validation.ValidationService;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.domain.userDetails.model.UserDetails;
@@ -15,14 +16,14 @@ import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 @Service
 public class UserDetailsService {
     
-    private final UserDetailsRepository userDetailsRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private UserDetailsRepository userDetailsRepository;
 
     @Autowired
-    public UserDetailsService(UserDetailsRepository userDetailsRepository, UserRepository userRepository) {
-        this.userDetailsRepository = userDetailsRepository;
-        this.userRepository = userRepository;
-    }
+    private UserRepository userRepository;
+
+    @Autowired
+    private ValidationService v;
 
     @Transactional
     public UserDetailsDTO getUserDetailsById(UUID userId) {
@@ -31,40 +32,32 @@ public class UserDetailsService {
 
     @Transactional
     public UserDetailsDTO createUserDetails(UUID userId, UserDetailsDTO userDetailsDTO) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        User user = v.validateUserExistsAndReturn(userId);
 
         UserDetails userDetails = new UserDetails();
         userDetails.setTotalDistance(userDetailsDTO.getTotalDistance() != null ? userDetailsDTO.getTotalDistance() : 0.0);
         userDetails.setTotalDuration(userDetailsDTO.getTotalDuration() != null ? userDetailsDTO.getTotalDuration() : 0.0);
         userDetails.setWeeklyDistance(userDetailsDTO.getWeeklyDistance() != null ? userDetailsDTO.getWeeklyDistance() : 0.0);
         userDetails.setRunCount(userDetailsDTO.getRunCount() != null ? userDetailsDTO.getRunCount() : 0);
-        userDetails.setUser(user);
-
         UserDetails savedUserDetails = userDetailsRepository.save(userDetails);
+        
         user.setUserDetails(savedUserDetails);
         userRepository.save(user);
 
-        UserDetailsDTO responseDto = new UserDetailsDTO();
-        responseDto.setUserDetailsId(savedUserDetails.getUserDetailsId());
-        responseDto.setTotalDistance(savedUserDetails.getTotalDistance());
-        responseDto.setTotalDuration(savedUserDetails.getTotalDuration());
-        responseDto.setWeeklyDistance(savedUserDetails.getWeeklyDistance());
-        responseDto.setRunCount(savedUserDetails.getRunCount());
+        userDetailsDTO.setUserDetailsId(savedUserDetails.getUserDetailsId());
+        userDetailsDTO.setUserId(user.getUserId());
 
-        return responseDto;
+        return userDetailsDTO;
     }
 
     @Transactional
     public UserDetailsDTO updateUserDetails(UUID userId, UserDetailsDTO userDetailsDTO) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        User user = v.validateUserExistsAndReturn(userId);
         
         UserDetails userDetails = user.getUserDetails();
         if (userDetails == null) {
             throw new RuntimeException("User details not found for userId: " + userId);
         }
-
         if (userDetailsDTO.getTotalDistance() != null) {
             userDetails.setTotalDistance(userDetailsDTO.getTotalDistance());
         }
@@ -77,16 +70,15 @@ public class UserDetailsService {
         if (userDetailsDTO.getRunCount() != null) {
             userDetails.setRunCount(userDetailsDTO.getRunCount());
         }
-
         UserDetails updatedUserDetails = userDetailsRepository.save(userDetails);
+        
+        userDetailsDTO.setUserDetailsId(updatedUserDetails.getUserDetailsId());
+        userDetailsDTO.setTotalDistance(updatedUserDetails.getTotalDistance());
+        userDetailsDTO.setTotalDuration(updatedUserDetails.getTotalDuration());
+        userDetailsDTO.setWeeklyDistance(updatedUserDetails.getWeeklyDistance());
+        userDetailsDTO.setRunCount(updatedUserDetails.getRunCount());
+        userDetailsDTO.setUserId(user.getUserId());
 
-        UserDetailsDTO responseDto = new UserDetailsDTO();
-        responseDto.setUserDetailsId(updatedUserDetails.getUserDetailsId());
-        responseDto.setTotalDistance(updatedUserDetails.getTotalDistance());
-        responseDto.setTotalDuration(updatedUserDetails.getTotalDuration());
-        responseDto.setWeeklyDistance(updatedUserDetails.getWeeklyDistance());
-        responseDto.setRunCount(updatedUserDetails.getRunCount());
-
-        return responseDto;
+        return userDetailsDTO;
     }
 }

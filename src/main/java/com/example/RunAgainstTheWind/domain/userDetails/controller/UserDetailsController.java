@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
 import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 
-import jakarta.persistence.EntityNotFoundException;
-
 @RestController
 @RequestMapping("/userdetails")
 public class UserDetailsController {
@@ -28,28 +26,16 @@ public class UserDetailsController {
     @Transactional
     @GetMapping("/{userId}")
     public ResponseEntity<UserDetailsDTO> getUserDetails(@PathVariable("userId") UUID userId) {
-        try {
-            UserDetailsDTO userDetails = userDetailsService.getUserDetailsById(userId);
-            return new ResponseEntity<>(userDetails, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        UserDetailsDTO userDetails = userDetailsService.getUserDetailsById(userId);
+        return new ResponseEntity<>(userDetails, HttpStatus.OK);
     }
 
     @Transactional
     @PutMapping("/{userId}")
     public ResponseEntity<UserDetailsDTO> updateUserDetails(
-            @PathVariable("userId") UUID userId,
-            @RequestBody UserDetailsDTO userDetailsDTO) {
-        try {
-            UserDetailsDTO updatedDetails = userDetailsService.updateUserDetails(userId, userDetailsDTO);
-            return new ResponseEntity<>(updatedDetails, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        @PathVariable("userId") UUID userId,
+        @RequestBody UserDetailsDTO userDetailsDTO) {
+        UserDetailsDTO updatedDetails = userDetailsService.updateUserDetails(userId, userDetailsDTO);
+        return new ResponseEntity<>(updatedDetails, HttpStatus.OK);
     }
 }
