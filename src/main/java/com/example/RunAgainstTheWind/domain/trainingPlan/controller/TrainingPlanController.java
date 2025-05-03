@@ -1,5 +1,7 @@
 package com.example.RunAgainstTheWind.domain.trainingPlan.controller;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,8 @@ public class TrainingPlanController {
     private TrainingPlanService trainingPlanService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<TrainingPlanDTO> getTrainingPlanByUserId(@PathVariable UUID userId) {
-        TrainingPlanDTO trainingPlan = trainingPlanService.getTrainingPlanByUserId(userId);
+    public ResponseEntity<List<TrainingPlanDTO>> getTrainingPlanByUserId(@PathVariable UUID userId) {
+        List<TrainingPlanDTO> trainingPlan = trainingPlanService.getTrainingPlanByUserId(userId);
         return new ResponseEntity<>(trainingPlan, HttpStatus.OK);
     }
 
@@ -27,13 +29,13 @@ public class TrainingPlanController {
     public ResponseEntity<TrainingPlanDTO> createTrainingPlan(
             @PathVariable UUID userId,
             @RequestBody TrainingPlanDTO trainingPlanDTO) {
-        TrainingPlanDTO savedTrainingPlan = trainingPlanService.createOrUpdateTrainingPlan(userId, trainingPlanDTO);
+        TrainingPlanDTO savedTrainingPlan = trainingPlanService.createTrainingPlan(userId, trainingPlanDTO);
         return new ResponseEntity<>(savedTrainingPlan, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteTrainingPlan(@PathVariable UUID userId) {
-        trainingPlanService.deleteTrainingPlan(userId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{trainingPlanId}")
+    public ResponseEntity<?> deleteTrainingPlan(@PathVariable Long trainingPlanId) {
+        trainingPlanService.deleteTrainingPlan(trainingPlanId);
+        return ResponseEntity.ok(Map.of("message", "Training Plan with ID " + trainingPlanId + " has been deleted"));
     }
 }

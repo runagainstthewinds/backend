@@ -8,7 +8,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-import java.util.Date;
+
+import java.time.LocalDate;
 
 import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
@@ -23,41 +24,43 @@ public class TrainingSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long trainingSessionId;
 
-    private Date date;
+    private TrainingType trainingType; 
+    private LocalDate date;
     private Double distance;
     private Double duration;
-    private Double goalPace;
-    private Boolean isCompleted;
-    private Double achievedPace;
+    private Double pace;
+    private Boolean isComplete;
     private Double achievedDistance;
     private Double achievedDuration;
+    private Double achievedPace;
     private Integer effort;
-    private TrainingType trainingType; 
+    private String notes; 
 
     public TrainingSession() {}
 
-    public TrainingSession(Date date, Double distance, Double duration, Double goalPace, Boolean isCompleted, Double achievedPace, Double achievedDistance, Double achievedDuration, Integer effort, TrainingType trainingType) {
+    public TrainingSession(TrainingType trainingType, LocalDate date, Double distance, Double duration, Double pace, Boolean isComplete, Double achievedDistance, Double achievedDuration, Double achievedPace, Integer effort, String notes) {
+        this.trainingType = trainingType; 
         this.date = date;
-        this.distance = distance; // In meters
-        this.duration = duration; // In minutes and decimal seconds
-        this.goalPace = goalPace; // In minutes and decimal seconds per kilometer
-        this.isCompleted = isCompleted;
+        this.distance = distance; 
+        this.duration = duration; 
+        this.pace = pace; 
+        this.isComplete = isComplete;
         this.achievedPace = achievedPace;
         this.achievedDistance = achievedDistance;
         this.achievedDuration = achievedDuration;
         this.effort = effort;
-        this.trainingType = trainingType; 
+        this.notes = notes;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "shoeId")
-    private Shoe shoe;
-
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
 
     @ManyToOne
     @JoinColumn(name = "trainingPlanId")
     private TrainingPlan trainingPlan;
+
+    @ManyToOne
+    @JoinColumn(name = "shoeId")
+    private Shoe shoe;
+    
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 }

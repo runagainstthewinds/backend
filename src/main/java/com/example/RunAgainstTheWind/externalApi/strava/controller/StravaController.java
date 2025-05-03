@@ -21,10 +21,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.Principal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -318,7 +318,7 @@ public class StravaController {
             TrainingSessionDTO dto = new TrainingSessionDTO();
             
             dto.setUserId(UUID.fromString(userID));
-            dto.setIsCompleted(true);
+            dto.setIsComplete(true);
 
             double distanceKm = BigDecimal.valueOf(activity.getDistance().doubleValue() / 1000.0)
             .setScale(3, RoundingMode.HALF_UP).doubleValue();
@@ -335,11 +335,12 @@ public class StravaController {
                 dto.setAchievedPace(paceRounded);
             }
             
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             try {
-                Date formattedDate = sdf.parse(sdf.format(Date.from(activity.getStartDate())));
-                dto.setDate(formattedDate);
-            } catch (ParseException e) {
+                String formattedDate = formatter.format(activity.getStartDate().atZone(java.time.ZoneId.systemDefault()));
+                LocalDate localDate = LocalDate.parse(formattedDate, formatter);
+                dto.setDate(localDate);
+            } catch (DateTimeParseException e) {
                 logger.error("Error parsing activity start date: {}", e.getMessage(), e);
                 throw new RuntimeException("Failed to parse activity start date", e);
             }
@@ -347,7 +348,7 @@ public class StravaController {
             dto.setTrainingSessionId(null);
             dto.setDistance(null);
             dto.setDuration(null);
-            dto.setGoalPace(null);
+            dto.setPace(null);
             dto.setEffort(null);
             dto.setTrainingType(TrainingType.UNSPECIFIED);
             

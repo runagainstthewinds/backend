@@ -1,6 +1,6 @@
 package com.example.RunAgainstTheWind.algorithm;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -13,17 +13,17 @@ public class Tester {
     public static void main(String[] args) {
         // Sample TrainingSession data
         TrainingSession[] trainingSessions = {
-            // 4:00 pace (10,000m in 40s)
+            // 4:00 pace (10,000m in 40 minutes)
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.UNSPECIFIED
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10000.0, 2400.0, 4.0, 0, ""
             ),
-            // 5:00 pace (3,000m in 15s)
+            // 5:00 pace (3,000m in 15 minutes)
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 3000.0, 15.0, 0, TrainingType.UNSPECIFIED
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 3000.0, 900.0, 5.0, 0, ""
             ),
-            // 6:00 pace (1,000m in 6s)
+            // 6:00 pace (1,000m in 6 minutes)
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0, TrainingType.UNSPECIFIED
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 1000.0, 360.0, 6.0, 0, ""
             )
         };
 
@@ -82,7 +82,7 @@ public class Tester {
                     String.format("%.0fm", session.getDistance()) : 
                     "Not set";
                 System.out.println("  Session " + (i + 1) + ": " + 
-                    session.getTrainingType() + " (Distance: " + distance + ", Time: " + session.getDuration() + ", Pace: " + session.getGoalPace() + ")");
+                    session.getTrainingType() + " (Distance: " + distance + ", Time: " + session.getDuration() + ", Pace: " + session.getPace() + ")");
             }
             System.out.println(); // Blank line between weeks
         }

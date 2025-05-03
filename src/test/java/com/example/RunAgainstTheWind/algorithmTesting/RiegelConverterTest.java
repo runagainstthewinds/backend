@@ -3,7 +3,7 @@ package com.example.RunAgainstTheWind.algorithmTesting;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,13 +21,13 @@ public class RiegelConverterTest {
         trainingSessions = new TrainingSession[] {
             // Date, distance(m), duration(s), goalPace, isCompleted, achievedPace, achievedDistance, achievedDuration, effort
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0,TrainingType.UNSPECIFIED
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10000.0, 40.0, 0.0, 0, ""
             ),
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 3000.0, 15.0, 0, TrainingType.UNSPECIFIED
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 3000.0, 15.0, 0.0, 0, ""
             ),
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 1000.0, 6.0, 0, TrainingType.UNSPECIFIED
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 1000.0, 6.0, 0.0, 0, ""
             )
         };
     }
@@ -70,7 +70,7 @@ public class RiegelConverterTest {
     public void testSingleSession() {
         TrainingSession[] singleSession = new TrainingSession[] {
             new TrainingSession(
-                new Date(), 0.0, 0.0, 0.0, true, 0.0, 10000.0, 40.0, 0, TrainingType.UNSPECIFIED
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10000.0, 40.0, 0.0, 0, ""
             )
         };
         double[] predictions = RiegelConverter.convertAllRunsToStandardDistance(singleSession, StandardDistance.FIVE_KM);
