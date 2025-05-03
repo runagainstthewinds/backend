@@ -15,15 +15,15 @@ public class Tester {
         TrainingSession[] trainingSessions = {
             // 4:00 pace (10,000m in 40 minutes)
             new TrainingSession(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10000.0, 2400.0, 4.0, 0, ""
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10000.0, 2400.0, 4.0, 0, "", null, null, null
             ),
             // 5:00 pace (3,000m in 15 minutes)
             new TrainingSession(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 3000.0, 900.0, 5.0, 0, ""
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 3000.0, 900.0, 5.0, 0, "", null, null, null
             ),
             // 6:00 pace (1,000m in 6 minutes)
             new TrainingSession(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 1000.0, 360.0, 6.0, 0, ""
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 1000.0, 360.0, 6.0, 0, "", null, null, null
             )
         };
 

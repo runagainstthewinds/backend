@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
@@ -19,6 +20,7 @@ import com.example.RunAgainstTheWind.enumeration.TrainingType;
 @Entity
 @Table(name = "training_session")
 @Data
+@NoArgsConstructor
 public class TrainingSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +38,19 @@ public class TrainingSession {
     private Integer effort;
     private String notes; 
 
-    public TrainingSession() {}
+    @ManyToOne
+    @JoinColumn(name = "trainingPlanId")
+    private TrainingPlan trainingPlan;
 
-    public TrainingSession(TrainingType trainingType, LocalDate date, Double distance, Double duration, Double pace, Boolean isComplete, Double achievedDistance, Double achievedDuration, Double achievedPace, Integer effort, String notes) {
+    @ManyToOne
+    @JoinColumn(name = "shoeId")
+    private Shoe shoe;
+    
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
+
+    public TrainingSession(TrainingType trainingType, LocalDate date, Double distance, Double duration, Double pace, Boolean isComplete, Double achievedDistance, Double achievedDuration, Double achievedPace, Integer effort, String notes, TrainingPlan trainingPlan, Shoe shoe, User user) {
         this.trainingType = trainingType; 
         this.date = date;
         this.distance = distance; 
@@ -51,16 +63,4 @@ public class TrainingSession {
         this.effort = effort;
         this.notes = notes;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "trainingPlanId")
-    private TrainingPlan trainingPlan;
-
-    @ManyToOne
-    @JoinColumn(name = "shoeId")
-    private Shoe shoe;
-    
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
 }

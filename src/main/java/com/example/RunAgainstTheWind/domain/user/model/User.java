@@ -15,9 +15,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/*
- * Model of a User who is trying to access the API.
- */
 @Data
 @Table(name = "`user`")
 @EqualsAndHashCode(exclude = {"userDetails"})

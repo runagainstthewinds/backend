@@ -142,25 +142,18 @@ public class StravaController {
      * @return Token response
      */
     @PostMapping("/exchange-token")
-    public ResponseEntity<?> exchangeToken(@RequestBody Map<String, String> requestBody, Principal principal) {
-        String code = requestBody.get("code");
-        if (code == null || code.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of(
-                "status", "error",
-                "message", "Authorization code is required"
-            ));
-        }
+    public ResponseEntity<?> exchangeToken(@RequestParam String code, Principal principal) {
+        logger.info("Exchanging token with code: {}, user: {}", code, principal.getName());
         try {
-            stravaService.exchangeToken(code, principal.getName());
-            return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "message", "Successfully connected Strava account"
-            ));
+            StravaTokenResponse response = stravaService.exchangeToken(code, principal.getName());
+            logger.info("Successfully exchanged token for user: {}", principal.getName());
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                "status", "error",
-                "message", e.getMessage()
-            ));
+            logger.error("Error exchanging token: {}", e.getMessage(), e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to exchange token");
+            error.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
     
@@ -311,48 +304,50 @@ public class StravaController {
      * @param activities List of Strava activities
      * @return List of TrainingSessionDTOs
      */
-    private List<TrainingSessionDTO> parseActivitiesToTrainingSessionDTOs(List<StravaActivityResponse> activities, String userID) {
+    private List<TrainingSessionDTO> parseActivitiesToTrainingSessionDTOs(List<StravaActivityResponse> activities, String userId) {
+        UUID uuid = UUID.fromString(userId);
         List<TrainingSessionDTO> trainingSessionDTOs = new ArrayList<>();
         
         for (StravaActivityResponse activity : activities) {
-            TrainingSessionDTO dto = new TrainingSessionDTO();
-            
-            dto.setUserId(UUID.fromString(userID));
-            dto.setIsComplete(true);
 
-            double distanceKm = BigDecimal.valueOf(activity.getDistance().doubleValue() / 1000.0)
-            .setScale(3, RoundingMode.HALF_UP).doubleValue();
-            dto.setAchievedDistance(distanceKm);
-
-            double durationMin = BigDecimal.valueOf(activity.getMovingTime().doubleValue() / 60.0)
-                .setScale(3, RoundingMode.HALF_UP).doubleValue();
-            dto.setAchievedDuration(durationMin);
-            
-            if (activity.getDistance() > 0 && activity.getMovingTime() > 0) {
-                double pace = (activity.getMovingTime() / activity.getDistance().doubleValue()) * 1000 / 60;
-                double paceRounded = BigDecimal.valueOf(pace)
-                    .setScale(3, RoundingMode.HALF_UP).doubleValue();
-                dto.setAchievedPace(paceRounded);
-            }
-            
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = null;
             try {
                 String formattedDate = formatter.format(activity.getStartDate().atZone(java.time.ZoneId.systemDefault()));
-                LocalDate localDate = LocalDate.parse(formattedDate, formatter);
-                dto.setDate(localDate);
+                localDate = LocalDate.parse(formattedDate, formatter);
             } catch (DateTimeParseException e) {
-                logger.error("Error parsing activity start date: {}", e.getMessage(), e);
                 throw new RuntimeException("Failed to parse activity start date", e);
             }
 
-            dto.setTrainingSessionId(null);
-            dto.setDistance(null);
-            dto.setDuration(null);
-            dto.setPace(null);
-            dto.setEffort(null);
-            dto.setTrainingType(TrainingType.UNSPECIFIED);
+            Double achievedDistance = BigDecimal.valueOf(activity.getDistance().doubleValue() / 1000.0)
+                .setScale(3, RoundingMode.HALF_UP).doubleValue();
+
+            Double achievedDuration = BigDecimal.valueOf(activity.getMovingTime().doubleValue() / 60.0)
+                .setScale(3, RoundingMode.HALF_UP).doubleValue();
             
-            trainingSessionDTOs.add(dto);
+            Double achievedPace = 0.0;
+            if (activity.getDistance() > 0 && activity.getMovingTime() > 0) {
+                Double pace = (activity.getMovingTime() / activity.getDistance().doubleValue()) * 1000 / 60;
+                achievedPace = BigDecimal.valueOf(pace).setScale(3, RoundingMode.HALF_UP).doubleValue();
+            }
+
+            TrainingSessionDTO trainingSessionDTO = new TrainingSessionDTO(
+                TrainingType.UNSPECIFIED,
+                localDate,
+                (Double) null,
+                (Double) null,
+                (Double) null,
+                true,
+                achievedDistance,
+                achievedDuration,
+                achievedPace,
+                (Integer) null,
+                (String) null,
+                (Long) null,
+                (Long) null,
+                uuid
+            );
+            trainingSessionDTOs.add(trainingSessionDTO);
         }
         
         return trainingSessionDTOs;
