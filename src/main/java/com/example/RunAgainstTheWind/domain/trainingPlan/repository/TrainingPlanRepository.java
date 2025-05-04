@@ -29,4 +29,22 @@ public interface TrainingPlanRepository extends JpaRepository<TrainingPlan, Long
         WHERE tp.user.userId = :userUUID
     """)
     List<TrainingPlanDTO> getTrainingPlanByUserId(@Param("userUUID") UUID userUUID);
+
+
+    // Find the current training plan by user ID
+    @Query("""
+        SELECT new com.example.RunAgainstTheWind.dto.trainingPlan.TrainingPlanDTO(
+            tp.trainingPlanId,
+            tp.planName,
+            tp.startDate,
+            tp.endDate,
+            tp.goalDistance,
+            tp.goalTime,
+            tp.isComplete,
+            tp.user.userId
+        )
+        FROM TrainingPlan tp
+        WHERE tp.user.userId = :userUUID AND tp.isComplete = false
+    """)
+    TrainingPlanDTO getCurrentTrainingPlanByUserId(@Param("userUUID") UUID userUUID);
 }
