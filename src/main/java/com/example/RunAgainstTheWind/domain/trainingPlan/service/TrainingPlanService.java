@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.domain.trainingPlan.service;
 
 import com.example.RunAgainstTheWind.dto.trainingPlan.TrainingPlanDTO;
+import com.example.RunAgainstTheWind.exceptions.trainingPlan.ActiveTrainingPlanExistsException;
 import com.example.RunAgainstTheWind.application.validation.ValidationService;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.trainingPlan.repository.TrainingPlanRepository;
@@ -30,20 +31,25 @@ public class TrainingPlanService {
 
     public TrainingPlanDTO getCurrentTrainingPlanByUserId(UUID userId) {
         v.validateUserExistsAndReturn(userId);
-        return trainingPlanRepository.getCurrentTrainingPlanByUserId(userId);
+        return trainingPlanRepository.getCurrentTrainingPlanByUserId(userId)
+            .orElseThrow(() -> new EntityNotFoundException("No active training plan found for user with id: " + userId));
     }
 
     public TrainingPlanDTO createTrainingPlan(UUID userId, TrainingPlanDTO trainingPlanDTO) {
         User user = v.validateUserExistsAndReturn(userId);
 
+        if (trainingPlanRepository.getCurrentTrainingPlanByUserId(userId).isPresent()) {
+            throw new ActiveTrainingPlanExistsException("An active training plan already exists for this user.");
+        }
+
         TrainingPlan trainingPlan = new TrainingPlan(
-                trainingPlanDTO.getPlanName(),
-                trainingPlanDTO.getStartDate(),
-                trainingPlanDTO.getEndDate(),
-                trainingPlanDTO.getGoalDistance(),
-                trainingPlanDTO.getGoalTime(),
-                false,
-                user
+            trainingPlanDTO.getPlanName(),
+            trainingPlanDTO.getStartDate(),
+            trainingPlanDTO.getEndDate(),
+            trainingPlanDTO.getGoalDistance(),
+            trainingPlanDTO.getGoalTime(),
+            false,
+            user
         );
         TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlan);
 
