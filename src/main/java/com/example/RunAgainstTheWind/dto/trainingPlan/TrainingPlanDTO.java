@@ -25,7 +25,7 @@ public class TrainingPlanDTO {
     private Double goalTime;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private boolean isComplete;
+    private Boolean isComplete;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)   
     private UUID userId;

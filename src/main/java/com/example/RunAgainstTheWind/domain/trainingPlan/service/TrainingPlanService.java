@@ -48,7 +48,7 @@ public class TrainingPlanService {
         TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlan);
 
         trainingPlanDTO.setTrainingPlanId(savedTrainingPlan.getTrainingPlanId());
-        trainingPlanDTO.setComplete(false);
+        trainingPlanDTO.setIsComplete(false);
         trainingPlanDTO.setUserId(userId);
         return trainingPlanDTO;
     }
