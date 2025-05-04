@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.domain.trainingPlan.service;
 
 import com.example.RunAgainstTheWind.dto.trainingPlan.TrainingPlanDTO;
+import com.example.RunAgainstTheWind.exceptions.trainingPlan.ActiveTrainingPlanExistsException;
 import com.example.RunAgainstTheWind.application.validation.ValidationService;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 import com.example.RunAgainstTheWind.domain.trainingPlan.repository.TrainingPlanRepository;
@@ -38,7 +39,7 @@ public class TrainingPlanService {
         User user = v.validateUserExistsAndReturn(userId);
 
         if (trainingPlanRepository.getCurrentTrainingPlanByUserId(userId).isPresent()) {
-            throw new IllegalStateException("An active training plan already exists for this user.");
+            throw new ActiveTrainingPlanExistsException("An active training plan already exists for this user.");
         }
 
         TrainingPlan trainingPlan = new TrainingPlan(
