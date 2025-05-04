@@ -7,6 +7,7 @@ import com.example.RunAgainstTheWind.domain.trainingPlan.repository.TrainingPlan
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -22,6 +23,7 @@ public class TrainingPlanService {
     @Autowired
     private ValidationService v;
 
+    @Transactional(readOnly = true)
     public List<TrainingPlanDTO> getTrainingPlanByUserId(UUID userId) {
         return trainingPlanRepository.getTrainingPlanByUserId(userId);
     }
@@ -34,14 +36,15 @@ public class TrainingPlanService {
     public TrainingPlanDTO createTrainingPlan(UUID userId, TrainingPlanDTO trainingPlanDTO) {
         User user = v.validateUserExistsAndReturn(userId);
 
-        TrainingPlan trainingPlan = new TrainingPlan();
-        trainingPlan.setPlanName(trainingPlanDTO.getPlanName());
-        trainingPlan.setStartDate(trainingPlanDTO.getStartDate());
-        trainingPlan.setEndDate(trainingPlanDTO.getEndDate());
-        trainingPlan.setGoalDistance(trainingPlanDTO.getGoalDistance());
-        trainingPlan.setGoalTime(trainingPlanDTO.getGoalTime());
-        trainingPlan.setComplete(false);
-        trainingPlan.setUser(user);
+        TrainingPlan trainingPlan = new TrainingPlan(
+                trainingPlanDTO.getPlanName(),
+                trainingPlanDTO.getStartDate(),
+                trainingPlanDTO.getEndDate(),
+                trainingPlanDTO.getGoalDistance(),
+                trainingPlanDTO.getGoalTime(),
+                false,
+                user
+        );
         TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlan);
 
         trainingPlanDTO.setTrainingPlanId(savedTrainingPlan.getTrainingPlanId());
@@ -50,9 +53,10 @@ public class TrainingPlanService {
         return trainingPlanDTO;
     }
 
+    @Transactional
     public void deleteTrainingPlan(Long trainingPlanId) {
         TrainingPlan trainingPlan = trainingPlanRepository.findById(trainingPlanId)
-                .orElseThrow(() -> new EntityNotFoundException("Training plan not found with id: " + trainingPlanId));
+            .orElseThrow(() -> new EntityNotFoundException("Training plan not found with id: " + trainingPlanId));
         trainingPlanRepository.delete(trainingPlan);
     }
 }

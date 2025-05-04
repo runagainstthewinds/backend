@@ -12,10 +12,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "training_plan")
 @Data
+@NoArgsConstructor
 public class TrainingPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,18 +30,17 @@ public class TrainingPlan {
     private Double goalTime;
     private boolean isComplete;
 
-    public TrainingPlan() {}
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 
-    public TrainingPlan(String planName, LocalDate startDate, LocalDate endDate, Double goalDistance, Double goalTime, Boolean isComplete) {
+    public TrainingPlan(String planName, LocalDate startDate, LocalDate endDate, Double goalDistance, Double goalTime, Boolean isComplete, User user) {
         this.planName = planName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalDistance = goalDistance;
         this.goalTime = goalTime;
         this.isComplete = isComplete;
+        this.user = user;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
 }   

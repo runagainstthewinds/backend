@@ -11,15 +11,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user_achievement")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserAchievement {
 
     @Id
@@ -35,4 +31,10 @@ public class UserAchievement {
     private Achievement achievement;
 
     private LocalDate dateAchieved;
+
+    public UserAchievement(User user, Achievement achievement, LocalDate dateAchieved) {
+        this.user = user;
+        this.achievement = achievement;
+        this.dateAchieved = dateAchieved;
+    }
 }

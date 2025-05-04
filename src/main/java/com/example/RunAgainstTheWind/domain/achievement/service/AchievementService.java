@@ -33,7 +33,6 @@ public class AchievementService {
     @Transactional(readOnly = true)
     public List<AchievementDTO> getUserAchievements(UUID userId) {
         v.validateUserExists(userId);
-        
         return achievementRepository.findAchievementsByUserId(userId);
     }
 
@@ -49,17 +48,12 @@ public class AchievementService {
             throw new AchievementAlreadyAssignedException("Achievement already assigned to user: " + achievementId);
         }
 
-        UserAchievement userAchievement = new UserAchievement();
-        userAchievement.setUser(user);
-        userAchievement.setAchievement(achievement);
-        userAchievement.setDateAchieved(LocalDate.now());
-        userAchievementRepository.save(userAchievement);
-
+        UserAchievement userAchievement = userAchievementRepository.save(new UserAchievement(user, achievement, LocalDate.now()));
         return new AchievementDTO(
-            achievement.getAchievementId(),
-            achievement.getAchievementName(),
+            achievement.getAchievementId(), 
+            achievement.getAchievementName(), 
             achievement.getDescription(),
-            userAchievement.getDateAchieved(),
+            userAchievement.getDateAchieved(), 
             userId
         );
     }
