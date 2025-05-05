@@ -1,5 +1,6 @@
 package com.example.RunAgainstTheWind.domain.user.controller;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.service.UserService;
 import com.example.RunAgainstTheWind.dto.user.UserDTO;
+import com.example.RunAgainstTheWind.dto.user.UserUpdateDTO;
 
 /*
  * Controller responsible for handling authentication for a user trying to access the api.
@@ -50,5 +52,11 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
         UserDTO user = userService.getUserByUsername(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PutMapping("/users/settings/{userId}")
+    public ResponseEntity<UserDTO> updateUserSettings(@PathVariable UUID userId, @RequestBody UserUpdateDTO userDTO) {
+        UserDTO updatedUser = userService.updateUserSettings(userId, userDTO);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 }
