@@ -1,5 +1,7 @@
 package com.example.RunAgainstTheWind.domain.user.service;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.RunAgainstTheWind.application.auth.JWTService;
+import com.example.RunAgainstTheWind.application.validation.ValidationService;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
 import com.example.RunAgainstTheWind.dto.user.UserDTO;
+import com.example.RunAgainstTheWind.dto.user.UserUpdateDTO;
 
 /*
  * Service responsible for handling user registration and login
@@ -27,6 +31,9 @@ public class UserService {
 
     @Autowired
     AuthenticationManager authManager;
+
+    @Autowired
+    private ValidationService v;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -53,5 +60,23 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDTO getUserByUsername(String username) {
         return userRepository.getUserByUsername(username);
+    }
+
+    @Transactional
+    public UserDTO updateUserSettings(UUID userId, UserUpdateDTO userDTO) {
+        User user = v.validateUserExistsAndReturn(userId);
+
+        if (userDTO.getUsername() != null) user.setUsername(userDTO.getUsername());
+        if (userDTO.getEmail() != null) user.setEmail(userDTO.getEmail());
+        if (userDTO.getPassword() != null) user.setPassword(encoder.encode(userDTO.getPassword()));
+
+        UserDTO dto = new UserDTO(
+            user.getUserId(), 
+            user.getUsername(), 
+            user.getEmail(), 
+            user.getGoogleCalendarToken(), 
+            user.getStravaToken(), 
+            user.getStravaRefreshToken());
+        return dto;
     }
 }
