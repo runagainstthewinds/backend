@@ -13,7 +13,7 @@ import com.example.RunAgainstTheWind.domain.trainingPlan.service.TrainingPlanSer
 import com.example.RunAgainstTheWind.dto.trainingPlan.TrainingPlanDTO;
 
 @RestController
-@RequestMapping("/trainingplan")
+@RequestMapping("/trainingplans")
 public class TrainingPlanController {
 
     @Autowired
