@@ -109,7 +109,8 @@ public class TrainingPlanService {
             }
         }
 
-        trainingPlanRepository.save(trainingPlan);
+        TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlan);
+        trainingPlanDTO.setTrainingPlanId(savedTrainingPlan.getTrainingPlanId());
      
         // Return both the training plan and sessions as separate entities
         Map<String, Object> response = new HashMap<>();
