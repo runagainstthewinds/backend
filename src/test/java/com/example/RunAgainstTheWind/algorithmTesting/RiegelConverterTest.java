@@ -62,7 +62,7 @@ public class RiegelConverterTest {
     @Test
     public void testEmptySessionsArray() {
         TrainingSessionDTO emptySessions = new TrainingSessionDTO();
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             RiegelConverter.convertAllRunsToStandardDistance(List.of(emptySessions), StandardDistance.FIVE_KM);
         }, "Empty input array should throw IllegalArgumentException");
     }

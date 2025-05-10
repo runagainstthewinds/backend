@@ -26,7 +26,7 @@ public class TrainingPlanSkeleton {
     private static final int HARD_SESSIONS_PER_WEEK = 6;
     
     private final Difficulty difficulty; // Easy, Medium, Hard
-    private final Double length; // Weeks
+    private final int length; // Weeks
     private final LocalDate startDate;
     private final LocalDate endDate;
     private final TrainingPlan trainingPlan;
@@ -60,9 +60,9 @@ public class TrainingPlanSkeleton {
      * 
      * @param startDate The start date of the training plan
      * @param endDate The end date of the training plan
-     * @return The number of full weeks as a Double
+     * @return The number of full weeks as an int
      */
-    private static Double calculateFullWeeks(LocalDate startDate, LocalDate endDate) {
+    private static int calculateFullWeeks(LocalDate startDate, LocalDate endDate) {
         // Adjust start date to next Monday if not already Monday
         LocalDate adjustedStartDate = startDate;
         if (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
@@ -77,7 +77,7 @@ public class TrainingPlanSkeleton {
         
         // Calculate weeks between adjusted dates
         long days = ChronoUnit.DAYS.between(adjustedStartDate, adjustedEndDate) + 1;
-        return Double.valueOf(Math.floor(days / 7.0));
+        return (int) Math.floor(days / 7.0);
     }
 
     /**
