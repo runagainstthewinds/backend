@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
@@ -20,7 +20,7 @@ public class RunnerStatistics {
 
     private static final double DEFAULT_DEVIATION_FACTOR = 0.7; 
 
-    private final TrainingSession[] trainingSessions;
+    private final List<TrainingSessionDTO> trainingSessions;
     private double[] standardizedTrainingSessions;
     private final StandardDistance standardDistance;
     private final double lowerDeviationFactor;   // Smaller value mean more data in extremeties
@@ -40,7 +40,7 @@ public class RunnerStatistics {
     private double lowIntensityMeanTime;
 
     // Default constructor if no deviation factors are provided
-    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance) throws MissingDataException {
+    public RunnerStatistics(List<TrainingSessionDTO> trainingSessions, StandardDistance standardDistance) throws MissingDataException {
         this(trainingSessions, standardDistance, DEFAULT_DEVIATION_FACTOR, DEFAULT_DEVIATION_FACTOR);
     }
 
@@ -52,7 +52,7 @@ public class RunnerStatistics {
      * @param lowerDeviationFactor  Factor for high-intensity cutoff
      * @param upperDeviationFactor  Factor for low-intensity cutoff
      */
-    public RunnerStatistics(TrainingSession[] trainingSessions, StandardDistance standardDistance,
+    public RunnerStatistics(List<TrainingSessionDTO> trainingSessions, StandardDistance standardDistance,
                             double lowerDeviationFactor, double upperDeviationFactor)
             throws MissingDataException {
         validateInputs(trainingSessions, standardDistance, lowerDeviationFactor, upperDeviationFactor);
@@ -84,12 +84,12 @@ public class RunnerStatistics {
     /**
      * Validates constructor inputs.
      */
-    private void validateInputs(TrainingSession[] sessions, StandardDistance distance,
+    private void validateInputs(List<TrainingSessionDTO> sessions, StandardDistance distance,
                                double lowerFactor, double upperFactor) {
-        if (sessions == null || sessions.length == 0) {
+        if (sessions == null || sessions.isEmpty()) {
             throw new IllegalArgumentException("Training sessions array cannot be null or empty");
         }
-        for (TrainingSession session : sessions) {
+        for (TrainingSessionDTO session : sessions) {
             if (session == null) {
                 throw new IllegalArgumentException("Training session cannot be null");
             }

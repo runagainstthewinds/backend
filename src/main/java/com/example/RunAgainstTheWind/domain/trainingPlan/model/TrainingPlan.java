@@ -3,6 +3,7 @@ package com.example.RunAgainstTheWind.domain.trainingPlan.model;
 import java.time.LocalDate;
 
 import com.example.RunAgainstTheWind.domain.user.model.User;
+import com.example.RunAgainstTheWind.enumeration.Difficulty;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,19 +28,19 @@ public class TrainingPlan {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double goalDistance;
-    private Double goalTime;
+    private Difficulty difficulty;
     private boolean isComplete;
 
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
 
-    public TrainingPlan(String planName, LocalDate startDate, LocalDate endDate, Double goalDistance, Double goalTime, Boolean isComplete, User user) {
+    public TrainingPlan(String planName, LocalDate startDate, LocalDate endDate, Double goalDistance, Difficulty difficulty, boolean isComplete, User user) {
         this.planName = planName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalDistance = goalDistance;
-        this.goalTime = goalTime;
+        this.difficulty = difficulty;
         this.isComplete = isComplete;
         this.user = user;
     }

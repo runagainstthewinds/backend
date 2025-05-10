@@ -1,20 +1,23 @@
 package com.example.RunAgainstTheWind.algorithm;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.enumeration.Difficulty;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
+import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 
 import lombok.Getter;
 
 /**
- * Creates a training plan based on runner history, difficulty, length, and goal distance.
+ * Creates a training plan based on runner history, difficulty, dates, and goal distance.
  * Configures sessions for long runs, tempo runs, intervals, and recovery runs.
  */
 @Getter
@@ -33,27 +36,33 @@ public class TrainingPlanCreator {
     private static final int ROUNDING_SCALE = 100;
 
     // Inputs
-    private final TrainingSession[] runHistory;
+    private final List<TrainingSessionDTO> runHistory;
     private final Difficulty difficulty; // Easy, Medium, Hard
-    private final int length; // weeks
-    private final int goalDistance; // m 
+    private final LocalDate startDate;
+    private final LocalDate endDate;
+    private final Double goalDistance; // m 
     private final StandardDistance standardDistance = StandardDistance.FIVE_KM; 
     private final RunnerStatistics runnerStatistics;
     private final TrainingPlanSkeleton trainingPlanSkeleton;
+    private final TrainingPlan trainingPlan;
 
     // Session counts
     private final Map<TrainingType, Integer> sessionCounts;
     private final Map<TrainingType, List<TrainingSession>> sessionsByType;
 
-    public TrainingPlanCreator(TrainingSession[] runHistory, Difficulty difficulty, int length, int goalDistance) throws MissingDataException {
-        validateInputs(runHistory, difficulty, length, goalDistance, standardDistance);
+    public TrainingPlanCreator(List<TrainingSessionDTO> runHistory, Difficulty difficulty, 
+                             LocalDate startDate, LocalDate endDate, Double goalDistance,
+                             TrainingPlan trainingPlan) throws MissingDataException {
+        validateInputs(runHistory, difficulty, startDate, endDate, goalDistance, standardDistance);
 
         this.runHistory = runHistory;
         this.difficulty = difficulty;
-        this.length = length;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.goalDistance = goalDistance;
+        this.trainingPlan = trainingPlan;
         this.runnerStatistics = new RunnerStatistics(this.runHistory, StandardDistance.FIVE_KM);
-        this.trainingPlanSkeleton = new TrainingPlanSkeleton(this.difficulty, this.length);
+        this.trainingPlanSkeleton = new TrainingPlanSkeleton(this.difficulty, this.startDate, this.endDate, this.trainingPlan);
 
         this.sessionCounts = new EnumMap<>(TrainingType.class);
         this.sessionsByType = new EnumMap<>(TrainingType.class);
@@ -64,12 +73,13 @@ public class TrainingPlanCreator {
     /**
      * Validates constructor inputs.
      */
-    private void validateInputs(TrainingSession[] runHistory, Difficulty difficulty, int length,
-                               int goalDistance, StandardDistance standardDistance) {
-        if (runHistory == null || runHistory.length == 0) {
+    private void validateInputs(List<TrainingSessionDTO> runHistory, Difficulty difficulty, 
+                              LocalDate startDate, LocalDate endDate, Double goalDistance, 
+                              StandardDistance standardDistance) {
+        if (runHistory == null || runHistory.isEmpty()) {
             throw new MissingDataException("Run history cannot be null or empty");
         }
-        for (TrainingSession session : runHistory) {
+        for (TrainingSessionDTO session : runHistory) {
             if (session == null) {
                 throw new MissingDataException("Run history contains null sessions");
             }
@@ -77,10 +87,16 @@ public class TrainingPlanCreator {
         if (difficulty == null) {
             throw new MissingDataException("Difficulty cannot be null");
         }
-        if (length <= 0) {
-            throw new MissingDataException("Plan length must be positive");
+        if (startDate == null) {
+            throw new MissingDataException("Start date cannot be null");
         }
-        if (goalDistance <= 0) {
+        if (endDate == null) {
+            throw new MissingDataException("End date cannot be null");
+        }
+        if (endDate.isBefore(startDate)) {
+            throw new MissingDataException("End date must be after start date");
+        }
+        if (goalDistance <= 0.0) {
             throw new MissingDataException("Goal distance must be positive");
         }
         if (standardDistance == null) {

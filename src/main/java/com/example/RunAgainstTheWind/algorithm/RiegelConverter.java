@@ -1,6 +1,8 @@
 package com.example.RunAgainstTheWind.algorithm;
 
-import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import java.util.List;
+
+import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
 
 /**
@@ -30,13 +32,13 @@ public class RiegelConverter {
      * @param standardDistance Standard distance to convert to
      * @return Array of predicted times in seconds for standard distance
      */
-    public static double[] convertAllRunsToStandardDistance(TrainingSession[] trainingSessions, StandardDistance standardDistance) {
-        if (trainingSessions == null || trainingSessions.length == 0 || standardDistance == null) throw new IllegalArgumentException("Invalid input");
+    public static double[] convertAllRunsToStandardDistance(List<TrainingSessionDTO> trainingSessions, StandardDistance standardDistance) {
+        if (trainingSessions == null || trainingSessions.isEmpty() || standardDistance == null) throw new IllegalArgumentException("Invalid input");
         
 
-        double[] standardizedTimes = new double[trainingSessions.length];
-        for (int i = 0; i< trainingSessions.length; i++) {
-            standardizedTimes[i] = predictTime(trainingSessions[i].getAchievedDistance(), trainingSessions[i].getAchievedDuration(), standardDistance.getMeters());
+        double[] standardizedTimes = new double[trainingSessions.size()];
+        for (int i = 0; i< trainingSessions.size(); i++) {
+            standardizedTimes[i] = predictTime(trainingSessions.get(i).getAchievedDistance(), trainingSessions.get(i).getAchievedDuration(), standardDistance.getMeters());
         }
 
         return standardizedTimes;

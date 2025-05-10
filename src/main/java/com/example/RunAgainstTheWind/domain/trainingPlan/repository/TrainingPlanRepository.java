@@ -22,7 +22,7 @@ public interface TrainingPlanRepository extends JpaRepository<TrainingPlan, Long
             tp.startDate,
             tp.endDate,
             tp.goalDistance,
-            tp.goalTime,
+            tp.difficulty,
             tp.isComplete,
             tp.user.userId
         )
@@ -40,7 +40,7 @@ public interface TrainingPlanRepository extends JpaRepository<TrainingPlan, Long
             tp.startDate,
             tp.endDate,
             tp.goalDistance,
-            tp.goalTime,
+            tp.difficulty,
             tp.isComplete,
             tp.user.userId
         )

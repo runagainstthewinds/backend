@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.RunAgainstTheWind.domain.trainingPlan.service.TrainingPlanService;
 import com.example.RunAgainstTheWind.dto.trainingPlan.TrainingPlanDTO;
+import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 
 @RestController
 @RequestMapping("/trainingplans")
@@ -35,11 +36,11 @@ public class TrainingPlanController {
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<TrainingPlanDTO> createTrainingPlan(
+    public ResponseEntity<Map<String, Object>> createTrainingPlan(
             @PathVariable UUID userId,
             @RequestBody TrainingPlanDTO trainingPlanDTO) {
-        TrainingPlanDTO savedTrainingPlan = trainingPlanService.createTrainingPlan(userId, trainingPlanDTO);
-        return new ResponseEntity<>(savedTrainingPlan, HttpStatus.CREATED);
+        Map<String, Object> response = trainingPlanService.createTrainingPlan(userId, trainingPlanDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{trainingPlanId}")

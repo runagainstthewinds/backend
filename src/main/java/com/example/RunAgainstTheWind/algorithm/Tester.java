@@ -5,35 +5,54 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.enumeration.Difficulty;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
+import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 
 public class Tester {
     public static void main(String[] args) {
         // Sample TrainingSession data
-        TrainingSession[] trainingSessions = {
+        List<TrainingSessionDTO> trainingSessions = List.of(
             // 4:00 pace (10,000m in 40 minutes)
-            new TrainingSession(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10000.0, 2400.0, 4.0, 0, "", null, null, null
+            new TrainingSessionDTO(
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10000.0, 40.0, 4.0, 0, "", null, null, null
             ),
             // 5:00 pace (3,000m in 15 minutes)
-            new TrainingSession(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 3000.0, 900.0, 5.0, 0, "", null, null, null
+            new TrainingSessionDTO(
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 3000.0, 17.5, 3.5, 0, "", null, null, null
             ),
             // 6:00 pace (1,000m in 6 minutes)
-            new TrainingSession(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 1000.0, 360.0, 6.0, 0, "", null, null, null
+            new TrainingSessionDTO(
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 1000.0, 3.0, 3.0, 0, "", null, null, null
             )
-        };
+        );
+
+        // Set up dates for a 6-week training plan
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusWeeks(6);
+
+        // Create a dummy training plan for testing
+        TrainingPlan dummyTrainingPlan = new TrainingPlan(
+            "Test Plan",
+            startDate,
+            endDate,
+            10000.0,
+            Difficulty.HARD,
+            false,
+            null  // No user for testing
+        );
 
         // Initialize TrainingPlanCreator
         try {
             TrainingPlanCreator planCreator = new TrainingPlanCreator(
-                trainingSessions, // runHistory
+                trainingSessions,         // runHistory
                 Difficulty.HARD,          // difficulty
-                6,               // length (weeks)
-                10000             // distance (meters, e.g., 5K)
+                startDate,               // startDate
+                endDate,                 // endDate
+                10000.0,                 // distance (meters, e.g., 5K)
+                dummyTrainingPlan        // trainingPlan
             );
 
             // Access RunnerStatistics via TrainingPlanCreator
@@ -44,11 +63,6 @@ public class Tester {
             System.out.println("High Intensity Sessions: " + runnerStatistics.getHighIntensitySessions());
             System.out.println("Medium Intensity Sessions: " + runnerStatistics.getMediumIntensitySessions());
             System.out.println("Low Intensity Sessions: " + runnerStatistics.getLowIntensitySessions());
-            //System.out.println("Statistics: ");
-            //System.out.println("Mean time: " + runnerStatistics.getMeanTime());
-            //System.out.println("Standard deviation: " + runnerStatistics.getStandardDeviation());
-            //System.out.println("Fast Cutoff: " + runnerStatistics.getFastCutoff());
-            //System.out.println("Slow Cutoff: " + runnerStatistics.getSlowCutoff());
 
             // Print training type counts (set by TrainingPlanCreator)
             for (TrainingType type : TrainingType.values()) {
@@ -81,8 +95,15 @@ public class Tester {
                 String distance = session.getDistance() != null ? 
                     String.format("%.0fm", session.getDistance()) : 
                     "Not set";
+                String date = session.getDate() != null ?
+                    session.getDate().toString() :
+                    "No date set";
                 System.out.println("  Session " + (i + 1) + ": " + 
-                    session.getTrainingType() + " (Distance: " + distance + ", Time: " + session.getDuration() + ", Pace: " + session.getPace() + ")");
+                    session.getTrainingType() + 
+                    " (Date: " + date + 
+                    ", Distance: " + distance + 
+                    ", Time: " + session.getDuration() + 
+                    ", Pace: " + session.getPace() + ")");
             }
             System.out.println(); // Blank line between weeks
         }

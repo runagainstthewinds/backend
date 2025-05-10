@@ -19,12 +19,12 @@ public class TrainingPlanSkeletonTest {
     @BeforeEach
     void setUp() {
         // Initialize with a default plan for reuse if needed
-        plan = new TrainingPlanSkeleton(Difficulty.EASY, 6);
+        plan = new TrainingPlanSkeleton(Difficulty.EASY, 6.0);
     }
 
     @Test
     void testEasyDifficultyFirstHalf() {
-        plan = new TrainingPlanSkeleton(Difficulty.EASY, 6);
+        plan = new TrainingPlanSkeleton(Difficulty.EASY, 6.0);
         HashMap<Integer, List<TrainingSession>> trainingPlan = plan.createTrainingPlanSkeleton();
 
         // First half (weeks 1-3) should have 2 sessions: Tempo, Long Run
@@ -43,7 +43,7 @@ public class TrainingPlanSkeletonTest {
 
     @Test
     void testEasyDifficultySecondHalf() {
-        plan = new TrainingPlanSkeleton(Difficulty.EASY, 6);
+        plan = new TrainingPlanSkeleton(Difficulty.EASY, 6.0);
         HashMap<Integer, List<TrainingSession>> trainingPlan = plan.createTrainingPlanSkeleton();
 
         // Second half (weeks 4-6) should have 3 sessions: Tempo, Long Run, Interval
@@ -64,7 +64,7 @@ public class TrainingPlanSkeletonTest {
 
     @Test
     void testMediumDifficultyFirstHalf() {
-        plan = new TrainingPlanSkeleton(Difficulty.MEDIUM, 6);
+        plan = new TrainingPlanSkeleton(Difficulty.MEDIUM, 6.0);
         HashMap<Integer, List<TrainingSession>> trainingPlan = plan.createTrainingPlanSkeleton();
 
         // First half (weeks 1-3) should have 4 sessions: Interval, Tempo, Long Run, Recovery
@@ -87,7 +87,7 @@ public class TrainingPlanSkeletonTest {
 
     @Test
     void testMediumDifficultySecondHalf() {
-        plan = new TrainingPlanSkeleton(Difficulty.MEDIUM, 6);
+        plan = new TrainingPlanSkeleton(Difficulty.MEDIUM, 6.0);
         HashMap<Integer, List<TrainingSession>> trainingPlan = plan.createTrainingPlanSkeleton();
 
         // Second half (weeks 4-6) should have 5 sessions: Interval, Tempo, Long Run, Recovery, Recovery
@@ -110,7 +110,7 @@ public class TrainingPlanSkeletonTest {
 
     @Test
     void testHardDifficultyFirstHalf() {
-        plan = new TrainingPlanSkeleton(Difficulty.HARD, 6);
+        plan = new TrainingPlanSkeleton(Difficulty.HARD, 6.0);
         HashMap<Integer, List<TrainingSession>> trainingPlan = plan.createTrainingPlanSkeleton();
 
         // First half (weeks 1-3) should have 6 sessions: Interval, Tempo, Long Run, Recovery, Recovery, Recovery
@@ -133,7 +133,7 @@ public class TrainingPlanSkeletonTest {
 
     @Test
     void testHardDifficultySecondHalf() {
-        plan = new TrainingPlanSkeleton(Difficulty.HARD, 6);
+        plan = new TrainingPlanSkeleton(Difficulty.HARD, 6.0);
         HashMap<Integer, List<TrainingSession>> trainingPlan = plan.createTrainingPlanSkeleton();
 
         // Second half (weeks 4-6) should have 7 sessions: Interval, Tempo, Long Run, Recovery, Recovery, Recovery, Recovery
@@ -156,7 +156,7 @@ public class TrainingPlanSkeletonTest {
 
     @Test
     void testPlanLength() {
-        plan = new TrainingPlanSkeleton(Difficulty.EASY, 5);
+        plan = new TrainingPlanSkeleton(Difficulty.EASY, 5.0);
         HashMap<Integer, List<TrainingSession>> trainingPlan = plan.createTrainingPlanSkeleton();
         assertEquals(5, trainingPlan.size(), "Plan should have 5 weeks");
 
@@ -168,7 +168,7 @@ public class TrainingPlanSkeletonTest {
 
     @Test
     void testOddLengthHalfwayPoint() {
-        plan = new TrainingPlanSkeleton(Difficulty.EASY, 5);
+        plan = new TrainingPlanSkeleton(Difficulty.EASY, 5.0);
         HashMap<Integer, List<TrainingSession>> trainingPlan = plan.createTrainingPlanSkeleton();
 
         // Halfway point for length 5 is week 3 (ceiling of 5/2 = 3)
