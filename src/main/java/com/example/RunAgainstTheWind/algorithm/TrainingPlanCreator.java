@@ -31,8 +31,9 @@ public class TrainingPlanCreator {
     private static final double TEMPO_END_DURATION_FACTOR = 0.9;
     private static final double INTERVAL_START_FACTOR = 0.25;
     private static final double INTERVAL_END_FACTOR = 0.5;
+    private static final double INTERVAL_DURATION_FACTOR = 1.4;
     private static final double RECOVERY_RUN_DISTANCE_FACTOR = 0.25;
-    private static final double INTERVAL_SET_DISTANCE = 400.0;
+    private static final double INTERVAL_SET_DISTANCE = 0.5;
     private static final int ROUNDING_SCALE = 100;
 
     // Inputs
@@ -40,7 +41,7 @@ public class TrainingPlanCreator {
     private final Difficulty difficulty; // Easy, Medium, Hard
     private final LocalDate startDate;
     private final LocalDate endDate;
-    private final Double goalDistance; // m 
+    private final Double goalDistance; // in meters
     private final StandardDistance standardDistance = StandardDistance.FIVE_KM; 
     private final RunnerStatistics runnerStatistics;
     private final TrainingPlanSkeleton trainingPlanSkeleton;
@@ -50,16 +51,27 @@ public class TrainingPlanCreator {
     private final Map<TrainingType, Integer> sessionCounts;
     private final Map<TrainingType, List<TrainingSession>> sessionsByType;
 
+    /**
+     * Creates a new training plan creator.
+     * @param runHistory List of previous training sessions
+     * @param difficulty Difficulty level of the plan
+     * @param startDate Start date of the plan
+     * @param endDate End date of the plan
+     * @param goalDistanceKm Goal distance in kilometers
+     * @param trainingPlan The training plan to associate sessions with
+     * @throws MissingDataException if required data is missing
+     */
     public TrainingPlanCreator(List<TrainingSessionDTO> runHistory, Difficulty difficulty, 
-                             LocalDate startDate, LocalDate endDate, Double goalDistance,
+                             LocalDate startDate, LocalDate endDate, Double goalDistanceKm,
                              TrainingPlan trainingPlan) throws MissingDataException {
-        validateInputs(runHistory, difficulty, startDate, endDate, goalDistance, standardDistance);
+        
+        validateInputs(runHistory, difficulty, startDate, endDate, goalDistanceKm, standardDistance);
 
         this.runHistory = runHistory;
         this.difficulty = difficulty;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.goalDistance = goalDistance;
+        this.goalDistance = goalDistanceKm;
         this.trainingPlan = trainingPlan;
         this.runnerStatistics = new RunnerStatistics(this.runHistory, StandardDistance.FIVE_KM);
         this.trainingPlanSkeleton = new TrainingPlanSkeleton(this.difficulty, this.startDate, this.endDate, this.trainingPlan);
@@ -152,7 +164,7 @@ public class TrainingPlanCreator {
             TrainingSession session = longRunSessions.get(i);
             double distance = startDistance + (i * increment);
             double duration = RiegelConverter.predictTime(this.standardDistance.getMeters(), lowIntensityMeanTime, distance);
-            double pace = duration / (distance / 1000);
+            double pace = duration / (distance);
 
             session.setDistance(distance);
             session.setDuration(roundToScale(duration));
@@ -180,7 +192,7 @@ public class TrainingPlanCreator {
             double duration = mediumIntensityMeanTime * durationFactor;
             tempoRunSessions.get(i).setDuration(Math.round(duration * 100.0) / 100.0);
 
-            double pace = duration / (distance / 1000);
+            double pace = duration / (distance);
             tempoRunSessions.get(i).setPace(Math.round(pace * 100.0) / 100.0);
         }
     }
@@ -196,14 +208,15 @@ public class TrainingPlanCreator {
         double startDistance = Math.floor((goalDistance * INTERVAL_START_FACTOR) / INTERVAL_SET_DISTANCE) * INTERVAL_SET_DISTANCE;
         double endDistance = Math.floor((goalDistance * INTERVAL_END_FACTOR) / INTERVAL_SET_DISTANCE) * INTERVAL_SET_DISTANCE;
         double distanceIncrement = count > 1 ? (endDistance - startDistance) / (count - 1) : 0.0;
-        double setDuration = RiegelConverter.predictTime(this.standardDistance.getMeters(), highIntensityMeanTime, 400.0);
+        double setDuration = RiegelConverter.predictTime(this.standardDistance.getMeters(), highIntensityMeanTime, 0.4);
+        setDuration = setDuration * INTERVAL_DURATION_FACTOR;
 
         for (int i = 0; i < count; i++) {
             TrainingSession session = intervalRunSessions.get(i);
             double rawDistance = startDistance + (i * distanceIncrement);
-            double distance = Math.floor(rawDistance / INTERVAL_SET_DISTANCE) * INTERVAL_SET_DISTANCE;
+            double distance = Math.floor(rawDistance / 0.4) * 0.4;
             double totalDuration = setDuration * (distance / INTERVAL_SET_DISTANCE);
-            double pace = totalDuration / (distance / 1000);
+            double pace = totalDuration / (distance);
 
             session.setDistance(distance);
             session.setDuration(roundToScale(totalDuration));
@@ -220,8 +233,8 @@ public class TrainingPlanCreator {
 
         double lowIntensityMeanTime = this.runnerStatistics.getLowIntensityMeanTime();
         double distance = goalDistance * RECOVERY_RUN_DISTANCE_FACTOR; 
-        double lowIntensityPace = lowIntensityMeanTime / (this.standardDistance.getMeters() / 1000); 
-        double duration = lowIntensityPace * (distance / 1000); 
+        double lowIntensityPace = lowIntensityMeanTime / (this.standardDistance.getMeters()); 
+        double duration = lowIntensityPace * (distance); 
 
         for (int i = 0; i < count; i++) {
             TrainingSession session = recoveryRunSessions.get(i);

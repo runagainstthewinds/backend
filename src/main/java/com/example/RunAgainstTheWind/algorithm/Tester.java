@@ -17,15 +17,15 @@ public class Tester {
         List<TrainingSessionDTO> trainingSessions = List.of(
             // 4:00 pace (10,000m in 40 minutes)
             new TrainingSessionDTO(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10000.0, 40.0, 4.0, 0, "", null, null, null
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 10.0, 40.0, 4.0, 0, "", null, null, null
             ),
             // 5:00 pace (3,000m in 15 minutes)
             new TrainingSessionDTO(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 3000.0, 17.5, 3.5, 0, "", null, null, null
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 3.0, 17.5, 3.5, 0, "", null, null, null
             ),
             // 6:00 pace (1,000m in 6 minutes)
             new TrainingSessionDTO(
-                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 1000.0, 3.0, 3.0, 0, "", null, null, null
+                TrainingType.UNSPECIFIED, LocalDate.now(), 0.0, 0.0, 0.0, true, 1.0, 3.0, 3.0, 0, "", null, null, null
             )
         );
 
@@ -38,7 +38,7 @@ public class Tester {
             "Test Plan",
             startDate,
             endDate,
-            10000.0,
+            10.0,
             Difficulty.HARD,
             false,
             null  // No user for testing
@@ -51,7 +51,7 @@ public class Tester {
                 Difficulty.HARD,          // difficulty
                 startDate,               // startDate
                 endDate,                 // endDate
-                10000.0,                 // distance (meters, e.g., 5K)
+                dummyTrainingPlan.getGoalDistance(),                // distance (kilometers, e.g., 5K)
                 dummyTrainingPlan        // trainingPlan
             );
 
@@ -93,7 +93,7 @@ public class Tester {
             for (int i = 0; i < sessions.size(); i++) {
                 TrainingSession session = sessions.get(i);
                 String distance = session.getDistance() != null ? 
-                    String.format("%.0fm", session.getDistance()) : 
+                    String.format("%.2fkm", session.getDistance()) : 
                     "Not set";
                 String date = session.getDate() != null ?
                     session.getDate().toString() :

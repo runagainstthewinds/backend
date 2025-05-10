@@ -57,6 +57,8 @@ public class RunnerStatistics {
             throws MissingDataException {
         validateInputs(trainingSessions, standardDistance, lowerDeviationFactor, upperDeviationFactor);
 
+        trainingSessions = filterValidSessions(trainingSessions);
+
         this.trainingSessions = trainingSessions;
         this.standardDistance = standardDistance;
         this.lowerDeviationFactor = lowerDeviationFactor;
@@ -74,8 +76,13 @@ public class RunnerStatistics {
         this.standardDeviation = calculateStandardDeviation();
         this.fastCutoff = meanTime - (lowerDeviationFactor * standardDeviation);
         this.slowCutoff = meanTime + (upperDeviationFactor * standardDeviation);
+        System.out.println("Fast cutoff: " + fastCutoff);
+        System.out.println("Slow cutoff: " + slowCutoff);
 
         categorizeSessions();
+        System.out.println("High intensity sessions: " + highIntensitySessions);
+        System.out.println("Medium intensity sessions: " + mediumIntensitySessions);
+        System.out.println("Low intensity sessions: " + lowIntensitySessions);
         this.highIntensityMeanTime = calculateMeanTime(highIntensitySessions, "high-intensity");
         this.mediumIntensityMeanTime = calculateMeanTime(mediumIntensitySessions, "medium-intensity");
         this.lowIntensityMeanTime = calculateMeanTime(lowIntensitySessions, "low-intensity");
@@ -161,6 +168,16 @@ public class RunnerStatistics {
                        .mapToDouble(Double::doubleValue)
                        .average()
                        .orElseThrow(() -> new IllegalStateException("Failed to compute mean for " + intensity));
+    }
+
+    private List<TrainingSessionDTO> filterValidSessions(List<TrainingSessionDTO> sessions) {
+        List<TrainingSessionDTO> validSessions = new ArrayList<>();
+        for (TrainingSessionDTO session : sessions) {
+            if (session.getAchievedDistance() != null && session.getAchievedDuration() != null) {
+                validSessions.add(session);
+            }
+        }
+        return validSessions;
     }
 
     // Unmodifiable getters

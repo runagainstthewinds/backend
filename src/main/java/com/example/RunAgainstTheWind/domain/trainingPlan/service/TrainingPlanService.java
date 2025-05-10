@@ -54,25 +54,25 @@ public class TrainingPlanService {
             throw new ActiveTrainingPlanExistsException("An active training plan already exists for this user.");
         }
 
+        // Convert goal distance from kilometers to meters for storage
+        Double goalDistanceMeters = trainingPlanDTO.getGoalDistance() * 1000.0;
+
         TrainingPlan trainingPlan = new TrainingPlan(
             trainingPlanDTO.getPlanName(),
             trainingPlanDTO.getStartDate(),
             trainingPlanDTO.getEndDate(),
-            trainingPlanDTO.getGoalDistance(),
+            goalDistanceMeters,
             trainingPlanDTO.getDifficulty(),
             false,
             user
         );
-
-        // Save the training plan first to get its ID
-        trainingPlan = trainingPlanRepository.save(trainingPlan);
 
         TrainingPlanCreator planCreator = new TrainingPlanCreator(
             trainingSessionService.getTrainingSessionsByUserId(userId),
             trainingPlanDTO.getDifficulty(),
             trainingPlanDTO.getStartDate(),
             trainingPlanDTO.getEndDate(),
-            trainingPlanDTO.getGoalDistance(),
+            trainingPlanDTO.getGoalDistance(), // Pass kilometers to creator
             trainingPlan
         );
 
@@ -108,6 +108,8 @@ public class TrainingPlanService {
                 }
             }
         }
+
+        trainingPlanRepository.save(trainingPlan);
      
         // Return both the training plan and sessions as separate entities
         Map<String, Object> response = new HashMap<>();

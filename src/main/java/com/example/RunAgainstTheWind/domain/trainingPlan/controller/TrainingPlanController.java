@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.RunAgainstTheWind.domain.trainingPlan.service.TrainingPlanService;
 import com.example.RunAgainstTheWind.dto.trainingPlan.TrainingPlanDTO;
-import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 
 @RestController
 @RequestMapping("/trainingplans")

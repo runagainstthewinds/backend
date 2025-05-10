@@ -1,11 +1,11 @@
 package com.example.RunAgainstTheWind.enumeration;
 
 public enum StandardDistance {
-    ONE_KM(1000),
-    FIVE_KM(5000),
-    TEN_KM(10000),
-    HALF_MARATHON(21097),
-    MARATHON(42195);
+    ONE_KM(1),
+    FIVE_KM(5),
+    TEN_KM(10),
+    HALF_MARATHON(21.097),
+    MARATHON(42.195);
 
     private final double meters;
 

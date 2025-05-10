@@ -34,10 +34,10 @@ public class RiegelConverter {
      */
     public static double[] convertAllRunsToStandardDistance(List<TrainingSessionDTO> trainingSessions, StandardDistance standardDistance) {
         if (trainingSessions == null || trainingSessions.isEmpty() || standardDistance == null) throw new IllegalArgumentException("Invalid input");
-        
 
         double[] standardizedTimes = new double[trainingSessions.size()];
         for (int i = 0; i< trainingSessions.size(); i++) {
+            if (trainingSessions.get(i).getAchievedDistance() == null || trainingSessions.get(i).getAchievedDuration() == null) continue;
             standardizedTimes[i] = predictTime(trainingSessions.get(i).getAchievedDistance(), trainingSessions.get(i).getAchievedDuration(), standardDistance.getMeters());
         }
 
