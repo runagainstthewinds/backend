@@ -67,13 +67,18 @@ public class TrainingPlanService {
             user
         );
 
+        // Save the training plan first to get an ID
+        TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlan);
+        trainingPlanDTO.setTrainingPlanId(savedTrainingPlan.getTrainingPlanId());
+        trainingPlanDTO.setUserId(userId);
+
         TrainingPlanCreator planCreator = new TrainingPlanCreator(
             trainingSessionService.getTrainingSessionsByUserId(userId),
             trainingPlanDTO.getDifficulty(),
             trainingPlanDTO.getStartDate(),
             trainingPlanDTO.getEndDate(),
             trainingPlanDTO.getGoalDistance(),
-            trainingPlan
+            savedTrainingPlan  // Use the saved plan with ID
         );
 
         TrainingPlanSkeleton trainingPlanSkeleton = planCreator.getTrainingPlanSkeleton();
@@ -97,7 +102,7 @@ public class TrainingPlanService {
                     session.getAchievedPace(),
                     session.getEffort(),
                     session.getNotes(),
-                    session.getTrainingPlan().getTrainingPlanId(),
+                    savedTrainingPlan.getTrainingPlanId(),  // Use the saved plan's ID
                     null,  
                     userId
                 );
@@ -108,10 +113,6 @@ public class TrainingPlanService {
                 }
             }
         }
-
-        TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlan);
-        trainingPlanDTO.setTrainingPlanId(savedTrainingPlan.getTrainingPlanId());
-        trainingPlanDTO.setUserId(userId);
      
         // Return both the training plan and sessions as separate entities
         Map<String, Object> response = new HashMap<>();

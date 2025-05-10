@@ -169,7 +169,6 @@ public class TrainingPlanCreator {
             session.setDistance(distance);
             session.setDuration(roundToScale(duration));
             session.setPace(roundToScale(pace));
-            session.setTrainingPlan(this.trainingPlan);
         }
     }
 
@@ -196,7 +195,6 @@ public class TrainingPlanCreator {
 
             double pace = duration / (distance);
             session.setPace(Math.round(pace * 100.0) / 100.0);
-            session.setTrainingPlan(this.trainingPlan);
         }
     }
 
@@ -224,7 +222,6 @@ public class TrainingPlanCreator {
             session.setDistance(distance);
             session.setDuration(roundToScale(totalDuration));
             session.setPace(roundToScale(pace));
-            session.setTrainingPlan(this.trainingPlan);
         }
     }
 
@@ -245,7 +242,6 @@ public class TrainingPlanCreator {
             session.setDistance(distance);
             session.setDuration(roundToScale(duration));
             session.setPace(roundToScale(lowIntensityPace));
-            session.setTrainingPlan(this.trainingPlan);
         }
     }
 
