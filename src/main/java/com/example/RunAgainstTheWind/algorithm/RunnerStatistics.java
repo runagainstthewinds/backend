@@ -76,13 +76,9 @@ public class RunnerStatistics {
         this.standardDeviation = calculateStandardDeviation();
         this.fastCutoff = meanTime - (lowerDeviationFactor * standardDeviation);
         this.slowCutoff = meanTime + (upperDeviationFactor * standardDeviation);
-        System.out.println("Fast cutoff: " + fastCutoff);
-        System.out.println("Slow cutoff: " + slowCutoff);
 
         categorizeSessions();
-        System.out.println("High intensity sessions: " + highIntensitySessions);
-        System.out.println("Medium intensity sessions: " + mediumIntensitySessions);
-        System.out.println("Low intensity sessions: " + lowIntensitySessions);
+
         this.highIntensityMeanTime = calculateMeanTime(highIntensitySessions, "high-intensity");
         this.mediumIntensityMeanTime = calculateMeanTime(mediumIntensitySessions, "medium-intensity");
         this.lowIntensityMeanTime = calculateMeanTime(lowIntensitySessions, "low-intensity");

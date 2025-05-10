@@ -128,7 +128,7 @@ class RunnerStatisticsTest {
         
         // Expected
         double expected10KNormalizedTo5K = trainingSessions.get(2).getAchievedDuration() * 
-            Math.pow(StandardDistance.FIVE_KM.getMeters() / trainingSessions.get(2).getAchievedDistance(), 1.06);
+            Math.pow(StandardDistance.FIVE_KM.getKilometers() / trainingSessions.get(2).getAchievedDistance(), 1.06);
         
         // Compare
         assertEquals(expected10KNormalizedTo5K, standardized[2], 0.001, 

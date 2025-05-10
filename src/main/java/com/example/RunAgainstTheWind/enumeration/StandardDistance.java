@@ -7,13 +7,13 @@ public enum StandardDistance {
     HALF_MARATHON(21.097),
     MARATHON(42.195);
 
-    private final double meters;
+    private final double kilometers;
 
-    StandardDistance(double meters) {
-        this.meters = meters;
+    StandardDistance(double kilometers) {
+        this.kilometers = kilometers;
     }
 
-    public double getMeters() {
-        return meters;
+    public double getKilometers() {
+        return kilometers;
     }
 }

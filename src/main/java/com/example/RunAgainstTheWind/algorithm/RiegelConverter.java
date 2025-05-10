@@ -38,7 +38,7 @@ public class RiegelConverter {
         double[] standardizedTimes = new double[trainingSessions.size()];
         for (int i = 0; i< trainingSessions.size(); i++) {
             if (trainingSessions.get(i).getAchievedDistance() == null || trainingSessions.get(i).getAchievedDuration() == null) continue;
-            standardizedTimes[i] = predictTime(trainingSessions.get(i).getAchievedDistance(), trainingSessions.get(i).getAchievedDuration(), standardDistance.getMeters());
+            standardizedTimes[i] = predictTime(trainingSessions.get(i).getAchievedDistance(), trainingSessions.get(i).getAchievedDuration(), standardDistance.getKilometers());
         }
 
         return standardizedTimes;

@@ -33,20 +33,6 @@ public class TrainingPlanSkeleton {
     private HashMap<Integer, List<TrainingSession>> plan = new HashMap<>();
 
     /**
-     * Constructor that takes difficulty and length directly.
-     */
-    public TrainingPlanSkeleton(Difficulty difficulty, Double length) {
-        if (difficulty == null || length <= 0) throw new IllegalArgumentException("Invalid parameters");
-
-        this.difficulty = difficulty;
-        this.length = length;
-        this.startDate = null;
-        this.endDate = null;
-        this.trainingPlan = null;
-        this.plan = createTrainingPlanSkeleton();
-    }
-
-    /**
      * Constructor that takes difficulty and dates, calculating length from full weeks.
      */
     public TrainingPlanSkeleton(Difficulty difficulty, LocalDate startDate, LocalDate endDate, TrainingPlan trainingPlan) {

@@ -72,7 +72,7 @@ public class TrainingPlanService {
             trainingPlanDTO.getDifficulty(),
             trainingPlanDTO.getStartDate(),
             trainingPlanDTO.getEndDate(),
-            trainingPlanDTO.getGoalDistance(), // Pass kilometers to creator
+            trainingPlanDTO.getGoalDistance(),
             trainingPlan
         );
 
@@ -97,7 +97,7 @@ public class TrainingPlanService {
                     session.getAchievedPace(),
                     session.getEffort(),
                     session.getNotes(),
-                    trainingPlan.getTrainingPlanId(),
+                    session.getTrainingPlan().getTrainingPlanId(),
                     null,  
                     userId
                 );
@@ -111,6 +111,7 @@ public class TrainingPlanService {
 
         TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlan);
         trainingPlanDTO.setTrainingPlanId(savedTrainingPlan.getTrainingPlanId());
+        trainingPlanDTO.setUserId(userId);
      
         // Return both the training plan and sessions as separate entities
         Map<String, Object> response = new HashMap<>();

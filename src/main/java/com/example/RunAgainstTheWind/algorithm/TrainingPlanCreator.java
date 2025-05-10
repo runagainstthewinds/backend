@@ -163,12 +163,13 @@ public class TrainingPlanCreator {
         for (int i = 0; i < count; i++) {
             TrainingSession session = longRunSessions.get(i);
             double distance = startDistance + (i * increment);
-            double duration = RiegelConverter.predictTime(this.standardDistance.getMeters(), lowIntensityMeanTime, distance);
+            double duration = RiegelConverter.predictTime(this.standardDistance.getKilometers(), lowIntensityMeanTime, distance);
             double pace = duration / (distance);
 
             session.setDistance(distance);
             session.setDuration(roundToScale(duration));
             session.setPace(roundToScale(pace));
+            session.setTrainingPlan(this.trainingPlan);
         }
     }
 
@@ -186,14 +187,16 @@ public class TrainingPlanCreator {
         double durationIncrement = count > 1 ?(endDurationFactor - startDurationFactor) / (count - 1) : 0.0;
 
         for (int i = 0; i < count; i++) {
-            tempoRunSessions.get(i).setDistance(distance);
+            TrainingSession session = tempoRunSessions.get(i);
+            session.setDistance(distance);
             
             double durationFactor = startDurationFactor + (i * durationIncrement);
             double duration = mediumIntensityMeanTime * durationFactor;
-            tempoRunSessions.get(i).setDuration(Math.round(duration * 100.0) / 100.0);
+            session.setDuration(Math.round(duration * 100.0) / 100.0);
 
             double pace = duration / (distance);
-            tempoRunSessions.get(i).setPace(Math.round(pace * 100.0) / 100.0);
+            session.setPace(Math.round(pace * 100.0) / 100.0);
+            session.setTrainingPlan(this.trainingPlan);
         }
     }
 
@@ -208,7 +211,7 @@ public class TrainingPlanCreator {
         double startDistance = Math.floor((goalDistance * INTERVAL_START_FACTOR) / INTERVAL_SET_DISTANCE) * INTERVAL_SET_DISTANCE;
         double endDistance = Math.floor((goalDistance * INTERVAL_END_FACTOR) / INTERVAL_SET_DISTANCE) * INTERVAL_SET_DISTANCE;
         double distanceIncrement = count > 1 ? (endDistance - startDistance) / (count - 1) : 0.0;
-        double setDuration = RiegelConverter.predictTime(this.standardDistance.getMeters(), highIntensityMeanTime, 0.4);
+        double setDuration = RiegelConverter.predictTime(this.standardDistance.getKilometers(), highIntensityMeanTime, 0.4);
         setDuration = setDuration * INTERVAL_DURATION_FACTOR;
 
         for (int i = 0; i < count; i++) {
@@ -221,6 +224,7 @@ public class TrainingPlanCreator {
             session.setDistance(distance);
             session.setDuration(roundToScale(totalDuration));
             session.setPace(roundToScale(pace));
+            session.setTrainingPlan(this.trainingPlan);
         }
     }
 
@@ -233,7 +237,7 @@ public class TrainingPlanCreator {
 
         double lowIntensityMeanTime = this.runnerStatistics.getLowIntensityMeanTime();
         double distance = goalDistance * RECOVERY_RUN_DISTANCE_FACTOR; 
-        double lowIntensityPace = lowIntensityMeanTime / (this.standardDistance.getMeters()); 
+        double lowIntensityPace = lowIntensityMeanTime / (this.standardDistance.getKilometers()); 
         double duration = lowIntensityPace * (distance); 
 
         for (int i = 0; i < count; i++) {
@@ -241,6 +245,7 @@ public class TrainingPlanCreator {
             session.setDistance(distance);
             session.setDuration(roundToScale(duration));
             session.setPace(roundToScale(lowIntensityPace));
+            session.setTrainingPlan(this.trainingPlan);
         }
     }
 
