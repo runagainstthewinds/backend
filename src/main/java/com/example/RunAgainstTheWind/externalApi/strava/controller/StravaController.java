@@ -313,6 +313,7 @@ public class StravaController {
 
             Double achievedDistance = BigDecimal.valueOf(activity.getDistance().doubleValue() / 1000.0)
                 .setScale(3, RoundingMode.HALF_UP).doubleValue();
+            if (achievedDistance == 0.0) continue; // Probably a gym workout session
 
             Double achievedDuration = BigDecimal.valueOf(activity.getMovingTime().doubleValue() / 60.0)
                 .setScale(3, RoundingMode.HALF_UP).doubleValue();

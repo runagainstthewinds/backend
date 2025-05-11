@@ -35,11 +35,11 @@ public class TrainingPlanController {
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<TrainingPlanDTO> createTrainingPlan(
+    public ResponseEntity<Map<String, Object>> createTrainingPlan(
             @PathVariable UUID userId,
             @RequestBody TrainingPlanDTO trainingPlanDTO) {
-        TrainingPlanDTO savedTrainingPlan = trainingPlanService.createTrainingPlan(userId, trainingPlanDTO);
-        return new ResponseEntity<>(savedTrainingPlan, HttpStatus.CREATED);
+        Map<String, Object> response = trainingPlanService.createTrainingPlan(userId, trainingPlanDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{trainingPlanId}")

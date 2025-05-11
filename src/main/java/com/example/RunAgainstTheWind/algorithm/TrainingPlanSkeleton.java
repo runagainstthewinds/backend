@@ -1,5 +1,9 @@
 package com.example.RunAgainstTheWind.algorithm;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +11,7 @@ import java.util.List;
 import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.enumeration.Difficulty;
 import com.example.RunAgainstTheWind.enumeration.TrainingType;
+import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
 
 import lombok.Data;
 
@@ -22,14 +27,57 @@ public class TrainingPlanSkeleton {
     
     private final Difficulty difficulty; // Easy, Medium, Hard
     private final int length; // Weeks
+    private final LocalDate startDate;
+    private final LocalDate endDate;
+    private final TrainingPlan trainingPlan;
     private HashMap<Integer, List<TrainingSession>> plan = new HashMap<>();
 
-    public TrainingPlanSkeleton(Difficulty difficulty, int length) {
-        if (difficulty == null || length <= 0) throw new IllegalArgumentException("Invalid parameters");
+    /**
+     * Constructor that takes difficulty and dates, calculating length from full weeks.
+     */
+    public TrainingPlanSkeleton(Difficulty difficulty, LocalDate startDate, LocalDate endDate, TrainingPlan trainingPlan) {
+        if (difficulty == null || startDate == null || endDate == null) {
+            throw new IllegalArgumentException("Invalid parameters");
+        }
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException("End date must be after start date");
+        }
 
         this.difficulty = difficulty;
-        this.length = length;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.trainingPlan = trainingPlan;
+        this.length = calculateFullWeeks(startDate, endDate);
+        if (this.length <= 0) {
+            throw new IllegalArgumentException("No full weeks found between start and end dates");
+        }
         this.plan = createTrainingPlanSkeleton();
+    }
+
+    /**
+     * Calculates the number of full weeks between start and end dates.
+     * A full week is defined as starting on Monday and ending on Sunday.
+     * 
+     * @param startDate The start date of the training plan
+     * @param endDate The end date of the training plan
+     * @return The number of full weeks as an int
+     */
+    private static int calculateFullWeeks(LocalDate startDate, LocalDate endDate) {
+        // Adjust start date to next Monday if not already Monday
+        LocalDate adjustedStartDate = startDate;
+        if (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+            adjustedStartDate = startDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        }
+        
+        // Adjust end date to previous Sunday if not already Sunday
+        LocalDate adjustedEndDate = endDate;
+        if (endDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            adjustedEndDate = endDate.with(TemporalAdjusters.previous(DayOfWeek.SUNDAY));
+        }
+        
+        // Calculate weeks between adjusted dates
+        long days = ChronoUnit.DAYS.between(adjustedStartDate, adjustedEndDate) + 1;
+        return (int) Math.floor(days / 7.0);
     }
 
     /**
@@ -47,6 +95,12 @@ public class TrainingPlanSkeleton {
             default -> throw new IllegalArgumentException("Invalid difficulty level: " + difficulty);
         };
 
+        // Get the first Monday of the training plan
+        LocalDate weekStart = startDate;
+        if (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+            weekStart = startDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        }
+
         int halfwayPoint = (int) Math.ceil(length / 2.0);  
         for (int week = 1; week <= length; week++) {
             List<TrainingSession> weeklySessions = new ArrayList<>();
@@ -55,20 +109,73 @@ public class TrainingPlanSkeleton {
                 baseSessionsPerWeek : 
                 baseSessionsPerWeek + 1;
 
+            // Calculate dates for this week
+            LocalDate monday = weekStart.plusWeeks(week - 1);
+            LocalDate tuesday = monday.plusDays(1);
+            LocalDate wednesday = monday.plusDays(2);
+            LocalDate thursday = monday.plusDays(3);
+            LocalDate friday = monday.plusDays(4);
+            LocalDate saturday = monday.plusDays(5);
+
             // Easy: Tempo and Long Run, add Interval after halfway
             if (difficulty == Difficulty.EASY) {
-                weeklySessions.add(createSession(TrainingType.TEMPO));
-                weeklySessions.add(createSession(TrainingType.LONG_RUN));
-                if (week > halfwayPoint) weeklySessions.add(createSession(TrainingType.INTERVAL));
+                // Monday: Tempo Run
+                TrainingSession tempoSession = createSession(TrainingType.TEMPO);
+                tempoSession.setDate(monday);
+                weeklySessions.add(tempoSession);
+
+                // Saturday: Long Run
+                TrainingSession longRunSession = createSession(TrainingType.LONG_RUN);
+                longRunSession.setDate(saturday);
+                weeklySessions.add(longRunSession);
+
+                // Wednesday: Interval (after halfway point)
+                if (week > halfwayPoint) {
+                    TrainingSession intervalSession = createSession(TrainingType.INTERVAL);
+                    intervalSession.setDate(wednesday);
+                    weeklySessions.add(intervalSession);
+                }
             } else {
                 // Medium and Hard: Interval, Tempo, Long Run, rest Recovery
-                weeklySessions.add(createSession(TrainingType.INTERVAL));
-                weeklySessions.add(createSession(TrainingType.TEMPO));
-                weeklySessions.add(createSession(TrainingType.LONG_RUN));
+                // Monday: Tempo Run
+                TrainingSession tempoSession = createSession(TrainingType.TEMPO);
+                tempoSession.setDate(monday);
+                weeklySessions.add(tempoSession);
+
+                // Wednesday: Interval
+                TrainingSession intervalSession = createSession(TrainingType.INTERVAL);
+                intervalSession.setDate(wednesday);
+                weeklySessions.add(intervalSession);
+
+                // Saturday: Long Run
+                TrainingSession longRunSession = createSession(TrainingType.LONG_RUN);
+                longRunSession.setDate(saturday);
+                weeklySessions.add(longRunSession);
 
                 // Fill remaining sessions with Recovery Runs
-                for (int i = 3; i < sessionsThisWeek; i++) {
-                    weeklySessions.add(createSession(TrainingType.RECOVERY_RUN));
+                // For Medium: 1 recovery run on Thursday
+                // For Hard: 1 recovery run on Tuesday, 1 on Thursday, and 1 on Friday
+                if (difficulty == Difficulty.MEDIUM) {
+                    TrainingSession recoverySession = createSession(TrainingType.RECOVERY_RUN);
+                    recoverySession.setDate(thursday);
+                    weeklySessions.add(recoverySession);
+                } else if (difficulty == Difficulty.HARD) {
+                    // Tuesday recovery
+                    TrainingSession recovery1 = createSession(TrainingType.RECOVERY_RUN);
+                    recovery1.setDate(tuesday);
+                    weeklySessions.add(recovery1);
+
+                    // Thursday recovery
+                    TrainingSession recovery2 = createSession(TrainingType.RECOVERY_RUN);
+                    recovery2.setDate(thursday);
+                    weeklySessions.add(recovery2);
+
+                    // Friday recovery (if needed)
+                    if (sessionsThisWeek > 6) {
+                        TrainingSession recovery3 = createSession(TrainingType.RECOVERY_RUN);
+                        recovery3.setDate(friday);
+                        weeklySessions.add(recovery3);
+                    }
                 }
             }
 
@@ -87,6 +194,7 @@ public class TrainingPlanSkeleton {
     private TrainingSession createSession(TrainingType type) {
         TrainingSession session = new TrainingSession();
         session.setTrainingType(type);
+        session.setTrainingPlan(trainingPlan);
         return session;
     }
 }
