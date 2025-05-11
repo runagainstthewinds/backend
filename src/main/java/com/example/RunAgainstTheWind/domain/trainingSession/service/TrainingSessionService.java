@@ -145,8 +145,9 @@ public class TrainingSessionService {
         if (shoe != null) existingSession.setShoe(shoe);
 
         // Calculate achievedPace if both achievedDistance and achievedDuration are present
-        if (trainingSessionDTO.getAchievedDistance() != null && trainingSessionDTO.getAchievedDuration() != null) {
-            Double achievedPace = trainingSessionDTO.getAchievedDuration() /trainingSessionDTO.getAchievedDistance();
+        if (trainingSessionDTO.getAchievedDistance() != null && trainingSessionDTO.getAchievedDuration() != null 
+            && trainingSessionDTO.getAchievedDistance() > 0) {
+            Double achievedPace = trainingSessionDTO.getAchievedDuration() / trainingSessionDTO.getAchievedDistance();
             existingSession.setAchievedPace(achievedPace);
         }
 
