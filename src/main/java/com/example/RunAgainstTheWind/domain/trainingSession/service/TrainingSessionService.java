@@ -9,6 +9,8 @@ import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSessio
 import com.example.RunAgainstTheWind.domain.trainingSession.repository.TrainingSessionRepository;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
+import com.example.RunAgainstTheWind.domain.shoe.service.ShoeService;
+import com.example.RunAgainstTheWind.dto.shoe.ShoeDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,9 @@ public class TrainingSessionService {
 
     @Autowired
     private ValidationService v;
+
+    @Autowired
+    private ShoeService shoeService;
 
     @Transactional(readOnly = true)
     public List<TrainingSessionDTO> getTrainingSessionsByUserId(UUID userId) {
@@ -118,22 +123,51 @@ public class TrainingSessionService {
                 .orElseThrow(() -> new EntityNotFoundException("Shoe not found with id: " + trainingSessionDTO.getShoeId()));
         }
 
+        // Update the shoe mileage
+        if (shoe != null && trainingSessionDTO.getAchievedDistance() != null && existingSession.getAchievedDistance() == null) {
+            Double currentMileage = shoe.getTotalMileage() != null ? shoe.getTotalMileage() : 0.0;
+            Double achievedDistance = trainingSessionDTO.getAchievedDistance();
+            Double newMileage = currentMileage + achievedDistance;
+            ShoeDTO mileageUpdate = new ShoeDTO();
+            mileageUpdate.setTotalMileage(newMileage);
+            shoeService.updateShoe(shoe.getShoeId(), mileageUpdate);
+        }
+
         if (trainingSessionDTO.getTrainingType() != null) existingSession.setTrainingType(trainingSessionDTO.getTrainingType());
         if (trainingSessionDTO.getDate() != null) existingSession.setDate(trainingSessionDTO.getDate());
         if (trainingSessionDTO.getDistance() != null) existingSession.setDistance(trainingSessionDTO.getDistance());
         if (trainingSessionDTO.getDuration() != null) existingSession.setDuration(trainingSessionDTO.getDuration());
-        if (trainingSessionDTO.getPace() != null) existingSession.setPace(trainingSessionDTO.getPace());
         if (trainingSessionDTO.getIsComplete() != null) existingSession.setIsComplete(trainingSessionDTO.getIsComplete());
         if (trainingSessionDTO.getAchievedDistance() != null) existingSession.setAchievedDistance(trainingSessionDTO.getAchievedDistance());
         if (trainingSessionDTO.getAchievedDuration() != null) existingSession.setAchievedDuration(trainingSessionDTO.getAchievedDuration());
-        if (trainingSessionDTO.getAchievedPace() != null) existingSession.setAchievedPace(trainingSessionDTO.getAchievedPace());
         if (trainingSessionDTO.getEffort() != null) existingSession.setEffort(trainingSessionDTO.getEffort());
         if (trainingSessionDTO.getNotes() != null) existingSession.setNotes(trainingSessionDTO.getNotes());
         if (shoe != null) existingSession.setShoe(shoe);
+
+        // Calculate achievedPace if both achievedDistance and achievedDuration are present
+        if (trainingSessionDTO.getAchievedDistance() != null && trainingSessionDTO.getAchievedDuration() != null 
+            && trainingSessionDTO.getAchievedDistance() > 0) {
+            Double achievedPace = trainingSessionDTO.getAchievedDuration() / trainingSessionDTO.getAchievedDistance();
+            existingSession.setAchievedPace(achievedPace);
+        }
+
         TrainingSession updatedSession = trainingSessionRepository.save(existingSession);
 
-        trainingSessionDTO.setTrainingSessionId(updatedSession.getTrainingPlan().getTrainingPlanId());
-        trainingSessionDTO.setTrainingPlanId(trainingSessionId);
+        // Set all attributes in the response DTO
+        trainingSessionDTO.setTrainingSessionId(updatedSession.getTrainingSessionId());
+        trainingSessionDTO.setTrainingType(updatedSession.getTrainingType());
+        trainingSessionDTO.setDate(updatedSession.getDate());
+        trainingSessionDTO.setDistance(updatedSession.getDistance());
+        trainingSessionDTO.setDuration(updatedSession.getDuration());
+        trainingSessionDTO.setPace(updatedSession.getPace());
+        trainingSessionDTO.setIsComplete(updatedSession.getIsComplete());
+        trainingSessionDTO.setAchievedDistance(updatedSession.getAchievedDistance());
+        trainingSessionDTO.setAchievedDuration(updatedSession.getAchievedDuration());
+        trainingSessionDTO.setAchievedPace(updatedSession.getAchievedPace());
+        trainingSessionDTO.setEffort(updatedSession.getEffort());
+        trainingSessionDTO.setNotes(updatedSession.getNotes());
+        trainingSessionDTO.setTrainingPlanId(updatedSession.getTrainingPlan() != null ? updatedSession.getTrainingPlan().getTrainingPlanId() : null);
+        trainingSessionDTO.setShoeId(updatedSession.getShoe() != null ? updatedSession.getShoe().getShoeId() : null);
         trainingSessionDTO.setUserId(updatedSession.getUser().getUserId());
 
         return trainingSessionDTO;
