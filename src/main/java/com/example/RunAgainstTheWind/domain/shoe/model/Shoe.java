@@ -1,8 +1,7 @@
 package com.example.RunAgainstTheWind.domain.shoe.model;
 
-import java.util.List;
+import java.time.LocalDate;
 
-import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 
 import jakarta.persistence.Entity;
@@ -11,38 +10,35 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "shoe")
 @Data
+@NoArgsConstructor
 public class Shoe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long shoeId;
 
-    private String brand;
     private String model;
-    private Double size;
+    private String brand;
+    private String color;
     private Double totalMileage;
-    private Double price;
-
-    public Shoe() {}
-
-    public Shoe(String brand, String model, Double size, Double totalMileage, Double price) {
-        this.brand = brand;
-        this.model = model;
-        this.size = size;
-        this.totalMileage = totalMileage;
-        this.price = price;
-    }
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
 
-    @OneToMany(mappedBy = "shoe")
-    private List<TrainingSession> trainingSessions;
+    public Shoe(String model, String brand, String color, Double totalMileage, LocalDate date, User user) {
+        this.model = model;
+        this.brand = brand;
+        this.color = color;
+        this.totalMileage = totalMileage;
+        this.date = date;
+        this.user = user;
+    }
 }

@@ -1,8 +1,9 @@
-package com.example.RunAgainstTheWind.dto.shoe;
+package com.example.RunAgainstTheWind.dto.achievement;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,18 +15,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ShoeDTO {
+public class AchievementDTO {
+    private Integer achievementId;
+    private String achievementName;
+    private String description;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long shoeId;
+    private LocalDate dateAchieved;
     
-    private String model;
-    private String brand;
-    private String color;
-    private Double totalMileage;
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDate date;
-
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID userId;
-}
+} 

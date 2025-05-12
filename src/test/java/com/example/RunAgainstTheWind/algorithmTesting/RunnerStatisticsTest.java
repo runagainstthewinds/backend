@@ -2,70 +2,63 @@ package com.example.RunAgainstTheWind.algorithmTesting;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.example.RunAgainstTheWind.algorithm.RunnerStatistics;
-import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
+import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.enumeration.StandardDistance;
+import com.example.RunAgainstTheWind.enumeration.TrainingType;
 import com.example.RunAgainstTheWind.exceptions.MissingDataException;
 
 class RunnerStatisticsTest {
     
-    private TrainingSession[] trainingSessions;
+    private List<TrainingSessionDTO> trainingSessions;
     
     @BeforeEach
     void setUp() {
-        trainingSessions = new TrainingSession[10];
-        
-        // Fast 5K (18:00 - High intensity)
-        // Converts to 18:00 for 5K
-        trainingSessions[0] = createTrainingSession(5000, 18.0);
-        
-        // Fast 5K (19:00 - High intensity)
-        // Converts to 19:00 for 5K
-        trainingSessions[1] = createTrainingSession(5000, 19.0);
-        
-        // Fast 10K (40:00 - High intensity to 5K)
-        // Converts to 19.11 for 5K
-        trainingSessions[2] = createTrainingSession(10000, 40.0);
-        
-        // Medium 5K (22:00 - Average intensity)
-        // Converts to 22:00 for 5K
-        trainingSessions[3] = createTrainingSession(5000, 22.0);
-        
-        // Medium 5K (23:30 - Average intensity)
-        // Converts to 23:30 for 5K
-        trainingSessions[4] = createTrainingSession(5000, 23.5);
-        
-        // Medium 8K (36:00 - Average intensity)
-        // Converts to 21:52 for 5K
-        trainingSessions[5] = createTrainingSession(8000, 36.0);
-        
-        // Medium 10K (47:00 - Average intensity)
-        // Converts to 22:32
-        trainingSessions[6] = createTrainingSession(10000, 47.0);
-        
-        // Slow 5K (26:00 - Low intensity)
-        // Converts to 26:00 for 5K
-        trainingSessions[7] = createTrainingSession(5000, 26.0);
-        
-        // Slow 5K (28:00 - Low intensity)
-        // Converts to 28:00 for 5K
-        trainingSessions[8] = createTrainingSession(5000, 28.0);
-        
-        // Very slow 3K (18:00 - Low intensity)
-        // Converts to 30:56 for 5K
-        trainingSessions[9] = createTrainingSession(3000, 18.0);
+        trainingSessions = new ArrayList<>();
+
+    UUID userId = UUID.randomUUID(); // Replace with a test UUID if needed
+    LocalDate today = LocalDate.now();
+
+        trainingSessions.add(createTrainingSessionDTO(5000.0, 18.0, userId, today, 10)); // Fast 5K
+        trainingSessions.add(createTrainingSessionDTO(5000.0, 19.0, userId, today, 9));  // Fast 5K
+        trainingSessions.add(createTrainingSessionDTO(10000.0, 40.0, userId, today, 9)); // Fast 10K
+        trainingSessions.add(createTrainingSessionDTO(5000.0, 22.0, userId, today, 6));  // Medium 5K
+        trainingSessions.add(createTrainingSessionDTO(5000.0, 23.5, userId, today, 6));  // Medium 5K
+        trainingSessions.add(createTrainingSessionDTO(8000.0, 36.0, userId, today, 6));  // Medium 8K
+        trainingSessions.add(createTrainingSessionDTO(10000.0, 47.0, userId, today, 6)); // Medium 10K
+        trainingSessions.add(createTrainingSessionDTO(5000.0, 26.0, userId, today, 4));  // Slow 5K
+        trainingSessions.add(createTrainingSessionDTO(5000.0, 28.0, userId, today, 3));  // Slow 5K
+        trainingSessions.add(createTrainingSessionDTO(3000.0, 18.0, userId, today, 2));
     }
     
-    private TrainingSession createTrainingSession(double distance, double duration) {
-        TrainingSession session = new TrainingSession();
-        session.setAchievedDistance(distance);
-        session.setAchievedDuration(duration);
-        return session;
+    private TrainingSessionDTO createTrainingSessionDTO(Double distance, Double duration, UUID userId, LocalDate date, int effort) {
+        double pace = duration / (distance / 1000.0); // pace in min/km
+    
+        return new TrainingSessionDTO(
+            TrainingType.TEMPO, 
+            date,
+            distance,
+            duration,
+            pace,
+            true,
+            distance,
+            duration,
+            pace,
+            effort,
+            "", 
+            null, 
+            null, 
+            userId
+        );
     }
     
     @Test
@@ -105,7 +98,7 @@ class RunnerStatisticsTest {
             "Should have 3 low intensity sessions");
         
         // Check that total count matches
-        assertEquals(trainingSessions.length, 
+        assertEquals(trainingSessions.size(), 
             stats.getHighIntensitySessions().size() + 
             stats.getMediumIntensitySessions().size() + 
             stats.getLowIntensitySessions().size(),
@@ -134,8 +127,8 @@ class RunnerStatisticsTest {
         double[] standardized = stats.getStandardizedTrainingSessions();
         
         // Expected
-        double expected10KNormalizedTo5K = trainingSessions[2].getAchievedDuration() * 
-            Math.pow(StandardDistance.FIVE_KM.getMeters() / trainingSessions[2].getAchievedDistance(), 1.06);
+        double expected10KNormalizedTo5K = trainingSessions.get(2).getAchievedDuration() * 
+            Math.pow(StandardDistance.FIVE_KM.getKilometers() / trainingSessions.get(2).getAchievedDistance(), 1.06);
         
         // Compare
         assertEquals(expected10KNormalizedTo5K, standardized[2], 0.001, 
@@ -161,7 +154,7 @@ class RunnerStatisticsTest {
     
     @Test
     void testEmptyTrainingSessions() {
-        TrainingSession[] emptySessions = new TrainingSession[0];
+        List<TrainingSessionDTO> emptySessions = new ArrayList<>(); 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             new RunnerStatistics(emptySessions, StandardDistance.FIVE_KM);
         });

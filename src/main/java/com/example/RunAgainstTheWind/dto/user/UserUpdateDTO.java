@@ -1,6 +1,5 @@
-package com.example.RunAgainstTheWind.dto.shoe;
+package com.example.RunAgainstTheWind.dto.user;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,18 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ShoeDTO {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long shoeId;
+public class UserUpdateDTO {
     
-    private String model;
-    private String brand;
-    private String color;
-    private Double totalMileage;
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDate date;
-
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID userId;
+
+    private String username;
+    private String email;
+    private String password;
 }

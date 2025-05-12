@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.domain.shoe.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,50 +23,30 @@ import com.example.RunAgainstTheWind.dto.shoe.ShoeDTO;
 @RequestMapping("/shoes")
 public class ShoeController {
 
-    private final ShoeService shoeService;
-
     @Autowired
-    public ShoeController(ShoeService shoeService) {
-        this.shoeService = shoeService;
+    private ShoeService shoeService;
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<ShoeDTO>> getShoesByUser(@PathVariable UUID userId) {
+        List<ShoeDTO> shoes = shoeService.getShoesByUserID(userId);
+        return new ResponseEntity<>(shoes, HttpStatus.OK);
     }
 
-    @GetMapping("/{userUUID}")
-    public ResponseEntity<List<ShoeDTO>> getShoesByUser(@PathVariable UUID userUUID) {
-        try {
-            List<ShoeDTO> shoes = shoeService.getShoesByUserID(userUUID);
-            return new ResponseEntity<>(shoes, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<ShoeDTO> createShoe(@RequestBody ShoeDTO shoeDTO) {
-        try {
-            ShoeDTO createdShoe = shoeService.createShoe(shoeDTO);
-            return new ResponseEntity<>(createdShoe, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @PostMapping("/{userId}")
+    public ResponseEntity<ShoeDTO> createShoe(@PathVariable UUID userId, @RequestBody ShoeDTO shoeDTO) {
+        ShoeDTO createdShoe = shoeService.createShoe(userId, shoeDTO);
+        return new ResponseEntity<>(createdShoe, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{shoeId}")
-    public ResponseEntity<Void> deleteShoe(@PathVariable Long shoeId) {
-        try {
-            shoeService.deleteShoe(shoeId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> deleteShoe(@PathVariable Long shoeId) {
+        shoeService.deleteShoe(shoeId);
+        return ResponseEntity.ok(Map.of("message", "Shoe with ID " + shoeId + " has been deleted"));
     }
 
     @PutMapping("/{shoeId}")
-    public ResponseEntity<ShoeDTO> updateShoe(@PathVariable Long shoeId, @RequestBody ShoeDTO shoeDTO) {
-        try {
-            ShoeDTO updatedShoe = shoeService.updateShoe(shoeId, shoeDTO);
-            return new ResponseEntity<>(updatedShoe, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> updateShoe(@PathVariable Long shoeId, @RequestBody ShoeDTO shoeDTO) {
+        ShoeDTO updatedShoe = shoeService.updateShoe(shoeId, shoeDTO);
+        return new ResponseEntity<>(updatedShoe, HttpStatus.OK);
     }
 }

@@ -1,11 +1,12 @@
 package com.example.RunAgainstTheWind.integrationTesting;
 
-import com.example.RunAgainstTheWind.domain.strava.controller.StravaController;
-import com.example.RunAgainstTheWind.domain.strava.model.StravaAthleteResponse;
-import com.example.RunAgainstTheWind.domain.strava.model.StravaTokenResponse;
-import com.example.RunAgainstTheWind.domain.strava.service.StravaService;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
+import com.example.RunAgainstTheWind.externalApi.strava.controller.StravaController;
+import com.example.RunAgainstTheWind.externalApi.strava.model.StravaAthleteResponse;
+import com.example.RunAgainstTheWind.externalApi.strava.model.StravaTokenResponse;
+import com.example.RunAgainstTheWind.externalApi.strava.service.StravaService;
+
 import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

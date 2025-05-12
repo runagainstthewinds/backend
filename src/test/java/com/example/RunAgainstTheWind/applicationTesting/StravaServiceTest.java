@@ -1,9 +1,10 @@
 package com.example.RunAgainstTheWind.applicationTesting;
 
 import com.example.RunAgainstTheWind.config.StravaConfig;
-import com.example.RunAgainstTheWind.domain.strava.service.StravaService;
 import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.domain.user.repository.UserRepository;
+import com.example.RunAgainstTheWind.externalApi.strava.service.StravaService;
+
 import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,50 +1,47 @@
 package com.example.RunAgainstTheWind.domain.trainingPlan.model;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
 
-import com.example.RunAgainstTheWind.domain.trainingSession.model.TrainingSession;
 import com.example.RunAgainstTheWind.domain.user.model.User;
-import com.example.RunAgainstTheWind.enumeration.Road;
+import com.example.RunAgainstTheWind.enumeration.Difficulty;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "training_plan")
 @Data
+@NoArgsConstructor
 public class TrainingPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long trainingPlanId;
 
-    private Date startDate;
-    private Date endDate;
-    private String planType;
-    private Road roadType;
+    private String planName;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Double goalDistance;
-    private Double goalTime;
+    private Difficulty difficulty;
+    private boolean isComplete;
 
-    public TrainingPlan() {}
-
-    public TrainingPlan(Date startDate, Date endDate, String planType, Road roadType, Double goalDistance, Double goalTime) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.planType = planType;
-        this.roadType = roadType;
-        this.goalDistance = goalDistance;
-        this.goalTime = goalTime;
-    }
-
-    @OneToOne(mappedBy = "trainingPlan")
+    @ManyToOne
+    @JoinColumn(name = "userId")
     private User user;
 
-    @OneToMany(mappedBy = "trainingPlan")
-    private List<TrainingSession> trainingSessions;
+    public TrainingPlan(String planName, LocalDate startDate, LocalDate endDate, Double goalDistance, Difficulty difficulty, boolean isComplete, User user) {
+        this.planName = planName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.goalDistance = goalDistance;
+        this.difficulty = difficulty;
+        this.isComplete = isComplete;
+        this.user = user;
+    }
 }   
