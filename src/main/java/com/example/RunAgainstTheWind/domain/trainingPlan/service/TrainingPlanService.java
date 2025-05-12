@@ -44,7 +44,7 @@ public class TrainingPlanService {
     public TrainingPlanDTO getCurrentTrainingPlanByUserId(UUID userId) {
         v.validateUserExistsAndReturn(userId);
         return trainingPlanRepository.getCurrentTrainingPlanByUserId(userId)
-            .orElseThrow(() -> new EntityNotFoundException("No active training plan found for user with id: " + userId));
+            .orElse(null);
     }
 
     public Map<String, Object> createTrainingPlan(UUID userId, TrainingPlanDTO trainingPlanDTO) {
