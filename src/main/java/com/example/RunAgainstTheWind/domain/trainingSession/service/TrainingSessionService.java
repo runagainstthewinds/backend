@@ -1,6 +1,7 @@
 package com.example.RunAgainstTheWind.domain.trainingSession.service;
 
 import com.example.RunAgainstTheWind.application.validation.ValidationService;
+import com.example.RunAgainstTheWind.domain.achievement.service.AchievementEvaluationService;
 import com.example.RunAgainstTheWind.domain.shoe.model.Shoe;
 import com.example.RunAgainstTheWind.domain.shoe.repository.ShoeRepository;
 import com.example.RunAgainstTheWind.domain.trainingPlan.model.TrainingPlan;
@@ -39,6 +40,9 @@ public class TrainingSessionService {
 
     @Autowired
     private ShoeService shoeService;
+
+    @Autowired
+    private AchievementEvaluationService achievementEvaluationService;
 
     @Transactional(readOnly = true)
     public List<TrainingSessionDTO> getTrainingSessionsByUserId(UUID userId) {
@@ -101,6 +105,11 @@ public class TrainingSessionService {
         trainingSessionDTO.setTrainingPlanId(trainingPlan != null ? trainingPlan.getTrainingPlanId() : null);
         trainingSessionDTO.setShoeId(shoe != null ? shoe.getShoeId() : null);
         trainingSessionDTO.setUserId(user.getUserId());
+
+        if (Boolean.TRUE.equals(trainingSessionDTO.getIsComplete())) {
+            achievementEvaluationService.evaluateRunningAchievements(userId, trainingSessionDTO);
+        }
+
         return trainingSessionDTO;
     }
 
@@ -169,6 +178,10 @@ public class TrainingSessionService {
         trainingSessionDTO.setTrainingPlanId(updatedSession.getTrainingPlan() != null ? updatedSession.getTrainingPlan().getTrainingPlanId() : null);
         trainingSessionDTO.setShoeId(updatedSession.getShoe() != null ? updatedSession.getShoe().getShoeId() : null);
         trainingSessionDTO.setUserId(updatedSession.getUser().getUserId());
+
+        if (Boolean.TRUE.equals(trainingSessionDTO.getIsComplete())) {
+            achievementEvaluationService.evaluateRunningAchievements(trainingSessionDTO.getUserId(), trainingSessionDTO);
+        }
 
         return trainingSessionDTO;
     }
