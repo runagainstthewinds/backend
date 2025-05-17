@@ -40,4 +40,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleAchievementAlreadyAssigned(AchievementAlreadyAssignedException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
+
+    @ExceptionHandler(InvalidTrainingSessionException.class)
+    public ResponseEntity<String> handleInvalidTrainingSession(InvalidTrainingSessionException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }

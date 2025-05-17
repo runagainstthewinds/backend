@@ -16,40 +16,76 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        if (!achievementRepository.existsByAchievementId(1)) {
-            achievementRepository.save(new Achievement(1, "First Run", "Completed your first run"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.FIRST_RUN_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.FIRST_RUN_ID, 
+                AchievementConfig.FIRST_RUN_NAME, 
+                AchievementConfig.FIRST_RUN_DESC
+            ));
         }
 
-        if (!achievementRepository.existsByAchievementId(2)) {
-            achievementRepository.save(new Achievement(2, "Early Bird", "Completed a run before 6 AM"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.EARLY_BIRD_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.EARLY_BIRD_ID, 
+                AchievementConfig.EARLY_BIRD_NAME, 
+                AchievementConfig.EARLY_BIRD_DESC
+            ));
         }
 
-        if (!achievementRepository.existsByAchievementId(3)) {
-            achievementRepository.save(new Achievement(3, "Rain Runner", "Completed a run in the rain"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.RAIN_RUNNER_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.RAIN_RUNNER_ID, 
+                AchievementConfig.RAIN_RUNNER_NAME, 
+                AchievementConfig.RAIN_RUNNER_DESC
+            ));
         }
 
-        if (!achievementRepository.existsByAchievementId(4)) {
-            achievementRepository.save(new Achievement(4, "Marathon Finisher", "Completed a full marathon"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.MARATHON_FINISHER_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.MARATHON_FINISHER_ID, 
+                AchievementConfig.MARATHON_FINISHER_NAME, 
+                AchievementConfig.MARATHON_FINISHER_DESC
+            ));
         }
 
-        if (!achievementRepository.existsByAchievementId(5)) {
-            achievementRepository.save(new Achievement(5, "Streak Master", "Run for 7 consecutive days"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.STREAK_MASTER_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.STREAK_MASTER_ID, 
+                AchievementConfig.STREAK_MASTER_NAME, 
+                AchievementConfig.STREAK_MASTER_DESC
+            ));
         }
 
-        if (!achievementRepository.existsByAchievementId(6)) {
-            achievementRepository.save(new Achievement(6, "Trail Explorer", "Completed a trail run"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.TRAIL_EXPLORER_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.TRAIL_EXPLORER_ID, 
+                AchievementConfig.TRAIL_EXPLORER_NAME, 
+                AchievementConfig.TRAIL_EXPLORER_DESC
+            ));
         }
 
-        if (!achievementRepository.existsByAchievementId(7)) {
-            achievementRepository.save(new Achievement(7, "Speed Demon", "Ran 5K under 20 minutes"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.SPEED_DEMON_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.SPEED_DEMON_ID, 
+                AchievementConfig.SPEED_DEMON_NAME, 
+                AchievementConfig.SPEED_DEMON_DESC
+            ));
         }
 
-        if (!achievementRepository.existsByAchievementId(8)) {
-            achievementRepository.save(new Achievement(8, "Globe Trotter", "Run in 5 different cities"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.GLOBE_TROTTER_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.GLOBE_TROTTER_ID, 
+                AchievementConfig.GLOBE_TROTTER_NAME, 
+                AchievementConfig.GLOBE_TROTTER_DESC
+            ));
         }
 
-        if (!achievementRepository.existsByAchievementId(9)) {
-            achievementRepository.save(new Achievement(9, "Consistency King", "Run 20 times in a month"));
+        if (!achievementRepository.existsByAchievementId(AchievementConfig.CONSISTENCY_KING_ID)) {
+            achievementRepository.save(new Achievement(
+                AchievementConfig.CONSISTENCY_KING_ID, 
+                AchievementConfig.CONSISTENCY_KING_NAME, 
+                AchievementConfig.CONSISTENCY_KING_DESC
+            ));
         }
     }
 }
