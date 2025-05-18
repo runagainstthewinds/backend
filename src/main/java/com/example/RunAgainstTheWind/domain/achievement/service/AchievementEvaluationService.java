@@ -4,12 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.RunAgainstTheWind.application.validation.ValidationService;
-import com.example.RunAgainstTheWind.config.AchievementConfig.Achievement;
+import com.example.RunAgainstTheWind.domain.achievement.model.AchievementEnum;
 import com.example.RunAgainstTheWind.dto.achievement.AchievementDTO;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,20 +29,26 @@ public class AchievementEvaluationService {
     @Autowired
     private AchievementService achievementService;
 
-    private final Map<Achievement, BiFunction<UUID, TrainingSessionDTO, Boolean>> achievementChecks;
+    private final Map<AchievementEnum, BiFunction<UUID, TrainingSessionDTO, Boolean>> achievementChecks;
 
     public AchievementEvaluationService() {
-        this.achievementChecks = Map.of(
-            Achievement.FIRST_RUN, (userId, session) -> checkFirstRunAchievement(userId),
-            Achievement.EARLY_BIRD, (userId, session) -> checkEarlyBirdAchievement(userId, session.getDate()),
-            Achievement.RAIN_RUNNER, (userId, session) -> checkRainRunnerAchievement(userId, session),
-            Achievement.MARATHON_FINISHER, (userId, session) -> checkMarathonFinisherAchievement(userId, session.getAchievedDistance()),
-            Achievement.STREAK_MASTER, (userId, session) -> checkStreakMasterAchievement(userId, session),
-            Achievement.TRAIL_EXPLORER, (userId, session) -> checkTrailExplorerAchievement(userId, session),
-            Achievement.SPEED_DEMON, (userId, session) -> checkSpeedDemonAchievement(userId, session.getAchievedDistance(), session.getAchievedPace()),
-            Achievement.GLOBE_TROTTER, (userId, session) -> checkGlobeTrotterAchievement(userId, session),
-            Achievement.CONSISTENCY_KING, (userId, session) -> checkConsistencyKingAchievement(userId, session)
-        );
+        Map<AchievementEnum, BiFunction<UUID, TrainingSessionDTO, Boolean>> checks = new EnumMap<>(AchievementEnum.class);
+        
+        for (AchievementEnum achievement : AchievementEnum.values()) {
+            checks.put(achievement, switch (achievement) {
+                case FIRST_RUN -> (userId, session) -> checkFirstRunAchievement(userId);
+                case EARLY_BIRD -> (userId, session) -> checkEarlyBirdAchievement(userId, session.getDate());
+                case RAIN_RUNNER -> (userId, session) -> checkRainRunnerAchievement(userId, session);
+                case MARATHON_FINISHER -> (userId, session) -> checkMarathonFinisherAchievement(userId, session.getAchievedDistance());
+                case STREAK_MASTER -> (userId, session) -> checkStreakMasterAchievement(userId, session);
+                case TRAIL_EXPLORER -> (userId, session) -> checkTrailExplorerAchievement(userId, session);
+                case SPEED_DEMON -> (userId, session) -> checkSpeedDemonAchievement(userId, session.getAchievedDistance(), session.getAchievedPace());
+                case GLOBE_TROTTER -> (userId, session) -> checkGlobeTrotterAchievement(userId, session);
+                case CONSISTENCY_KING -> (userId, session) -> checkConsistencyKingAchievement(userId, session);
+            });
+        }
+        
+        this.achievementChecks = checks;
     }
 
     public void evaluateRunningAchievements(UUID userId, TrainingSessionDTO trainingSession) {
@@ -50,7 +57,7 @@ public class AchievementEvaluationService {
         
         List<AchievementDTO> existingAchievements = achievementService.getUserAchievements(userId);
         
-        for (Achievement achievement : Achievement.values()) {
+        for (AchievementEnum achievement : AchievementEnum.values()) {
             if (!hasAchievement(existingAchievements, achievement.getName()) && 
                 achievementChecks.get(achievement).apply(userId, trainingSession)) {
                 achievementService.assignAchievementToUser(userId, achievement.getId());
