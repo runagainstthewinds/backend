@@ -75,7 +75,7 @@ public class AchievementEvaluationService {
     }
 
     private boolean checkMarathonFinisherAchievement(UUID userId, double distance) {
-        return distance >= 42.0;
+        return distance >= 42.2;
     }
 
     private boolean checkEarlyBirdAchievement(UUID userId, LocalDate date) {
