@@ -11,6 +11,8 @@ import com.example.RunAgainstTheWind.domain.user.model.User;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 import com.example.RunAgainstTheWind.domain.shoe.service.ShoeService;
 import com.example.RunAgainstTheWind.dto.shoe.ShoeDTO;
+import com.example.RunAgainstTheWind.domain.userDetails.service.UserDetailsService;
+import com.example.RunAgainstTheWind.dto.userDetails.UserDetailsDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,9 @@ public class TrainingSessionService {
 
     @Autowired
     private ShoeService shoeService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Transactional(readOnly = true)
     public List<TrainingSessionDTO> getTrainingSessionsByUserId(UUID userId) {
@@ -97,6 +102,11 @@ public class TrainingSessionService {
         );
         TrainingSession savedSession = trainingSessionRepository.save(trainingSession);
 
+        // Update user details if achieved distance and duration are present
+        if (trainingSessionDTO.getAchievedDistance() != null && trainingSessionDTO.getAchievedDuration() != null) {
+            updateUserDetails(userId, trainingSessionDTO.getAchievedDistance(), trainingSessionDTO.getAchievedDuration(), false);
+        }
+
         trainingSessionDTO.setTrainingSessionId(savedSession.getTrainingSessionId());
         trainingSessionDTO.setTrainingPlanId(trainingPlan != null ? trainingPlan.getTrainingPlanId() : null);
         trainingSessionDTO.setShoeId(shoe != null ? shoe.getShoeId() : null);
@@ -106,9 +116,14 @@ public class TrainingSessionService {
 
     @Transactional
     public void deleteTrainingSession(Long trainingSessionId) {
-        if (!trainingSessionRepository.existsById(trainingSessionId)) {
-            throw new EntityNotFoundException("Training session not found with id: " + trainingSessionId);
+        TrainingSession session = trainingSessionRepository.findById(trainingSessionId)
+            .orElseThrow(() -> new EntityNotFoundException("Training session not found with id: " + trainingSessionId));
+        
+        // Update user details if achieved distance and duration are present
+        if (session.getAchievedDistance() != null && session.getAchievedDuration() != null) {
+            updateUserDetails(session.getUser().getUserId(), session.getAchievedDistance(), session.getAchievedDuration(), true);
         }
+        
         trainingSessionRepository.deleteById(trainingSessionId);
     }
 
@@ -116,6 +131,14 @@ public class TrainingSessionService {
     public TrainingSessionDTO updateTrainingSession(Long trainingSessionId, TrainingSessionDTO trainingSessionDTO) {
         TrainingSession existingSession = trainingSessionRepository.findById(trainingSessionId)
             .orElseThrow(() -> new EntityNotFoundException("Training session not found with id: " + trainingSessionId));
+
+        // If there are existing achieved values, subtract them from user details
+        if (existingSession.getAchievedDistance() != null && existingSession.getAchievedDuration() != null) {
+            updateUserDetails(existingSession.getUser().getUserId(), 
+                existingSession.getAchievedDistance(), 
+                existingSession.getAchievedDuration(), 
+                true);
+        }
 
         Shoe shoe = null;
         if (trainingSessionDTO.getShoeId() != null) {
@@ -153,6 +176,14 @@ public class TrainingSessionService {
 
         TrainingSession updatedSession = trainingSessionRepository.save(existingSession);
 
+        // Update user details with new achieved values
+        if (trainingSessionDTO.getAchievedDistance() != null && trainingSessionDTO.getAchievedDuration() != null) {
+            updateUserDetails(existingSession.getUser().getUserId(), 
+                trainingSessionDTO.getAchievedDistance(), 
+                trainingSessionDTO.getAchievedDuration(), 
+                false);
+        }
+
         // Set all attributes in the response DTO
         trainingSessionDTO.setTrainingSessionId(updatedSession.getTrainingSessionId());
         trainingSessionDTO.setTrainingType(updatedSession.getTrainingType());
@@ -171,5 +202,28 @@ public class TrainingSessionService {
         trainingSessionDTO.setUserId(updatedSession.getUser().getUserId());
 
         return trainingSessionDTO;
+    }
+
+    private void updateUserDetails(UUID userId, Double achievedDistance, Double achievedDuration, boolean isDeletion) {
+        UserDetailsDTO userDetails = userDetailsService.getUserDetailsById(userId);
+        if (userDetails == null) {
+            userDetails = new UserDetailsDTO();
+            userDetails.setTotalDistance(0.0);
+            userDetails.setTotalDuration(0.0);
+            userDetails.setRunCount(0);
+        }
+
+        double multiplier = isDeletion ? -1 : 1;
+        
+        // Add to existing values instead of replacing them
+        Double currentDistance = userDetails.getTotalDistance() != null ? userDetails.getTotalDistance() : 0.0;
+        Double currentDuration = userDetails.getTotalDuration() != null ? userDetails.getTotalDuration() : 0.0;
+        Integer currentRunCount = userDetails.getRunCount() != null ? userDetails.getRunCount() : 0;
+
+        userDetails.setTotalDistance(currentDistance + (achievedDistance * multiplier));
+        userDetails.setTotalDuration(currentDuration + (achievedDuration * multiplier));
+        userDetails.setRunCount(currentRunCount + (int)(1 * multiplier));
+
+        userDetailsService.updateUserDetails(userId, userDetails);
     }
 }
