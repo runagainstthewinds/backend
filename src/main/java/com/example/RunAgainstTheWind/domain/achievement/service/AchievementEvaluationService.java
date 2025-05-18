@@ -4,14 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.RunAgainstTheWind.application.validation.ValidationService;
-import com.example.RunAgainstTheWind.config.AchievementConfig;
+import com.example.RunAgainstTheWind.config.AchievementConfig.Achievement;
 import com.example.RunAgainstTheWind.dto.achievement.AchievementDTO;
 import com.example.RunAgainstTheWind.dto.trainingSession.TrainingSessionDTO;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiFunction;
 
 @Service
 public class AchievementEvaluationService {
@@ -26,38 +28,33 @@ public class AchievementEvaluationService {
     @Autowired
     private AchievementService achievementService;
 
+    private final Map<Achievement, BiFunction<UUID, TrainingSessionDTO, Boolean>> achievementChecks;
+
+    public AchievementEvaluationService() {
+        this.achievementChecks = Map.of(
+            Achievement.FIRST_RUN, (userId, session) -> checkFirstRunAchievement(userId),
+            Achievement.EARLY_BIRD, (userId, session) -> checkEarlyBirdAchievement(userId, session.getDate()),
+            Achievement.RAIN_RUNNER, (userId, session) -> checkRainRunnerAchievement(userId, session),
+            Achievement.MARATHON_FINISHER, (userId, session) -> checkMarathonFinisherAchievement(userId, session.getAchievedDistance()),
+            Achievement.STREAK_MASTER, (userId, session) -> checkStreakMasterAchievement(userId, session),
+            Achievement.TRAIL_EXPLORER, (userId, session) -> checkTrailExplorerAchievement(userId, session),
+            Achievement.SPEED_DEMON, (userId, session) -> checkSpeedDemonAchievement(userId, session.getAchievedDistance(), session.getAchievedPace()),
+            Achievement.GLOBE_TROTTER, (userId, session) -> checkGlobeTrotterAchievement(userId, session),
+            Achievement.CONSISTENCY_KING, (userId, session) -> checkConsistencyKingAchievement(userId, session)
+        );
+    }
+
     public void evaluateRunningAchievements(UUID userId, TrainingSessionDTO trainingSession) {
         v.validateUserExists(userId);
         v.validateTrainingSession(trainingSession);
         
         List<AchievementDTO> existingAchievements = achievementService.getUserAchievements(userId);
         
-        if (!hasAchievement(existingAchievements, AchievementConfig.FIRST_RUN_NAME) && checkFirstRunAchievement(userId)) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.FIRST_RUN_ID);
-        }
-        if (!hasAchievement(existingAchievements, AchievementConfig.EARLY_BIRD_NAME) && checkEarlyBirdAchievement(userId, trainingSession.getDate())) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.EARLY_BIRD_ID);
-        }
-        if (!hasAchievement(existingAchievements, AchievementConfig.RAIN_RUNNER_NAME) && checkRainRunnerAchievement(userId, trainingSession)) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.RAIN_RUNNER_ID);
-        }
-        if (!hasAchievement(existingAchievements, AchievementConfig.MARATHON_FINISHER_NAME) && checkMarathonFinisherAchievement(userId, trainingSession.getAchievedDistance())) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.MARATHON_FINISHER_ID);
-        }
-        if (!hasAchievement(existingAchievements, AchievementConfig.STREAK_MASTER_NAME) && checkStreakMasterAchievement(userId, trainingSession)) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.STREAK_MASTER_ID);
-        }
-        if (!hasAchievement(existingAchievements, AchievementConfig.TRAIL_EXPLORER_NAME) && checkTrailExplorerAchievement(userId, trainingSession)) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.TRAIL_EXPLORER_ID);
-        }
-        if (!hasAchievement(existingAchievements, AchievementConfig.SPEED_DEMON_NAME) && checkSpeedDemonAchievement(userId, trainingSession.getAchievedDistance(), trainingSession.getAchievedPace())) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.SPEED_DEMON_ID);
-        }
-        if (!hasAchievement(existingAchievements, AchievementConfig.GLOBE_TROTTER_NAME) && checkGlobeTrotterAchievement(userId, trainingSession)) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.GLOBE_TROTTER_ID);
-        }
-        if (!hasAchievement(existingAchievements, AchievementConfig.CONSISTENCY_KING_NAME) && checkConsistencyKingAchievement(userId, trainingSession)) {
-            achievementService.assignAchievementToUser(userId, AchievementConfig.CONSISTENCY_KING_ID);
+        for (Achievement achievement : Achievement.values()) {
+            if (!hasAchievement(existingAchievements, achievement.getName()) && 
+                achievementChecks.get(achievement).apply(userId, trainingSession)) {
+                achievementService.assignAchievementToUser(userId, achievement.getId());
+            }
         }
     }
 
