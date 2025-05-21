@@ -84,18 +84,9 @@ public class TrainingSessionService {
                 .orElseThrow(() -> new EntityNotFoundException("Shoe not found with id: " + shoeId));
         }
 
-        // Calculate pace values
-        Double pace = null;
-        if (trainingSessionDTO.getDistance() != null && trainingSessionDTO.getDistance() > 0 && 
-            trainingSessionDTO.getDuration() != null) {
-            pace = trainingSessionDTO.getDuration() / trainingSessionDTO.getDistance();
-        }
-
-        Double achievedPace = null;
-        if (trainingSessionDTO.getAchievedDistance() != null && trainingSessionDTO.getAchievedDistance() > 0 && 
-            trainingSessionDTO.getAchievedDuration() != null) {
-            achievedPace = trainingSessionDTO.getAchievedDuration() / trainingSessionDTO.getAchievedDistance();
-        }
+        // Calculate pace values using helper
+        Double pace = calculatePace(trainingSessionDTO.getDuration(), trainingSessionDTO.getDistance());
+        Double achievedPace = calculatePace(trainingSessionDTO.getAchievedDuration(), trainingSessionDTO.getAchievedDistance());
 
         TrainingSession trainingSession = new TrainingSession(
             trainingSessionDTO.getTrainingType(),
@@ -182,18 +173,11 @@ public class TrainingSessionService {
         if (trainingSessionDTO.getNotes() != null) existingSession.setNotes(trainingSessionDTO.getNotes());
         if (shoe != null) existingSession.setShoe(shoe);
 
-        // Calculate pace values
-        if (trainingSessionDTO.getDistance() != null && trainingSessionDTO.getDistance() > 0 && 
-            trainingSessionDTO.getDuration() != null) {
-            Double pace = trainingSessionDTO.getDuration() / trainingSessionDTO.getDistance();
-            existingSession.setPace(pace);
-        }
-
-        if (trainingSessionDTO.getAchievedDistance() != null && trainingSessionDTO.getAchievedDistance() > 0 && 
-            trainingSessionDTO.getAchievedDuration() != null) {
-            Double achievedPace = trainingSessionDTO.getAchievedDuration() / trainingSessionDTO.getAchievedDistance();
-            existingSession.setAchievedPace(achievedPace);
-        }
+        // Calculate pace values using helper
+        Double pace = calculatePace(existingSession.getDuration(), existingSession.getDistance());
+        existingSession.setPace(pace);
+        Double achievedPace = calculatePace(existingSession.getAchievedDuration(), existingSession.getAchievedDistance());
+        existingSession.setAchievedPace(achievedPace);
 
         TrainingSession updatedSession = trainingSessionRepository.save(existingSession);
 
@@ -247,4 +231,12 @@ public class TrainingSessionService {
 
         userDetailsService.updateUserDetails(userId, userDetails);
     }
+
+    private Double calculatePace(Double duration, Double distance) {
+        if (distance != null && distance > 0 && duration != null) {
+            return duration / distance;
+        }
+        return null;
+    }
+
 }
