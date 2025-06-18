@@ -20,8 +20,11 @@ import java.util.function.BiFunction;
 public class AchievementEvaluationService {
     
     private static final LocalTime EARLY_BIRD_THRESHOLD = LocalTime.of(6, 0);
-    private static final double SPEED_DEMON_MIN_DISTANCE = 5.0; // 5km
-    private static final double SPEED_DEMON_MAX_PACE = 4.0; // 4:00 min/km
+    private static final LocalTime NIGHT_OWL_THRESHOLD = LocalTime.of(21, 0);
+    private static final double FIVE_KM_DISTANCE = 5.0;
+    private static final double TEN_KM_DISTANCE = 10.0;
+    private static final double HALF_MARATHON_DISTANCE = 21.1;
+    private static final double MARATHON_DISTANCE = 42.2;
 
     @Autowired
     private ValidationService v;
@@ -38,13 +41,11 @@ public class AchievementEvaluationService {
             checks.put(achievement, switch (achievement) {
                 case FIRST_RUN -> (userId, session) -> checkFirstRunAchievement(userId);
                 case EARLY_BIRD -> (userId, session) -> checkEarlyBirdAchievement(userId, session.getDate());
-                case RAIN_RUNNER -> (userId, session) -> checkRainRunnerAchievement(userId, session);
-                case MARATHON_FINISHER -> (userId, session) -> checkMarathonFinisherAchievement(userId, session.getAchievedDistance());
-                case STREAK_MASTER -> (userId, session) -> checkStreakMasterAchievement(userId, session);
-                case TRAIL_EXPLORER -> (userId, session) -> checkTrailExplorerAchievement(userId, session);
-                case SPEED_DEMON -> (userId, session) -> checkSpeedDemonAchievement(userId, session.getAchievedDistance(), session.getAchievedPace());
-                case GLOBE_TROTTER -> (userId, session) -> checkGlobeTrotterAchievement(userId, session);
-                case CONSISTENCY_KING -> (userId, session) -> checkConsistencyKingAchievement(userId, session);
+                case NIGHT_OWL -> (userId, session) -> checkNightOwlAchievement(userId, session.getDate());
+                case FIVE_KM -> (userId, session) -> checkFiveKmAchievement(userId, session.getAchievedDistance());
+                case TEN_KM -> (userId, session) -> checkTenKmAchievement(userId, session.getAchievedDistance());
+                case HALF_MARATHON -> (userId, session) -> checkHalfMarathonAchievement(userId, session.getAchievedDistance());
+                case MARATHON -> (userId, session) -> checkMarathonAchievement(userId, session.getAchievedDistance());
             });
         }
         
@@ -74,45 +75,27 @@ public class AchievementEvaluationService {
         return true;
     }
 
-    private boolean checkMarathonFinisherAchievement(UUID userId, double distance) {
-        return distance >= 42.2;
-    }
-
     private boolean checkEarlyBirdAchievement(UUID userId, LocalDate date) {
         return date != null && date.atTime(LocalTime.now()).toLocalTime().isBefore(EARLY_BIRD_THRESHOLD);
     }
 
-    private boolean checkSpeedDemonAchievement(UUID userId, double distance, Double pace) {
-        return pace != null && distance >= SPEED_DEMON_MIN_DISTANCE && pace <= SPEED_DEMON_MAX_PACE;
+    private boolean checkNightOwlAchievement(UUID userId, LocalDate date) {
+        return date != null && date.atTime(LocalTime.now()).toLocalTime().isAfter(NIGHT_OWL_THRESHOLD);
     }
 
-    private boolean checkRainRunnerAchievement(UUID userId, TrainingSessionDTO trainingSession) {
-        // TODO: Implement rain detection logic
-        // This will check if the run was completed during rainy weather
-        return false;
+    private boolean checkFiveKmAchievement(UUID userId, double distance) {
+        return distance >= FIVE_KM_DISTANCE;
     }
 
-    private boolean checkStreakMasterAchievement(UUID userId, TrainingSessionDTO trainingSession) {
-        // TODO: Implement streak tracking logic
-        // This will check for consecutive days of running
-        return false;
+    private boolean checkTenKmAchievement(UUID userId, double distance) {
+        return distance >= TEN_KM_DISTANCE;
     }
 
-    private boolean checkTrailExplorerAchievement(UUID userId, TrainingSessionDTO trainingSession) {
-        // TODO: Implement trail running detection logic
-        // This will check if the run was on a trail
-        return false;
+    private boolean checkHalfMarathonAchievement(UUID userId, double distance) {
+        return distance >= HALF_MARATHON_DISTANCE;
     }
 
-    private boolean checkGlobeTrotterAchievement(UUID userId, TrainingSessionDTO trainingSession) {
-        // TODO: Implement location tracking logic
-        // This will check for runs in different locations
-        return false;
-    }
-
-    private boolean checkConsistencyKingAchievement(UUID userId, TrainingSessionDTO trainingSession) {
-        // TODO: Implement consistency tracking logic
-        // This will check for regular running patterns
-        return false;
+    private boolean checkMarathonAchievement(UUID userId, double distance) {
+        return distance >= MARATHON_DISTANCE;
     }
 }
