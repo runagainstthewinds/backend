@@ -8,13 +8,11 @@ import lombok.RequiredArgsConstructor;
 public enum AchievementEnum {
     FIRST_RUN(1, "First Run", "Completed your first run"),
     EARLY_BIRD(2, "Early Bird", "Completed a run before 6 AM"),
-    RAIN_RUNNER(3, "Rain Runner", "Completed a run in the rain"),
-    MARATHON_FINISHER(4, "Marathon Finisher", "Completed a full marathon"),
-    STREAK_MASTER(5, "Streak Master", "Run for 7 consecutive days"),
-    TRAIL_EXPLORER(6, "Trail Explorer", "Completed a trail run"),
-    SPEED_DEMON(7, "Speed Demon", "Ran 5K under 20 minutes"),
-    GLOBE_TROTTER(8, "Globe Trotter", "Run in 5 different cities"),
-    CONSISTENCY_KING(9, "Consistency King", "Run 20 times in a month");
+    NIGHT_OWL(3, "Night Owl", "Completed a run after 9 PM"),
+    FIVE_KM(4, "5K Runner", "Completed a 5K run"),
+    TEN_KM(5, "10K Runner", "Completed a 10K run"),
+    HALF_MARATHON(6, "Half Marathon", "Completed a half marathon"),
+    MARATHON(7, "Marathon", "Completed a full marathon");
 
     private final int id;
     private final String name;
